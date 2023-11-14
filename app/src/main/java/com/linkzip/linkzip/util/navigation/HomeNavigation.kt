@@ -8,38 +8,42 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.model.ScreenState
 import com.linkzip.linkzip.presentation.feature.home.HomeView
+import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.presentation.feature.my.MyPageView
 
-sealed class MainPath(val path: String) {
-    object Home : MainPath("Home")
-    object Mypage : MainPath("Mypage")
+
+sealed class HomePath(val path: String) {
+    object All : HomePath("All")
+    object Often : HomePath("Often")
 }
 
 @Composable
-fun MainNavigation(
-    mainViewModel: MainViewModel = viewModel()
+fun HomeNavigation(
+    homeViewModel: HomeViewModel = viewModel()
 ){
     val navController = rememberNavController()
-    val screenState by mainViewModel.screenState.collectAsState(initial = ScreenState.HOME)
+    val screenState by homeViewModel.homeScreenState.collectAsState(initial = HomeScreenState.ALL)
 
+    //screenState 가 바뀔때마다 취소되고 재실행
     LaunchedEffect(screenState) {
         when(screenState) {
-            ScreenState.HOME -> { navController.navigate(MainPath.Home.path)}
-            ScreenState.MYPAGE -> { navController.navigate(MainPath.Mypage.path) }
+            HomeScreenState.ALL -> {navController.navigate(HomePath.All.path) }
+            HomeScreenState.OFTEN -> { navController.navigate(HomePath.Often.path) }
         }
     }
 
     NavHost(
         navController =  navController,
-        startDestination = MainPath.Home.path){
-        composable(MainPath.Home.path) {
-            HomeView()
+        startDestination = HomePath.All.path){
+        composable(HomePath.All.path) {
+           //AllView
         }
-        composable(MainPath.Mypage.path) {
-            MyPageView()
+        composable(HomePath.Often.path) {
+           // OftenView
         }
     }
 }
