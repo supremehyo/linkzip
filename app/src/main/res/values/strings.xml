@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">linkzip</string>
+
+    <!-- 바텀 네비게이션-->
+    <string name="bottom_home_text">홈</string>
+    <string name="bottom_my_text">마이</string>
+    <string name="bottom_home_path">HOME</string>
+    <string name="bottom_my_path">MY_PAGE</string>
 </resources>
