@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,6 +13,7 @@ import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.model.ScreenState
 import com.linkzip.linkzip.presentation.feature.home.HomeView
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
+import com.linkzip.linkzip.presentation.feature.home.all.AllView
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.presentation.feature.my.MyPageView
 
@@ -23,7 +25,7 @@ sealed class HomePath(val path: String) {
 
 @Composable
 fun HomeNavigation(
-    homeViewModel: HomeViewModel = viewModel()
+    homeViewModel: HomeViewModel =  hiltViewModel()
 ){
     val navController = rememberNavController()
     val screenState by homeViewModel.homeScreenState.collectAsState(initial = HomeScreenState.ALL)
@@ -40,7 +42,7 @@ fun HomeNavigation(
         navController =  navController,
         startDestination = HomePath.All.path){
         composable(HomePath.All.path) {
-           //AllView
+            AllView()
         }
         composable(HomePath.Often.path) {
            // OftenView

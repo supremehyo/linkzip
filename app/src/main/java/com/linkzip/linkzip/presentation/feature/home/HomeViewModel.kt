@@ -5,10 +5,11 @@ import com.linkzip.linkzip.data.model.HomeScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
 
 @HiltViewModel
-class HomeViewModel : ViewModel() {
+class HomeViewModel @Inject constructor() : ViewModel() {
     val _homeScreenState = MutableStateFlow(HomeScreenState.ALL)
     val homeScreenState = _homeScreenState.asStateFlow()
 
