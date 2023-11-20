@@ -14,13 +14,14 @@ import com.linkzip.linkzip.data.model.ScreenState
 import com.linkzip.linkzip.presentation.feature.home.HomeView
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.presentation.feature.home.all.AllView
+import com.linkzip.linkzip.presentation.feature.home.favorite.FavoriteView
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.presentation.feature.my.MyPageView
 
 
 sealed class HomePath(val path: String) {
     object All : HomePath("All")
-    object Often : HomePath("Often")
+    object Favorite : HomePath("Favorite")
 }
 
 @Composable
@@ -34,7 +35,7 @@ fun HomeNavigation(
     LaunchedEffect(screenState) {
         when(screenState) {
             HomeScreenState.ALL -> {navController.navigate(HomePath.All.path) }
-            HomeScreenState.OFTEN -> { navController.navigate(HomePath.Often.path) }
+            HomeScreenState.FAVORITE -> { navController.navigate(HomePath.Favorite.path) }
         }
     }
 
@@ -44,8 +45,8 @@ fun HomeNavigation(
         composable(HomePath.All.path) {
             AllView()
         }
-        composable(HomePath.Often.path) {
-           // OftenView
+        composable(HomePath.Favorite.path) {
+            FavoriteView()
         }
     }
 }

@@ -5,5 +5,5 @@ enum class ScreenState {
 }
 
 enum class HomeScreenState{
-    ALL, OFTEN
+    ALL, FAVORITE
 }

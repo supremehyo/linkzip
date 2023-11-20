@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.linkzip.linkzip.App
 import com.linkzip.linkzip.ui.theme.LinkzipTheme
 import com.linkzip.linkzip.util.navigation.MainBottomNavigation
 import com.linkzip.linkzip.util.navigation.MainBottomNavigationGraph
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
         setContent {
             LinkzipTheme {
                 // A surface container using the 'background' color from the theme
