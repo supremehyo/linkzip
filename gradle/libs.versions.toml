@@ -1,5 +1,5 @@
 [versions]
-agp = "8.3.0-alpha07"
+agp = "8.1.3"
 annotationsJava5 = "15.0"
 coreSplashscreen = "1.0.1"
 hilt = "2.46.1"
