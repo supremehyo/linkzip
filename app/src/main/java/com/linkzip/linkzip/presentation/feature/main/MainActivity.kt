@@ -15,12 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.linkzip.linkzip.App
-import com.linkzip.linkzip.ui.theme.LinkzipTheme
+import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.navigation.MainBottomNavigation
 import com.linkzip.linkzip.util.navigation.MainBottomNavigationGraph
 import com.linkzip.linkzip.util.navigation.MainBottomPath
-import com.linkzip.linkzip.util.navigation.MainNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -32,7 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         
         setContent {
-            LinkzipTheme {
+            LinkZipTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -70,7 +68,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    LinkzipTheme {
+    LinkZipTheme {
         Greeting("Android")
     }
 }
