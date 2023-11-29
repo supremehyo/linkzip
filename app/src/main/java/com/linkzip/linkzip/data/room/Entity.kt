@@ -1,6 +1,5 @@
 package com.linkzip.linkzip.data.room
 
-import android.net.Uri
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,7 +13,9 @@ data class LinkData(
     val linkGroupId : String,
     val linkTitle : String,
     val linkMemo : String,
-    val createDate : String
+    val createDate : String,
+    val updateDate : String,
+    val favorite: Boolean
 )
 
 @Entity
@@ -22,7 +23,18 @@ data class GroupData(
     @PrimaryKey
     val groupId : Long = 0,
     val groupName : String,
-    val groupIcon : String
+    val groupIconId : Long,
+    val createDate : String,
+    val updateDate : String
+)
+
+@Entity
+data class IconData(
+    @PrimaryKey
+    val iconId : Long = 0,
+    val iconName : String,
+    val iconButtonColor : String,
+    val iconHeaderColor : String
 )
 
 
