@@ -306,8 +306,19 @@ fun LinkZipColorScheme.updateColorSchemeFrom(other: LinkZipColorScheme) {
 enum class ThemeColor {
     Default,
 }
+
 fun getCurrentThemeColor(currentTheme: ThemeColor, isDarkTheme: Boolean): LinkZipColorScheme {
-    return lightColors()
+    return if (isDarkTheme) {
+        // 다크테마일 경우
+        lightColors()
+    } else {
+        // 다크 테마가 아닌, 앱에서 제공하는 다른 컬러 테마일 경우
+        when (currentTheme) {
+            ThemeColor.Default -> {
+                lightColors()
+            }
+        }
+    }
 }
 
 fun lightColors(

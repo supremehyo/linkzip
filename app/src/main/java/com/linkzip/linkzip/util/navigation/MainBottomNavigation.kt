@@ -8,7 +8,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -20,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.presentation.feature.home.HomeView
 import com.linkzip.linkzip.presentation.feature.my.MyPageView
+import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 sealed class MainBottomPath(
     val title: Int, val icon: Int, val path: String
@@ -36,8 +36,8 @@ fun MainBottomNavigation(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     NavigationBar(
-        containerColor = Color(0xFF3F414E),
-        contentColor = Color.Blue
+        containerColor = LinkZipTheme.color.wg10,
+        contentColor = LinkZipTheme.color.blue294459
     ) {
         for(item in items){
             NavigationBarItem(
