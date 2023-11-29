@@ -21,7 +21,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     fun checkFirstStart(data : SharedPreferences) : Boolean{
         val editor = data.edit()
         if(!data.getBoolean(IS_FRIST,false)){
-            editor.putBoolean("first" , true).apply()
+            editor.putBoolean(IS_FRIST , true).apply()
             return true
         }else{
             return false

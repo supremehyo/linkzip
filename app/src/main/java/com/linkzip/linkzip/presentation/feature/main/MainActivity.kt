@@ -1,7 +1,5 @@
 package com.linkzip.linkzip.presentation.feature.main
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -17,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.linkzip.linkzip.data.model.IS_FRIST
 import com.linkzip.linkzip.presentation.feature.onboarding.OnBoardingView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.navigation.MainBottomNavigation
@@ -38,8 +35,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = LinkZipTheme.color.wg10
                 ) {
-                 //   val isFirst = viewModel.checkFirstStart(spf)
-                 //   Log.v("ssssss" , isFirst.toString())
+                    val spf = getSharedPreferences("spf", MODE_PRIVATE)
+                    val isFirst = viewModel.checkFirstStart(spf)
                     val navController = rememberNavController()
                     val items = listOf(
                         MainBottomPath.Home,
@@ -53,7 +50,7 @@ class MainActivity : ComponentActivity() {
                             MainBottomNavigationGraph(navController)
                         }
                     }
-                    /*
+
                     if(!isFirst){
                         val navController = rememberNavController()
                         val items = listOf(
@@ -76,8 +73,6 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-
-                     */
                 }
             }
         }
