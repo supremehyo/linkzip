@@ -42,7 +42,6 @@ class MainActivity : ComponentActivity() {
                         MainBottomPath.Home,
                         MainBottomPath.MyPage
                     )
-                    Log.v("ssssss" , "2")
                     Scaffold(
                         bottomBar = { MainBottomNavigation(items,navController) }
                     ) {
@@ -57,7 +56,6 @@ class MainActivity : ComponentActivity() {
                             MainBottomPath.Home,
                             MainBottomPath.MyPage
                         )
-                        Log.v("ssssss" , "2")
                         Scaffold(
                             bottomBar = { MainBottomNavigation(items,navController) }
                         ) {
@@ -66,7 +64,6 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }else{
-                        Log.v("ssssss" , "1")
                         Scaffold {
                             Box(Modifier.padding(it)){
                                 OnBoardingView()

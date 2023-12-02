@@ -79,7 +79,6 @@ fun OnBoardingView() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Log.e("Sdfsdfsdfsf", "22")
             HorizontalPager(
                 state = pagerState,
             ) { page ->

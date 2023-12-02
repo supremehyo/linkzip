@@ -18,7 +18,7 @@ data class LinkData(
     val favorite: Boolean
 )
 
-@Entity
+@Entity(tableName = "group")
 data class GroupData(
     @PrimaryKey
     val groupId : Long = 0,
