@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
  * 실제 사용할 떄는 "LinkZipTheme.color.WG10"
  */
 val WG10 = Color(0xFFF8F8F8)
-val WG20 = Color(0xFFF8F8F8)
+val WG20 = Color(0xFFEBEBEB)
 val WG30 = Color(0xFFD0D0D0)
 val WG40 = Color(0xFFA8A8A8)
 val WG50 = Color(0xFF6A6866)
