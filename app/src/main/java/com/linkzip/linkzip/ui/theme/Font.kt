@@ -9,7 +9,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.linkzip.linkzip.R
-import org.w3c.dom.Text
 
 val pretendard = FontFamily(
     Font(R.font.pretendard_bold, FontWeight.Bold),
@@ -31,7 +30,8 @@ data class LinkZipTypography(
     val blackMedium14 : TextStyle,
     val whiteMedium16 : TextStyle,
     val blackSemiBold16 : TextStyle,
-    val grayNormal16 : TextStyle
+    val grayNormal16 : TextStyle,
+    val wg70Medium16 : TextStyle
 ) {
     companion object {
         val textStyle = LinkZipTypography(
@@ -75,6 +75,14 @@ data class LinkZipTypography(
                     includeFontPadding = false,
                 )
             ),
+            wg70Medium16 = TextStyle(
+                fontFamily = pretendard,
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false,
+                ),
+            )
         )
     }
 }
@@ -87,5 +95,6 @@ val LocalLinkZipTypography = staticCompositionLocalOf {
         whiteMedium16 = LinkZipTypography.textStyle.whiteMedium16,
         blackSemiBold16 = LinkZipTypography.textStyle.blackSemiBold16,
         grayNormal16 = LinkZipTypography.textStyle.grayNormal16,
+        wg70Medium16 = LinkZipTypography.textStyle.wg70Medium16
     )
 }

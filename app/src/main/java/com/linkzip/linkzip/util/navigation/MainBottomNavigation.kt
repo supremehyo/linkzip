@@ -17,8 +17,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.linkzip.linkzip.R
+import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView
 import com.linkzip.linkzip.presentation.feature.home.HomeView
-import com.linkzip.linkzip.presentation.feature.my.MyPageView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 sealed class MainBottomPath(
@@ -74,7 +74,9 @@ fun MainBottomNavigationGraph(navController: NavHostController) {
             HomeView()
         }
         composable(MainBottomPath.MyPage.path) {
-            MyPageView()
+            // MyPageView()
+            // TODO 후에 Mypage로 변경, 테스트 때문에 그룹 추가하기로 보여짐
+            AddGroupView { navController.popBackStack() }
         }
     }
 }
