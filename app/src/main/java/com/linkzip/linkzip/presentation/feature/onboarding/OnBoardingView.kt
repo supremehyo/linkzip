@@ -1,6 +1,7 @@
 package com.linkzip.linkzip.presentation.feature.onboarding
 
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,45 +36,56 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.linkzip.linkzip.R
+import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.presentation.feature.home.HomeView
 import com.linkzip.linkzip.presentation.feature.main.Greeting
+import com.linkzip.linkzip.presentation.feature.main.MainView
+import com.linkzip.linkzip.presentation.feature.main.MainViewModel
+import com.linkzip.linkzip.presentation.feature.my.MyPageView
 import com.linkzip.linkzip.ui.theme.LinkZipColorScheme
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.ui.theme.LinkZipTypography
+import com.linkzip.linkzip.util.navigation.MainBottomPath
 
 sealed class OnboardingPath(val path: String) {
     object Main : OnboardingPath("MAIN")
 }
 
 val pageTitle = listOf(
-    "링크 그룹 만들기",
-    "링크 즐겨찾기",
-    "내 모든 링크를\n쉽게 관리해볼까요?"
+    R.string.onboarding_title_1,
+    R.string.onboarding_title_2,
+    R.string.onboarding_title_3
 )
 
 val pageContent = listOf(
-    "내가 분류하고 싶은 대로 그룹을 만들 수 있어요",
-    "자주 방문하는 링크는 빠르게 볼 수 있어요",
-    ""
+    R.string.onboarding_content_1,
+    R.string.onboarding_content_2,
+    R.string.onboarding_content_3
 )
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnBoardingView() {
+fun OnBoardingView(
+    mainViewModel: MainViewModel = viewModel()
+) {
     val navController = rememberNavController()
     val pagerState = rememberPagerState(pageCount = { 3 })
     Scaffold(
         modifier = Modifier
             .padding(top = 115.dp)
             .fillMaxHeight(),
-    ) { innerPadding ->
+    ) { innerPadding->
         Column(
             modifier = Modifier.padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,7 +103,7 @@ fun OnBoardingView() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = pageTitle[page],
+                        text =  stringResource(pageTitle[page]),
                         modifier = Modifier.padding(bottom = 8.dp),
                         style = LinkZipTypography.textStyle.blackBold22.copy(
                             textAlign = TextAlign.Center
@@ -99,7 +111,7 @@ fun OnBoardingView() {
 
                     )
                     Text(
-                        text = pageContent[page],
+                        text = stringResource(pageContent[page]),
                         style = LinkZipTypography.textStyle.blackMedium14
                     )
                 }
@@ -138,28 +150,13 @@ fun OnBoardingView() {
                     containerColor = LinkZipTheme.color.wg70
                 ),
                 onClick = {
-
+                    mainViewModel.updateScreenState(MainScreenState.MAIN)
                 }
             ){
                 Text("시작하기",
                     style = LinkZipTypography.textStyle.whiteMedium16)
             }
         }
-
-
-        //navController.navigate(OnboardingPath.Main.path)
-
-
-        /*
-    NavHost(
-        navController =  navController,
-        startDestination = OnboardingPath.Main.path){
-        composable(OnboardingPath.Main.path) {
-            HomeView()
-        }
-    }
-
-     */
     }
 }
 

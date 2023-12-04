@@ -37,8 +37,6 @@ data class IconData(
     val iconHeaderColor : String
 )
 
-
-//https://nuritech.tistory.com/39 참고
 data class LinkWithGroupData(
     @Embedded val groupData: GroupData,
     @Relation(

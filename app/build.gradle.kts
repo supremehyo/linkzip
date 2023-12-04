@@ -71,7 +71,7 @@ dependencies {
     kapt(libs.hilt.compiler)
     kapt ("androidx.room:room-compiler:2.5.1")
     testImplementation(libs.junit)
-
+    implementation(libs.androidx.lifecycle.runtime.compose)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
