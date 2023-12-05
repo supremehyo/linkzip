@@ -27,7 +27,11 @@ val pretendard = FontFamily(
  */
 @Immutable
 data class LinkZipTypography(
-    val blackBold22 : TextStyle
+    val blackBold22 : TextStyle,
+    val blackMedium14 : TextStyle,
+    val whiteMedium16 : TextStyle,
+    val blackSemiBold16 : TextStyle,
+    val grayNormal16 : TextStyle
 ) {
     companion object {
         val textStyle = LinkZipTypography(
@@ -39,6 +43,38 @@ data class LinkZipTypography(
                     includeFontPadding = false,
                 ),
             ),
+            blackMedium14 = TextStyle(
+                fontFamily = pretendard,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false,
+                ),
+            ),
+            whiteMedium16 = TextStyle(
+                fontFamily = pretendard,
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false,
+                ),
+            ),
+            blackSemiBold16 = TextStyle(
+                fontFamily = pretendard,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false,
+                )
+            ),
+            grayNormal16 = TextStyle(
+                fontFamily = pretendard,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false,
+                )
+            ),
         )
     }
 }
@@ -46,6 +82,10 @@ data class LinkZipTypography(
 
 val LocalLinkZipTypography = staticCompositionLocalOf {
     LinkZipTypography(
-        blackBold22 = LinkZipTypography.textStyle.blackBold22
+        blackBold22 = LinkZipTypography.textStyle.blackBold22,
+        blackMedium14 = LinkZipTypography.textStyle.blackMedium14,
+        whiteMedium16 = LinkZipTypography.textStyle.whiteMedium16,
+        blackSemiBold16 = LinkZipTypography.textStyle.blackSemiBold16,
+        grayNormal16 = LinkZipTypography.textStyle.grayNormal16,
     )
 }

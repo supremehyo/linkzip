@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.data.model.ScreenState
 import com.linkzip.linkzip.presentation.feature.home.HomeView
+import com.linkzip.linkzip.presentation.feature.main.MainView
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.presentation.feature.my.MyPageView
 
@@ -36,7 +37,7 @@ fun MainNavigation(
         navController =  navController,
         startDestination = MainPath.Home.path){
         composable(MainPath.Home.path) {
-            HomeView()
+            MainView()
         }
         composable(MainPath.Mypage.path) {
             MyPageView()

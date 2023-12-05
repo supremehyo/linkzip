@@ -7,3 +7,7 @@ enum class ScreenState {
 enum class HomeScreenState{
     ALL, FAVORITE
 }
+
+enum class MainScreenState{
+    ONBOARDING,MAIN
+}

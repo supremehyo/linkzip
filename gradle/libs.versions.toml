@@ -4,6 +4,7 @@ annotationsJava5 = "15.0"
 coreSplashscreen = "1.0.1"
 hilt = "2.46.1"
 hiltNavigationCompose = "1.1.0"
+lifecycleRuntimeCompose = "2.6.0"
 room = "2.6.0"
 kotlin = "1.9.0"
 core-ktx = "1.12.0"
@@ -22,6 +23,7 @@ org-jetbrains-kotlin-android = "1.8.10"
 [libraries]
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 annotations-java5 = { module = "org.jetbrains:annotations-java5", version.ref = "annotationsJava5" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

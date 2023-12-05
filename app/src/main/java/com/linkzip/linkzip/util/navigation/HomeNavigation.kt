@@ -31,13 +31,13 @@ fun HomeNavigation(
     val navController = rememberNavController()
     val screenState by homeViewModel.homeScreenState.collectAsState(initial = HomeScreenState.ALL)
 
-    //screenState 가 바뀔때마다 취소되고 재실행
     LaunchedEffect(screenState) {
         when(screenState) {
             HomeScreenState.ALL -> {navController.navigate(HomePath.All.path) }
             HomeScreenState.FAVORITE -> { navController.navigate(HomePath.Favorite.path) }
         }
     }
+
 
     NavHost(
         navController =  navController,

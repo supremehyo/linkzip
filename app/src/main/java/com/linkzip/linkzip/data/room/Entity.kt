@@ -18,7 +18,7 @@ data class LinkData(
     val favorite: Boolean
 )
 
-@Entity
+@Entity(tableName = "group")
 data class GroupData(
     @PrimaryKey
     val groupId : Long = 0,
@@ -37,8 +37,6 @@ data class IconData(
     val iconHeaderColor : String
 )
 
-
-//https://nuritech.tistory.com/39 참고
 data class LinkWithGroupData(
     @Embedded val groupData: GroupData,
     @Relation(
