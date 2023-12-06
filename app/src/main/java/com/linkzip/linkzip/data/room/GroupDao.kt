@@ -6,23 +6,24 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GroupDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertGroup(group: GroupData)
+    fun insertGroup(group: GroupData): Flow<Any>
 
     @Delete
-    fun deleteGroup(group: GroupData)
+    fun deleteGroup(group: GroupData) : Flow<Any>
 
     @Query("SELECT * FROM `group` ORDER BY groupId DESC") //ASC
-    fun getGroup(): List<GroupData>
+    fun getGroups(): Flow<List<GroupData>>
 
     @Query("SELECT * FROM `group` WHERE groupId = :uid")
-    fun getGroupByUid(uid: Long): GroupData
+    fun getGroupByUid(uid: Long): Flow<GroupData>
 
     @Query("DELETE FROM `group` WHERE groupId = :uid")
-    fun deleteGroupByUid(uid: Long)
+    fun deleteGroupByUid(uid: Long) : Flow<Any>
 
     @Query("DELETE FROM `group`")
     fun clearGroups()
