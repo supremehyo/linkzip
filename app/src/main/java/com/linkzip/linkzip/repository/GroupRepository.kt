@@ -7,19 +7,19 @@ import kotlinx.coroutines.flow.Flow
 class GroupRepository(
     private val groupDao: GroupDao
 ){
-    fun getAllGroups() : Flow<List<GroupData>> {
-       return groupDao.getGroups()
+    fun getAllGroups() : List<GroupData> {
+        return groupDao.getGroups()
     }
 
-    fun insertGroup (group : GroupData) : Flow<Any>{
+    fun insertGroup (group : GroupData) : Any{
         return groupDao.insertGroup(group)
     }
 
-    fun deleteGroup (group : GroupData) : Flow<Any> {
+    fun deleteGroup (group : GroupData) : Any {
         return groupDao.deleteGroup(group)
     }
 
-    fun getGroupByUid(uid : Long) : Flow<GroupData>{
+    fun getGroupByUid(uid : Long) : GroupData{
         return groupDao.getGroupByUid(uid)
     }
 }
