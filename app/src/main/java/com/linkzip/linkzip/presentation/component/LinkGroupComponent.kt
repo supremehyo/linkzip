@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +24,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.linkzip.linkzip.R
-import com.linkzip.linkzip.presentation.feature.home.HomeView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 @Composable
@@ -70,7 +67,7 @@ fun LinkGroupComponent(
                     painter = painterResource(id = linkGroupIcon),
                     contentDescription = "groupIcon")
                 Text(text = linkGroupName,
-                    style = LinkZipTheme.typography.blackSemiBold16)
+                    style = LinkZipTheme.typography.semiBold16, color = LinkZipTheme.color.black)
                 Spacer(modifier = Modifier.weight(1f))
                 Image(
                     modifier = Modifier
