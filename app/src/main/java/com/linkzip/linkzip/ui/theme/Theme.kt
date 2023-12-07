@@ -37,7 +37,7 @@ fun LinkZipTheme(
         LocalLinkZipColor provides rememberedColors,
         LocalLinkZipTypography provides typography
     ) {
-        ProvideTextStyle(typography.blackBold22, content = content)
+        ProvideTextStyle(typography.bold22, content = content)
     }
 
 }

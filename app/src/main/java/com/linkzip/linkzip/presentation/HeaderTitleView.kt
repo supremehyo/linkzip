@@ -18,7 +18,8 @@ fun HeaderTitleView(onBackButtonPressed: () -> Unit, title: String) {
         title = {
             Text(
                 text = title,
-                style = LinkZipTheme.typography.wg70Medium16,
+                color = LinkZipTheme.color.wg70,
+                style = LinkZipTheme.typography.medium16,
                 textAlign = TextAlign.Center
             )
         },
