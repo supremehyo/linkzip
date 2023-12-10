@@ -5,18 +5,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.data.model.HomeScreenState
-import com.linkzip.linkzip.data.model.ScreenState
-import com.linkzip.linkzip.presentation.feature.home.HomeView
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.presentation.feature.home.all.AllView
 import com.linkzip.linkzip.presentation.feature.home.favorite.FavoriteView
-import com.linkzip.linkzip.presentation.feature.main.MainViewModel
-import com.linkzip.linkzip.presentation.feature.my.MyPageView
 
 
 sealed class HomePath(val path: String) {

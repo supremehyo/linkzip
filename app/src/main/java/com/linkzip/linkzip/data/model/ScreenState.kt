@@ -9,5 +9,5 @@ enum class HomeScreenState{
 }
 
 enum class MainScreenState{
-    ONBOARDING,MAIN
+    ONBOARDING,MAIN,GROUPADD
 }
