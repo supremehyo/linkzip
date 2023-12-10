@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.onboarding
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.R
@@ -58,7 +60,7 @@ val pageContent = listOf(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnBoardingView(
-    mainViewModel: MainViewModel = viewModel()
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
     val pagerState = rememberPagerState(pageCount = { 3 })

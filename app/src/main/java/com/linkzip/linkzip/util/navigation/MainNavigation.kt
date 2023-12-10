@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.util.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -8,11 +9,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.data.model.ScreenState
 import com.linkzip.linkzip.presentation.feature.home.HomeView
@@ -29,18 +32,17 @@ sealed class MainPath(val path: String) {
 
 @Composable
 fun MainNavigation(
-    mainViewModel: MainViewModel = viewModel()
+    mainViewModel: MainViewModel =  hiltViewModel()
 ){
     val navController = rememberNavController()
     val screenState by mainViewModel.screenState.collectAsStateWithLifecycle()
 
-
     LaunchedEffect(screenState) {
-        when(screenState) {
-            MainScreenState.ONBOARDING -> { navController.navigate(MainPath.Onboarding.path)}
-            MainScreenState.MAIN -> { navController.navigate(MainPath.Main.path) }
-            MainScreenState.GROUPADD -> { navController.navigate(MainPath.GroupAdd.path) }
-        }
+            when (screenState) {
+                MainScreenState.ONBOARDING -> { navController.navigate(MainPath.Onboarding.path)}
+                MainScreenState.MAIN -> { navController.navigate(MainPath.Main.path) }
+                MainScreenState.GROUPADD -> { navController.navigate(MainPath.GroupAdd.path) }
+            }
     }
 
     NavHost(
@@ -53,7 +55,7 @@ fun MainNavigation(
             MainView()
         }
         composable(MainPath.GroupAdd.path) {
-            MyPageView()
+
         }
     }
 }

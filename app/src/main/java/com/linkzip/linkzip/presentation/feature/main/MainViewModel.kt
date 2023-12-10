@@ -1,6 +1,7 @@
 package com.linkzip.linkzip.presentation.feature.main
 
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.linkzip.linkzip.data.model.IS_FRIST
 import com.linkzip.linkzip.data.model.MainScreenState
@@ -17,7 +18,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
 
     fun updateScreenState(state: MainScreenState) {
+        Log.v("testt1" , "${_screenState.value}")
         _screenState.value = state
+        Log.v("testt2" , "${_screenState.value}")
+        Log.v("testt3" , "${screenState.value}")
     }
 
     fun checkFirstStart(data : SharedPreferences) : Boolean{
