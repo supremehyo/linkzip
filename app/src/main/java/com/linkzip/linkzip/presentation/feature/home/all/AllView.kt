@@ -3,7 +3,6 @@ package com.linkzip.linkzip.presentation.feature.home.all
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,9 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
@@ -24,7 +21,6 @@ import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.presentation.component.LinkGroupComponent
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
-import com.linkzip.linkzip.util.navigation.HomeNavigation
 
 @Composable
 fun AllView (
@@ -43,7 +39,8 @@ fun AllView (
 
         Text(
             text = stringResource(R.string.add_group),
-            style = LinkZipTheme.typography.grayNormal16
+            style = LinkZipTheme.typography.normal16,
+            color = LinkZipTheme.color.wg50
         )
     }
 }
