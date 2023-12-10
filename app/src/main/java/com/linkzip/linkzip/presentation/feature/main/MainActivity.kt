@@ -7,17 +7,30 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
+import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.presentation.feature.onboarding.OnBoardingView
 import com.linkzip.linkzip.presentation.feature.onboarding.OnboardingPath
@@ -68,6 +81,24 @@ class MainActivity : ComponentActivity() {
                                 MainBottomPath.MyPage
                             )
                             Scaffold(
+                                floatingActionButtonPosition = FabPosition.Center,
+                                floatingActionButton = {
+                                    FloatingActionButton(
+                                        modifier = Modifier
+                                            .size(70.dp)
+                                            .offset(y = 60.dp),
+                                        containerColor = LinkZipTheme.color.black,
+                                        shape = CircleShape,
+                                        onClick = { /* ... */ }
+                                    ){
+                                        Icon(
+                                            tint = LinkZipTheme.color.white,
+                                            imageVector  = Icons.Rounded.Add ,
+                                            contentDescription = "link_Add",
+                                            modifier = Modifier.size(50.dp)
+                                        )
+                                    }
+                                },
                                 bottomBar = { MainBottomNavigation(items,navController) }
                             ) {
                                 Box(Modifier.padding(it)) {

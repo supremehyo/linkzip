@@ -11,8 +11,8 @@ interface LinkDao {
     @Query("SELECT * FROM LinkData")
     fun getLinkDataList() : List<LinkData>
 
-    @Query("SELECT * FROM LinkData WHERE uid= :uid")
-    fun getLinkDataByUid(uid : Long) : LinkData
+    @Query("SELECT * FROM LinkData WHERE uid= :id")
+    fun getLinkDataByUid(id : Long) : LinkData
 
     @Insert
     fun insertTempVideo(linkData: LinkData)

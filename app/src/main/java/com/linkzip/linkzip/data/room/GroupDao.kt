@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface GroupDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertGroup(group: GroupData): Any
+    fun insertGroup(group: GroupData)
 
     @Delete
-    fun deleteGroup(group: GroupData) : Any
+    fun deleteGroup(group: GroupData)
 
     @Query("SELECT * FROM `group` ORDER BY groupId DESC") //ASC
     fun getGroups(): List<GroupData>
@@ -23,7 +23,7 @@ interface GroupDao {
     fun getGroupByUid(uid: Long): GroupData
 
     @Query("DELETE FROM `group` WHERE groupId = :uid")
-    fun deleteGroupByUid(uid: Long) : Any
+    fun deleteGroupByUid(uid: Long)
 
     @Query("DELETE FROM `group`")
     fun clearGroups()

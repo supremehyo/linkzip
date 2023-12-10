@@ -14,10 +14,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.presentation.feature.main.Greeting
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
@@ -43,9 +45,9 @@ fun HomeView (
             Row(
                 modifier = Modifier.padding(bottom = 28.dp)
             ) {
-                Text(text = "전체", modifier = Modifier.padding(end = 24.dp),
+                Text(text = stringResource(R.string.all), modifier = Modifier.padding(end = 24.dp),
                     color = if(screenState == HomeScreenState.ALL) LinkZipTheme.color.black else LinkZipTheme.color.wg40)
-                Text(text = "즐겨찾는 링크",
+                Text(text = stringResource(R.string.favorite_link),
                     color = if(screenState == HomeScreenState.ALL) LinkZipTheme.color.black else LinkZipTheme.color.wg40)
             }
             HomeNavigation()

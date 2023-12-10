@@ -56,7 +56,6 @@ fun GroupList(
         is UiState.Success ->{
             LazyColumn(){
                 items(state.data){ group ->
-                    //아이콘이랑 컬러를 이렇게 넣는게 맞는걸까?
                     LinkGroupComponent(
                         group.groupName,
                         R.drawable.guide_image,

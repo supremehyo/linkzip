@@ -31,7 +31,7 @@ sealed class MainBottomPath(
 @Composable
 fun MainBottomNavigation(
     items :List<MainBottomPath>,
-    navController : NavHostController
+    navController : NavHostController,
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -39,7 +39,7 @@ fun MainBottomNavigation(
         containerColor = LinkZipTheme.color.wg10,
         contentColor = LinkZipTheme.color.blue294459
     ) {
-        for(item in items){
+        for(item in items){0
             NavigationBarItem(
                 icon = {
                     Icon(
