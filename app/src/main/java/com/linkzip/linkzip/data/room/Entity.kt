@@ -28,7 +28,7 @@ data class GroupData(
     val updateDate : String
 )
 
-@Entity
+@Entity(tableName = "icon")
 data class IconData(
     @PrimaryKey
     val iconId : Long = 0,

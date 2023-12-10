@@ -11,8 +11,8 @@ interface LinkDao {
     @Query("SELECT * FROM LinkData")
     fun getLinkDataList() : List<LinkData>
 
-    @Query("SELECT * FROM LinkData WHERE uid= :uid")
-    fun getLinkDataByUid(uid : Long) : LinkData
+    @Query("SELECT * FROM LinkData WHERE uid= :id")
+    fun getLinkDataByUid(id : Long) : LinkData
 
     @Insert
     fun insertTempVideo(linkData: LinkData)
@@ -22,7 +22,7 @@ interface LinkDao {
 
     //cascade 를 하고 싶었지만 링크도 함께 지우기가 옵션으로 들어가면 따로 삭제해주는 쿼리가 필요
     @Query("DELETE FROM LinkData WHERE linkGroupId = :groupUid")
-    fun deleteByGroupId(groupUid: Long)
+    fun deleteLinksByGroupId(groupUid: Long)
 
     @Query("UPDATE LinkData SET link = :link , linkGroupId = :linkGroupId,linkTitle = :linkTitle, linkMemo = :linkMemo  WHERE uid = :uid")
     fun updateLinkData(uid : Int, link: String, linkGroupId : String, linkTitle: String, linkMemo:String)

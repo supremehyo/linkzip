@@ -27,10 +27,11 @@ val pretendard = FontFamily(
 @Immutable
 data class LinkZipTypography(
     val bold22: TextStyle,
-    val medium14 : TextStyle,
-    val medium16 : TextStyle,
-    val semiBold16 : TextStyle,
-    val normal16 : TextStyle
+    val medium14: TextStyle,
+    val medium16: TextStyle,
+    val semiBold16: TextStyle,
+    val normal16: TextStyle,
+    val normal20: TextStyle
 ) {
     companion object {
         val textStyle = LinkZipTypography(
@@ -73,6 +74,14 @@ data class LinkZipTypography(
                 platformStyle = PlatformTextStyle(
                     includeFontPadding = false,
                 )
+            ),
+            normal20 = TextStyle(
+                fontFamily = pretendard,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 20.sp,
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false,
+                )
             )
         )
     }
@@ -85,6 +94,7 @@ val LocalLinkZipTypography = staticCompositionLocalOf {
         medium14 = LinkZipTypography.textStyle.medium14,
         medium16 = LinkZipTypography.textStyle.medium16,
         semiBold16 = LinkZipTypography.textStyle.semiBold16,
-        normal16 = LinkZipTypography.textStyle.normal16
+        normal16 = LinkZipTypography.textStyle.normal16,
+        normal20 = LinkZipTypography.textStyle.normal20,
     )
 }

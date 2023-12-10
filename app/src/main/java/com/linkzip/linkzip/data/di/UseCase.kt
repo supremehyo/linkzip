@@ -1,5 +1,7 @@
 package com.linkzip.linkzip.data.di
 
+import com.linkzip.linkzip.repository.GroupRepository
+import com.linkzip.linkzip.usecase.AllViewUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,5 +13,11 @@ import javax.inject.Singleton
 object UseCase {
     @Provides
     @Singleton
-    fun provideAllGroupsUseCase() :
+    fun provideAllGroupsUseCase(
+        repository: GroupRepository
+    ) : AllViewUseCase {
+        return AllViewUseCase(
+            groupRepository = repository
+        )
+    }
 }
