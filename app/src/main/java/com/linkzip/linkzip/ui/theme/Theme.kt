@@ -23,7 +23,7 @@ fun LinkZipTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colors.green.toArgb()
+            window.statusBarColor = colors.wg10.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
@@ -37,7 +37,7 @@ fun LinkZipTheme(
         LocalLinkZipColor provides rememberedColors,
         LocalLinkZipTypography provides typography
     ) {
-        ProvideTextStyle(typography.blackBold22, content = content)
+        ProvideTextStyle(typography.bold22, content = content)
     }
 
 }
