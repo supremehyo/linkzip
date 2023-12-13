@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = LinkZipTheme.color.wg10
                 ) {
-                    /*
                         val spf = getSharedPreferences("spf", MODE_PRIVATE)
                         val isFirst = viewModel.checkFirstStart(spf)
 
@@ -40,8 +39,6 @@ class MainActivity : ComponentActivity() {
                         }else{
                             viewModel.updateScreenState(MainScreenState.ONBOARDING)
                         }
-
-                     */
                         MainNavigation()
                 }
             }
