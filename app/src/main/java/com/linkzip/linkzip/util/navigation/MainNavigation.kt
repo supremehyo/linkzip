@@ -23,6 +23,7 @@ import com.linkzip.linkzip.presentation.feature.main.MainView
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.presentation.feature.my.MyPageView
 import com.linkzip.linkzip.presentation.feature.onboarding.OnBoardingView
+import kotlinx.coroutines.delay
 
 sealed class MainPath(val path: String) {
     object Onboarding : MainPath("Onboarding")
@@ -49,7 +50,9 @@ fun MainNavigation(
         navController =  navController,
         startDestination = MainPath.Onboarding.path){
         composable(MainPath.Onboarding.path) {
-            OnBoardingView()
+            OnBoardingView{
+                mainViewModel.updateScreenState(MainScreenState.MAIN)
+            }
         }
         composable(MainPath.Main.path) {
             MainView()
