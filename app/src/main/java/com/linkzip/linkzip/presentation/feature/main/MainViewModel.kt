@@ -1,23 +1,27 @@
 package com.linkzip.linkzip.presentation.feature.main
 
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.linkzip.linkzip.data.model.IS_FRIST
 import com.linkzip.linkzip.data.model.MainScreenState
-import com.linkzip.linkzip.data.model.ScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
-    private val _screenState = MutableStateFlow(MainScreenState.ONBOARDING)
+    val _screenState = MutableStateFlow(MainScreenState.ONBOARDING)
     val screenState = _screenState.asStateFlow()
 
 
     fun updateScreenState(state: MainScreenState) {
-        _screenState.value = state
+        viewModelScope.launch {
+            _screenState.emit(state)
+        }
     }
 
     fun checkFirstStart(data : SharedPreferences) : Boolean{

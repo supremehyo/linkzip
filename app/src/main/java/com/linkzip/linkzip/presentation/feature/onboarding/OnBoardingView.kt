@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.onboarding
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.model.MainScreenState
@@ -58,7 +59,8 @@ val pageContent = listOf(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnBoardingView(
-    mainViewModel: MainViewModel = viewModel()
+    mainViewModel: MainViewModel = hiltViewModel(),
+    onClick : () -> Unit
 ) {
     val navController = rememberNavController()
     val pagerState = rememberPagerState(pageCount = { 3 })
@@ -68,7 +70,7 @@ fun OnBoardingView(
             .fillMaxHeight(),
     ) { innerPadding->
         Column(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier.padding(innerPadding).background(LinkZipTheme.color.wg10),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -117,7 +119,6 @@ fun OnBoardingView(
                         .background(color)
                         .size(10.dp)
                 )
-
             }
         }
 
@@ -133,7 +134,8 @@ fun OnBoardingView(
                     containerColor = LinkZipTheme.color.wg70
                 ),
                 onClick = {
-                    mainViewModel.updateScreenState(MainScreenState.MAIN)
+                    onClick()
+
                 }
             ){
                 Text("시작하기",
@@ -147,6 +149,6 @@ fun OnBoardingView(
 @Composable
 fun GreetingPreview() {
     LinkZipTheme {
-        OnBoardingView()
+
     }
 }
