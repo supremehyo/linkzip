@@ -14,5 +14,6 @@
     <string name="onboarding_content_3" />
     <string name="add_group">+ 그룹 추가하기</string>
     <string name="all">전체</string>
+    <string name="add">추가</string>
     <string name="favorite_link">즐겨찾는 링크</string>
 </resources>

@@ -43,7 +43,6 @@ fun MainBottomNavigation(
         contentColor = LinkZipTheme.color.blue294459
     ) {
         for (item in items) {
-            0
             NavigationBarItem(
                 icon = {
                     Icon(
