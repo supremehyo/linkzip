@@ -1,4 +1,5 @@
 package com.linkzip.linkzip.util.navigation
+
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -17,21 +18,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.linkzip.linkzip.R
-import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView
 import com.linkzip.linkzip.presentation.feature.home.HomeView
+import com.linkzip.linkzip.presentation.feature.main.MainViewModel
+import com.linkzip.linkzip.presentation.feature.my.MyPageView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 sealed class MainBottomPath(
     val title: Int, val icon: Int, val path: String
 ) {
     object Home : MainBottomPath(R.string.bottom_home_text, R.drawable.home_icon, "HOME")
-    object MyPage : MainBottomPath(R.string.bottom_my_text,R.drawable.icon_my,"MY_PAGE")
+    object MyPage : MainBottomPath(R.string.bottom_my_text, R.drawable.icon_my, "MY_PAGE")
 }
 
 @Composable
 fun MainBottomNavigation(
-    items :List<MainBottomPath>,
-    navController : NavHostController,
+    items: List<MainBottomPath>,
+    navController: NavHostController,
+    mainViewModel: MainViewModel
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -39,7 +42,8 @@ fun MainBottomNavigation(
         containerColor = LinkZipTheme.color.wg10,
         contentColor = LinkZipTheme.color.blue294459
     ) {
-        for(item in items){0
+        for (item in items) {
+            0
             NavigationBarItem(
                 icon = {
                     Icon(
@@ -68,15 +72,15 @@ fun MainBottomNavigation(
 }
 
 @Composable
-fun MainBottomNavigationGraph(navController: NavHostController) {
+fun MainBottomNavigationGraph(navController: NavHostController, mainViewModel: MainViewModel) {
     NavHost(navController = navController, startDestination = MainBottomPath.Home.path) {
         composable(MainBottomPath.Home.path) {
-            HomeView()
+            HomeView(mainViewModel)
         }
         composable(MainBottomPath.MyPage.path) {
-            // MyPageView()
-            // TODO 후에 Mypage로 변경, 테스트 때문에 그룹 추가하기로 보여짐
-            AddGroupView { navController.popBackStack() }
+             MyPageView()
+//            // TODO 후에 Mypage로 변경, 테스트 때문에 그룹 추가하기로 보여짐
+//            AddGroupView { navController.popBackStack() }
         }
     }
 }

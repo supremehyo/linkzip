@@ -9,9 +9,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.data.model.HomeScreenState
+import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.presentation.feature.home.all.AllView
 import com.linkzip.linkzip.presentation.feature.home.favorite.FavoriteView
+import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 
 
 sealed class HomePath(val path: String) {
@@ -21,6 +23,7 @@ sealed class HomePath(val path: String) {
 
 @Composable
 fun HomeNavigation(
+    mainViewModel: MainViewModel,
     homeViewModel: HomeViewModel =  hiltViewModel()
 ){
     val navController = rememberNavController()
@@ -38,7 +41,7 @@ fun HomeNavigation(
         navController =  navController,
         startDestination = HomePath.All.path){
         composable(HomePath.All.path) {
-            AllView()
+            AllView{   mainViewModel.updateScreenState(MainScreenState.GROUPADD)}
         }
         composable(HomePath.Favorite.path) {
             FavoriteView()

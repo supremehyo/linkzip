@@ -6,14 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.AnnotatedString
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
@@ -25,7 +24,8 @@ import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 @Composable
 fun AllView (
-    homeViewModel: HomeViewModel =  hiltViewModel()
+    homeViewModel: HomeViewModel =  hiltViewModel(),
+    onClickAddGroup: ()->Unit
 ){
     val groupEvent by homeViewModel.allGroupListFlow.collectAsStateWithLifecycle(null)
     homeViewModel.getAllGroups()
@@ -40,10 +40,12 @@ fun AllView (
             GroupList(groupEvent!!)
         }
 
-        Text(
-            text = stringResource(R.string.add_group),
-            style = LinkZipTheme.typography.normal16,
-            color = LinkZipTheme.color.wg50
+        ClickableText(
+            onClick = {
+                onClickAddGroup.invoke()
+            },
+            text = AnnotatedString(stringResource(R.string.add_group)),
+            style = LinkZipTheme.typography.normal16.copy(color = LinkZipTheme.color.wg50)
         )
     }
 }
@@ -73,13 +75,5 @@ fun GroupList(
         is UiState.Error -> {
             Log.e("group List Error" , state.error?.message.toString())
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    LinkZipTheme {
-        AllView()
     }
 }

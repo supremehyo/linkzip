@@ -1,7 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.main
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.linkzip.linkzip.data.model.IS_FRIST
@@ -14,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
-    val _screenState = MutableStateFlow(MainScreenState.ONBOARDING)
+    private val _screenState = MutableStateFlow(MainScreenState.ONBOARDING)
     val screenState = _screenState.asStateFlow()
 
 
