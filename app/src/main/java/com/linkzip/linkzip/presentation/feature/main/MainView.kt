@@ -1,9 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.main
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,7 +12,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
@@ -25,7 +21,7 @@ import com.linkzip.linkzip.util.navigation.MainBottomNavigationGraph
 import com.linkzip.linkzip.util.navigation.MainBottomPath
 
 @Composable
-fun MainView(){
+fun MainView(mainViewModel: MainViewModel) {
     val navController = rememberNavController()
     val items = listOf(
         MainBottomPath.Home,
@@ -41,19 +37,19 @@ fun MainView(){
                 containerColor = LinkZipTheme.color.black,
                 shape = CircleShape,
                 onClick = { /* ... */ }
-            ){
+            ) {
                 Icon(
                     tint = LinkZipTheme.color.white,
-                    imageVector  = Icons.Rounded.Add ,
+                    imageVector = Icons.Rounded.Add,
                     contentDescription = "link_Add",
                     modifier = Modifier.size(50.dp)
                 )
             }
         },
-        bottomBar = { MainBottomNavigation(items,navController) }
+        bottomBar = { MainBottomNavigation(items, navController, mainViewModel) }
     ) {
         Box(Modifier.padding(it)) {
-            MainBottomNavigationGraph(navController)
+            MainBottomNavigationGraph(navController, mainViewModel)
         }
     }
 }

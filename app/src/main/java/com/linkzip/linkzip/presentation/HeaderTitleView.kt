@@ -5,6 +5,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -15,6 +16,7 @@ import com.linkzip.linkzip.ui.theme.LinkZipTheme
 @Composable
 fun HeaderTitleView(onBackButtonPressed: () -> Unit, title: String) {
     CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(LinkZipTheme.color.white),
         title = {
             Text(
                 text = title,
