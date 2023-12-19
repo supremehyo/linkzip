@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -99,29 +100,33 @@ fun MainView(mainViewModel: MainViewModel) {
         bottomBar = { MainBottomNavigation(items, navController, mainViewModel) }
     ) {
         MainBottomNavigationGraph(navController, mainViewModel)
-        Box(
-            Modifier.padding(it)
-        ) {
-            BottomDialogComponent(
-                onDismissRequest = { showDialog = false },
-                visible = showDialog,
-                height = 150.dp
+        Column {
+            Spacer(modifier = Modifier.weight(1f))
+            Box(
+                modifier= Modifier.padding(it)
             ) {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(29.dp)
+                BottomDialogComponent(
+                    onDismissRequest = { showDialog = false },
+                    visible = showDialog,
+                    height = 150.dp
                 ) {
-                    items(menuItems.size) { it ->
-                        BottomDialogMenuComponent(
-                            menuImage = R.drawable.guide_image,
-                            menuTitle = menuItems[it]
-                        ) {
-                            mainViewModel.updateMenuState(it)
-                            showDialog = false
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(29.dp)
+                    ) {
+                        items(menuItems.size) { it ->
+                            BottomDialogMenuComponent(
+                                menuImage = R.drawable.guide_image,
+                                menuTitle = menuItems[it]
+                            ) {
+                                mainViewModel.updateMenuState(it)
+                                showDialog = false
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 }
 
