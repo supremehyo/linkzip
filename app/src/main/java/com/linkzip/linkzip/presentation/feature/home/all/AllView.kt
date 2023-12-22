@@ -19,6 +19,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,10 @@ import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.presentation.component.LinkGroupComponent
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 @Composable
 fun AllView (
@@ -42,13 +47,34 @@ fun AllView (
     onClickAddGroup: ()->Unit
 ){
     val groupEvent by homeViewModel.allGroupListFlow.collectAsStateWithLifecycle(null)
-    homeViewModel.getAllGroups()
+
+    var randomColors = listOf(
+        LinkZipTheme.color.orangeFFE6C1,
+        LinkZipTheme.color.greenBDF3C2,
+        LinkZipTheme.color.pinkFFE8F7,
+        LinkZipTheme.color.blueC0F0FF
+    )
+
+    LaunchedEffect(true){
+        CoroutineScope(Dispatchers.IO).launch {
+            homeViewModel.getAllGroups()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
+        LinkGroupComponent(
+            stringResource(R.string.linkzip_produce),
+            R.drawable.guide_image,
+            randomColors[Random.nextInt(randomColors.size)],
+            1L
+        ){ it ->
+            Log.e("groupClick" , "$it")
+        }
 
         if (groupEvent != null){
             GroupList(groupEvent!!)
@@ -75,6 +101,7 @@ fun AllView (
 fun GroupList(
     state : UiState<List<GroupData>>
 ){
+
     when(state){
         is UiState.Success ->{
             LazyColumn(){
