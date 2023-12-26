@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     kapt(libs.hilt.compiler)
+    implementation (libs.jsoup)
     kapt ("androidx.room:room-compiler:2.5.1")
     testImplementation(libs.junit)
     implementation(libs.androidx.lifecycle.runtime.compose)

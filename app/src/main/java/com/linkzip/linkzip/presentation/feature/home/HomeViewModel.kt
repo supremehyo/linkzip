@@ -24,14 +24,18 @@ class HomeViewModel @Inject constructor(
     private val allViewUseCase: AllViewUseCase,
     private val favoriteUseCase: FavoriteUseCase
 ) : ViewModel() {
-    val _homeScreenState = MutableStateFlow(HomeScreenState.ALL)
+    private val _homeScreenState = MutableStateFlow(HomeScreenState.ALL)
     val homeScreenState = _homeScreenState.asStateFlow()
 
-    val _allGroupListFlow = MutableSharedFlow<UiState<List<GroupData>>>()
+    private val _allGroupListFlow = MutableSharedFlow<UiState<List<GroupData>>>()
     val allGroupListFlow = _allGroupListFlow.asSharedFlow()
 
-    val _favoriteListFlow = MutableSharedFlow<UiState<List<LinkData>>>()
+    private val _favoriteListFlow = MutableSharedFlow<UiState<List<LinkData>>>()
     val favoriteListFlow = _favoriteListFlow.asSharedFlow()
+
+    private val _pasteClipBoardEvent = MutableSharedFlow<Boolean>()
+    val pasteClipBoardEvent = _pasteClipBoardEvent.asSharedFlow()
+
 
 
     fun updateHomeScreenState(state: HomeScreenState) {
@@ -52,6 +56,12 @@ class HomeViewModel @Inject constructor(
             favoriteUseCase.getFavoriteLinkList().collect{
                 _favoriteListFlow.emit(it)
             }
+        }
+    }
+
+    fun pasteClipBoardEvent(boolean: Boolean){
+        viewModelScope.launch {
+            _pasteClipBoardEvent.emit(boolean)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.presentation.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -27,9 +28,11 @@ enum class FieldSize {
     NORMAL, LARGE
 }
 
+//처음부터 값을 입력시키는 필드도 있어야함. ex.링크에서 바로 가져와서 넣기 위해서
 @Composable
 fun CommonEditTextField(
     title : String,
+    initialText : String = "",
     fieldType : FieldSize,
     textCountOption : Boolean,
     resultText : (Pair<String,String>) -> Unit,
@@ -39,6 +42,7 @@ fun CommonEditTextField(
     val maxLength = 12
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
+    Log.e("initialText" , "$initialText")
     var height = when(fieldType){
         FieldSize.NORMAL ->{
             49.dp
@@ -80,7 +84,7 @@ fun CommonEditTextField(
                 // TextField hint
                 if (groupNameText.text.isEmpty()) {
                     Text(
-                        text = hintText,
+                        text = if(initialText.isNotBlank()) initialText else hintText,
                         style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg40)
                     )
                 }
