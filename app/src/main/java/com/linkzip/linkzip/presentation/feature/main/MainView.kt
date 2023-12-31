@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.model.HomeBottomDialogMenu
+import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
@@ -45,21 +46,24 @@ fun MainView(mainViewModel: MainViewModel) {
     )
     val menuItems = listOf(
         HomeBottomDialogMenu.LinkAdd,
-        HomeBottomDialogMenu.GroupAdd
+        HomeBottomDialogMenu.GroupAdd,
+        HomeBottomDialogMenu.None
     )
 
-    LaunchedEffect(menuState){
+    DisposableEffect(menuState){
         when(menuState){
             HomeBottomDialogMenu.LinkAdd ->{
-                Log.v("테스트" , menuState.title.toString())
-                customToast(context, "링크" )
+                mainViewModel.updateScreenState(MainScreenState.LINKADD)
             }
             HomeBottomDialogMenu.GroupAdd ->{
-                Log.v("테스트" , "그룹")
-                customToast(context,"그룹")
+                mainViewModel.updateScreenState(MainScreenState.GROUPADD)
             }else ->{
                 
             }
+        }
+
+        onDispose {
+            mainViewModel.updateMenuState(HomeBottomDialogMenu.None)
         }
     }
 

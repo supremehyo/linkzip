@@ -7,8 +7,8 @@ import androidx.room.Relation
 
 @Entity
 data class LinkData(
-    @PrimaryKey
-    val uid : Long = 0,
+    @PrimaryKey(autoGenerate = true)
+    val uid : Long? = 0,
     val link : String,
     val linkGroupId : String,
     val linkTitle : String,
