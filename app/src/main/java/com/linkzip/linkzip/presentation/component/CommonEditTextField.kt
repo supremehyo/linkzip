@@ -45,7 +45,7 @@ fun CommonEditTextField(
     Log.e("initialText" , "$initialText")
     var height = when(fieldType){
         FieldSize.NORMAL ->{
-            49.dp
+            50.dp
         }
         FieldSize.LARGE->{
             162.dp

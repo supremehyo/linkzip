@@ -8,13 +8,14 @@ import androidx.annotation.RequiresApi
 import com.linkzip.linkzip.data.room.LinkData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun LinkScrapData(url : String) : LinkData? {
+suspend fun LinkScrapData(url : String) : LinkData? {
     if(isUrl(url)){
         var resultLinkData = LinkData(
             link = url,
@@ -25,7 +26,7 @@ fun LinkScrapData(url : String) : LinkData? {
             updateDate = "",
             favorite = false
         )
-        CoroutineScope(Dispatchers.IO).launch {
+        var job = CoroutineScope(Dispatchers.IO).async {
             val document = Jsoup.connect(url).get()
             val elements = document.select("meta[property^=og:]")
             elements.let {
@@ -61,6 +62,7 @@ fun LinkScrapData(url : String) : LinkData? {
             resultLinkData = resultLinkData.copy(createDate = getCurrentDateFormatted())
             resultLinkData = resultLinkData.copy(updateDate = getCurrentDateFormatted())
         }
+        job.await()
         return resultLinkData
     }else{
         return null

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,9 @@ import com.linkzip.linkzip.presentation.component.FieldSize
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.DisposableEffectWithLifeCycle
 import com.linkzip.linkzip.util.LinkScrapData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalComposeUiApi::class)
@@ -67,6 +71,8 @@ fun LinkAddView(
             favorite = false
         )
     )}
+
+
     DisposableEffectWithLifeCycle(
         onResume = {
             val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -78,7 +84,15 @@ fun LinkAddView(
                     if (clipData != null && clipData.itemCount > 0) {
                         val text = clipData.getItemAt(0).text.toString()
                         // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
-                        LinkScrapData(text)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            var result = LinkScrapData(text)
+                            Log.e("sdfsdfsdf0" , "$result")
+                            if(result != null){
+                                resultLinkData = result
+                                Log.e("resultData" , "$resultLinkData")
+                                showDialog = !showDialog
+                            }
+                        }
                     }
                 }
             } else {
@@ -86,10 +100,12 @@ fun LinkAddView(
                 if (clipData != null && clipData.itemCount > 0) {
                     val text = clipData.getItemAt(0).text.toString()
                     // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
-                    var result = LinkScrapData(text)
-                    if(result != null){
-                        resultData = result
-                        showDialog = !showDialog
+                    CoroutineScope(Dispatchers.IO).launch {
+                        var result = LinkScrapData(text)
+                        if(result != null){
+                            resultData = result
+                            showDialog = !showDialog
+                        }
                     }
                 }
             }
@@ -185,13 +201,12 @@ fun LinkAddView(
 
         DialogComponent(
             onDismissRequest = { showDialog = false },
-            visible = true,
+            visible = showDialog,
             cancelButtonText = "취소",
             successButtonText = "붙여넣기",
             content = "복사한 링크를 붙여넣을까요?",
             onClickEvent = {
-                resultLinkData = resultData
-                Log.v("sdfsdfsdf"  ,  "$resultLinkData")
+                showDialog = false
             }
         )
     }
