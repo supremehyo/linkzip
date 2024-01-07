@@ -43,7 +43,8 @@ fun CommonButton(
                 .padding(vertical = 16.dp)
                 .height(55.dp)
                 .clip(RoundedCornerShape(12.dp)),
-            onClick = { isEnabled = !isEnabled },
+            onClick = { isEnabled = !isEnabled
+                onClickEvent()},
             colors =
             ButtonDefaults.buttonColors(
                 containerColor = if(enable) LinkZipTheme.color.wg70 else LinkZipTheme.color.wg20
@@ -65,7 +66,10 @@ fun CommonButton(
                 .padding(horizontal = 22.dp)
                 .padding(vertical = 16.dp)
                 .height(55.dp),
-            onClick = { isEnabled = !isEnabled },
+            onClick = {
+                isEnabled = !isEnabled
+                onClickEvent()
+                      },
             colors = ButtonDefaults.buttonColors(
                 containerColor = if(enable) LinkZipTheme.color.wg70 else LinkZipTheme.color.wg20
             ),

@@ -31,8 +31,19 @@ fun HomeNavigation(
 
     LaunchedEffect(screenState) {
         when(screenState) {
-            HomeScreenState.ALL -> {navController.navigate(HomePath.All.path) }
-            HomeScreenState.FAVORITE -> { navController.navigate(HomePath.Favorite.path) }
+            HomeScreenState.ALL -> {navController.navigate(HomePath.All.path) {
+                popUpTo(HomePath.All.path){
+                    inclusive = true
+                }
+            }}
+            HomeScreenState.FAVORITE -> { navController.navigate(HomePath.Favorite.path){
+                popUpTo(HomePath.Favorite.path){
+                    inclusive = true
+                }
+            }}
+            HomeScreenState.POPUP->{
+                navController.popBackStack()
+            }
         }
     }
 

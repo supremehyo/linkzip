@@ -15,8 +15,8 @@ class LinkRepository @Inject constructor(
         return linkDao.getFavoriteLinkList()
     }
 
-    fun insertLink (group : LinkData){
-        linkDao.insertLink(group)
+    fun insertLink (link : LinkData){
+        linkDao.insertLink(link)
     }
 
     fun deleteLink (uid: Long) {

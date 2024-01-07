@@ -1,9 +1,8 @@
-package com.linkzip.linkzip.presentation.feature.main
+package com.linkzip.linkzip.presentation.feature.addlink
 
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
-import android.service.autofill.UserData
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -27,12 +26,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
+import com.linkzip.linkzip.common.UiState
+import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.presentation.HeaderTitleView
 import com.linkzip.linkzip.presentation.component.CommonButton
 import com.linkzip.linkzip.presentation.component.CommonEditTextField
 import com.linkzip.linkzip.presentation.component.DialogComponent
 import com.linkzip.linkzip.presentation.component.FieldSize
+import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
+import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.DisposableEffectWithLifeCycle
 import com.linkzip.linkzip.util.LinkScrapData
@@ -44,13 +49,15 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LinkAddView(
+    homeViewModel: HomeViewModel = hiltViewModel(),
     onBackButtonPressed: () -> Unit
 ) {
+    val navController = rememberNavController()
     var showDialog by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
-    var resultData =  LinkData(
+    var resultData = LinkData(
         link = "",
         linkGroupId = "",//분류되지 않음 이라는 그룹이 자동으로 생성되어야 할듯함.
         linkTitle = "",
@@ -60,22 +67,63 @@ fun LinkAddView(
         favorite = false
     )
 
-    var resultLinkData by remember { mutableStateOf(
-        LinkData(
-            link = "",
-            linkGroupId = "",//분류되지 않음 이라는 그룹이 자동으로 생성되어야 할듯함.
-            linkTitle = "",
-            linkMemo = "",
-            createDate = "",
-            updateDate = "",
-            favorite = false
+    var resultLinkData by remember {
+        mutableStateOf(
+            LinkData(
+                link = "",
+                linkGroupId = "",//분류되지 않음 이라는 그룹이 자동으로 생성되어야 할듯함.
+                linkTitle = "",
+                linkMemo = "",
+                createDate = "",
+                updateDate = "",
+                favorite = false
+            )
         )
-    )}
+    }
+
+    LaunchedEffect(true) {
+        CoroutineScope(Dispatchers.IO).launch {
+            homeViewModel.linkEventFlow.collect { state ->
+                when (state) {
+                    is HomeViewModel.LinkEvent.InsertLinkUiEvent -> {
+                        when(state.uiState){
+                            is UiState.Loding->{
+
+                            }
+                            is UiState.Success->{
+                                Log.v("resultText2", "dd")
+                                homeViewModel.updateHomeScreenState(HomeScreenState.POPUP)
+                                //완료되면 뒤로 나가기
+                            }
+                            else ->{
+                                Log.v("resultText3", "${state.uiState.toString()}")
+                            }
+                        }
+                    }
+                    is  HomeViewModel.LinkEvent.GetLinksUiEvent -> {
+                        when(state.uiState){
+                            is UiState.Loding->{
+
+                            }
+                            is UiState.Success->{
+                                Log.e("insert","${state.uiState.data}")
+                            }
+                            else ->{
+
+                            }
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
 
 
     DisposableEffectWithLifeCycle(
         onResume = {
-            val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipboardManager =
+                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 if (!clipboardManager.hasPrimaryClip()) {
                     // 클립보드가 비어있는 경우
@@ -86,10 +134,8 @@ fun LinkAddView(
                         // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
                         CoroutineScope(Dispatchers.IO).launch {
                             var result = LinkScrapData(text)
-                            Log.e("sdfsdfsdf0" , "$result")
-                            if(result != null){
+                            if (result != null) {
                                 resultLinkData = result
-                                Log.e("resultData" , "$resultLinkData")
                                 showDialog = !showDialog
                             }
                         }
@@ -102,7 +148,7 @@ fun LinkAddView(
                     // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
                     CoroutineScope(Dispatchers.IO).launch {
                         var result = LinkScrapData(text)
-                        if(result != null){
+                        if (result != null) {
                             resultData = result
                             showDialog = !showDialog
                         }
@@ -138,7 +184,7 @@ fun LinkAddView(
             fieldType = FieldSize.NORMAL,
             initialText = resultLinkData.link,
             resultText = {
-                Log.v("resultText" , "${it.second}")
+                Log.v("resultText", "${it.second}")
             }
         )
         Spacer(modifier = Modifier.height(28.dp))
@@ -153,10 +199,13 @@ fun LinkAddView(
             hintText = "그룹을 선택해주세요",
             fieldType = FieldSize.NORMAL,
             resultText = {
-                Log.v("resultText" , "${it.second}")
+                Log.v("resultText", "${it.second}")
             }
         )
         Spacer(modifier = Modifier.height(28.dp))
+
+
+
         Text(
             text = "제목",
             style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
@@ -169,7 +218,7 @@ fun LinkAddView(
             initialText = resultLinkData.linkTitle,
             fieldType = FieldSize.NORMAL,
             resultText = {
-                Log.v("resultText" , "${it.second}")
+                Log.v("resultText", "${it.second}")
             }
         )
         Spacer(modifier = Modifier.height(28.dp))
@@ -185,17 +234,17 @@ fun LinkAddView(
             initialText = resultLinkData.linkMemo,
             hintText = "링크를 통해 발견한 인사이트가 있나요?",
             resultText = {
-                Log.v("resultText" , "${it.second}")
+                Log.v("resultText", "${it.second}")
             }
         )
 
         CommonButton(
-            enable = false,
+            enable = true,
             keyBoardUpOption = true,
             buttonName = "저장하기",
             buttonColor = LinkZipTheme.color.black,
             onClickEvent = {
-
+                homeViewModel.insertLink(resultLinkData)
             }
         )
 
@@ -210,4 +259,8 @@ fun LinkAddView(
             }
         )
     }
+}
+
+private fun eventHandler(event : HomeViewModel.LinkEvent){
+
 }
