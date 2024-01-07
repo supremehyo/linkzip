@@ -1,7 +1,6 @@
 package com.linkzip.linkzip.data.di
 
 import android.content.Context
-import androidx.room.Room
 import com.linkzip.linkzip.data.room.GroupDao
 import com.linkzip.linkzip.data.room.IconDao
 import com.linkzip.linkzip.data.room.LinkDao
@@ -22,9 +21,7 @@ object RoomModule {
     @Provides
     fun provideAppDatabase(
         @ApplicationContext context: Context
-    ): LinkRoomDataBase = Room
-        .databaseBuilder(context, LinkRoomDataBase::class.java, "linkzip-database")
-        .build()
+    ): LinkRoomDataBase = LinkRoomDataBase.getDatabase(context)
 
     @Singleton
     @Provides
