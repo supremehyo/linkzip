@@ -1,6 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -31,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -74,10 +73,13 @@ import com.linkzip.linkzip.ui.theme.LinkZipTheme
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddGroupView(
+    addGroupViewModel: AddGroupViewModel = hiltViewModel(),
     onBackButtonPressed: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+
+    addGroupViewModel.getIconData()
 
     Column(
         modifier = Modifier
@@ -190,10 +192,18 @@ fun editGroupName(modifier: Modifier) {
 
 // icon View
 @Composable
-fun iconView(modifier: Modifier) {
+fun iconView(
+    modifier: Modifier,
+    addGroupViewModel: AddGroupViewModel = hiltViewModel()
+) {
+    val currentIconState = addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
+
     Box(modifier = modifier) {
-        Image(
-            painter = painterResource(id = R.drawable.icon_nogroup),
+        Icon(
+            painter = painterResource(
+                id = getDrawableIcon(currentIconState.value),
+            ),
+            tint = Color.Unspecified,
             contentDescription = ICON_NO_GROUP,
             modifier = Modifier
                 .width(120.dp)
@@ -210,11 +220,9 @@ fun plusIconAndBottomSheet(
     modifier: Modifier,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
-    val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    addGroupViewModel.getIconData()
     val allIconList by addGroupViewModel.iconListFlow.collectAsStateWithLifecycle(null)
 
     IconButton(
@@ -230,8 +238,7 @@ fun plusIconAndBottomSheet(
 
         if (showBottomSheet) {
             ModalBottomSheet(
-                modifier = Modifier
-                    .width(336.dp),
+                modifier = Modifier.width(336.dp),
                 onDismissRequest = {
                     showBottomSheet = false
                 },
@@ -246,27 +253,41 @@ fun plusIconAndBottomSheet(
                             verticalArrangement = Arrangement.spacedBy(20.dp),
                             horizontalArrangement = Arrangement.spacedBy(20.dp)
                         ) {
-                            val smartCastIconList = (allIconList as UiState.Success<List<IconData>>).data
+                            val smartCastIconList =
+                                (allIconList as UiState.Success<List<IconData>>).data
                             items(smartCastIconList.size) { item ->
 
-                                Icon(
-                                    painter = painterResource(id = getDrawableIcon(smartCastIconList[item].iconName)),
-                                    contentDescription = smartCastIconList[item].iconName,
-                                    tint = Color.Unspecified
-                                )
+                                IconButton(
+                                    onClick = {
+                                        addGroupViewModel.updateCurrentIcon(smartCastIconList[item].iconName)
+                                        showBottomSheet = false
+                                    }) {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = getDrawableIcon(
+                                                smartCastIconList[item].iconName
+                                            )
+                                        ),
+                                        contentDescription = smartCastIconList[item].iconName,
+                                        tint = Color.Unspecified
+                                    )
+                                }
                             }
                         }
                     }
 
                     is UiState.Loding -> {
+                        Log.e("add_group", "Loading")
                         CircularProgressIndicator()
                     }
 
                     is UiState.Error -> {
+                        Log.e("add_group", "error")
                         CircularProgressIndicator()
                     }
 
                     else -> {
+                        Log.e("add_group", "else")
                         CircularProgressIndicator()
                     }
                 }
