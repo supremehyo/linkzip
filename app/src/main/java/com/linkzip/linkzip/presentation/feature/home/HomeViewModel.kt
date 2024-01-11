@@ -55,7 +55,7 @@ class HomeViewModel @Inject constructor(
 
 
     fun getAllGroups(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             allViewUseCase.getAllGroups().collect{ it->
                 _allGroupListFlow.emit(it)
             }

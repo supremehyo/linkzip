@@ -48,6 +48,7 @@ import androidx.compose.ui.window.DialogWindowProvider
 import androidx.compose.ui.window.SecureFlagPolicy
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.model.HomeBottomDialogMenu
+import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 
@@ -97,6 +98,33 @@ fun BottomDialogComponent(
         }
     }
 }
+
+@Composable
+fun BottomDialogLinkAddGroupMenuComponent(
+    groupData: GroupData,
+    onClickAction : (GroupData) -> Unit
+){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .clickable {
+                onClickAction(groupData)
+            },
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            modifier = Modifier
+                .width(24.dp)
+                .height(24.dp)
+                .padding(end = 12.dp),
+            painter = painterResource(id = groupData.groupIconId.toInt()),
+            contentDescription = "menu_image")
+        Text(text = groupData.groupName ,
+            style = LinkZipTheme.typography.medium18, color = LinkZipTheme.color.black)
+    }
+}
+
 
 @Composable
 fun BottomDialogMenuComponent(
