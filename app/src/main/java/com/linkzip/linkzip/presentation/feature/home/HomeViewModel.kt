@@ -37,6 +37,12 @@ class HomeViewModel @Inject constructor(
     private val _pasteClipBoardEvent = MutableSharedFlow<Boolean>()
     val pasteClipBoardEvent = _pasteClipBoardEvent.asSharedFlow()
 
+    private val _backDim = MutableSharedFlow<Boolean>()
+    val backDim = _backDim.asSharedFlow()
+
+init {
+    print("생성")
+}
 
     //link event
     private val _linkEventFlow = MutableSharedFlow<LinkEvent>()
@@ -47,6 +53,13 @@ class HomeViewModel @Inject constructor(
             _linkEventFlow.emit(event)
         }
     }
+
+    fun setBackgroundDim(isDim : Boolean){
+        viewModelScope.launch(Dispatchers.IO) {
+            _backDim.emit(isDim)
+        }
+    }
+
     //link event
 
     fun updateHomeScreenState(state: HomeScreenState) {

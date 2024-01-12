@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.R
@@ -29,14 +30,19 @@ import com.linkzip.linkzip.data.model.HomeBottomDialogMenu
 import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
+import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.navigation.MainBottomNavigation
 import com.linkzip.linkzip.util.navigation.MainBottomNavigationGraph
 import com.linkzip.linkzip.util.navigation.MainBottomPath
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun MainView(mainViewModel: MainViewModel) {
     val navController = rememberNavController()
+    val homeViewModel: HomeViewModel = hiltViewModel()
     var showDialog by remember { mutableStateOf(false) }
     val menuState by mainViewModel.menuState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -49,6 +55,14 @@ fun MainView(mainViewModel: MainViewModel) {
         HomeBottomDialogMenu.GroupAdd,
         HomeBottomDialogMenu.None
     )
+
+    LaunchedEffect(true){
+        CoroutineScope(Dispatchers.IO).launch {
+            homeViewModel.backDim.collect { it->
+                println("ddd")
+            }
+        }
+    }
 
     DisposableEffect(menuState){
         when(menuState){

@@ -1,5 +1,7 @@
 package com.linkzip.linkzip.util.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +26,7 @@ sealed class MainPath(val path: String) {
     object LinkAdd : MainPath("LinkAdd")
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainNavigation(
     mainViewModel: MainViewModel =  hiltViewModel()
