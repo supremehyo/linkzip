@@ -9,6 +9,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.linkzip.linkzip.R
+import org.w3c.dom.Text
 
 val pretendard = FontFamily(
     Font(R.font.pretendard_bold, FontWeight.Bold),
@@ -27,9 +28,12 @@ val pretendard = FontFamily(
 @Immutable
 data class LinkZipTypography(
     val bold22: TextStyle,
+    val bold18 : TextStyle,
+    val semiBold10 : TextStyle,
     val medium12 : TextStyle,
     val medium14 : TextStyle,
     val medium16 : TextStyle,
+    val medium18 : TextStyle,
     val semiBold16 : TextStyle,
     val normal16 : TextStyle,
     val normal20: TextStyle
@@ -91,6 +95,30 @@ data class LinkZipTypography(
                 platformStyle = PlatformTextStyle(
                     includeFontPadding = false,
                 )
+            ),
+            semiBold10 = TextStyle(
+                fontFamily = pretendard,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 10.sp,
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false,
+                )
+            ),
+            medium18 = TextStyle(
+                fontFamily = pretendard,
+                fontWeight = FontWeight.Medium,
+                fontSize = 18.sp,
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false,
+                )
+            ),
+            bold18 = TextStyle(
+                fontFamily = pretendard,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false,
+                )
             )
         )
     }
@@ -106,5 +134,8 @@ val LocalLinkZipTypography = staticCompositionLocalOf {
         semiBold16 = LinkZipTypography.textStyle.semiBold16,
         normal16 = LinkZipTypography.textStyle.normal16,
         normal20 = LinkZipTypography.textStyle.normal20,
+        semiBold10 = LinkZipTypography.textStyle.semiBold10,
+        medium18 = LinkZipTypography.textStyle.medium18,
+        bold18 = LinkZipTypography.textStyle.bold18,
     )
 }

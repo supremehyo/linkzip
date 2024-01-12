@@ -5,9 +5,9 @@ enum class ScreenState {
 }
 
 enum class HomeScreenState{
-    ALL, FAVORITE
+    ALL, FAVORITE , POPUP
 }
 
 enum class MainScreenState{
-    ONBOARDING,MAIN,GROUPADD
+    ONBOARDING,MAIN,GROUPADD , LINKADD
 }

@@ -14,5 +14,10 @@
     <string name="onboarding_content_3" />
     <string name="add_group">+ 그룹 추가하기</string>
     <string name="all">전체</string>
+    <string name="add">추가</string>
     <string name="favorite_link">즐겨찾는 링크</string>
+    <string name="home_bottom_dialog_menu_linkadd">링크 추가하기</string>
+    <string name="home_bottom_dialog_menu_groupadd">그룹 추가하기</string>
+    <string name="none">""</string>
+    <string name="linkzip_produce">만나서 반가워요\n링크zip을 소개할게요!</string>
 </resources>

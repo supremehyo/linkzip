@@ -3,6 +3,7 @@ package com.linkzip.linkzip.data.room
 import android.net.Uri
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 
@@ -17,7 +18,7 @@ interface LinkDao {
     @Query("SELECT * FROM LinkData WHERE favorite = 1")
     fun getFavoriteLinkList() : List<LinkData>
 
-    @Insert
+    @Insert (onConflict = OnConflictStrategy.REPLACE)
     fun insertLink(linkData: LinkData)
 
     @Query("DELETE FROM LinkData WHERE uid = :uid")

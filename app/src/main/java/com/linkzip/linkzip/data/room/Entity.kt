@@ -7,15 +7,15 @@ import androidx.room.Relation
 
 @Entity
 data class LinkData(
-    @PrimaryKey
-    val uid : Long = 0,
-    val link : String,
-    val linkGroupId : String,
-    val linkTitle : String,
-    val linkMemo : String,
-    val createDate : String,
-    val updateDate : String,
-    val favorite: Boolean
+    @PrimaryKey(autoGenerate = true)
+    var uid : Long? = 0,
+    var link : String,
+    var linkGroupId : String,
+    var linkTitle : String,
+    var linkMemo : String,
+    var createDate : String,
+    var updateDate : String,
+    var favorite: Boolean
 )
 
 @Entity(tableName = "group")

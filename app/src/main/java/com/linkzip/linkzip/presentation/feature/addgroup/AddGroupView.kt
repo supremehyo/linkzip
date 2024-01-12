@@ -57,7 +57,6 @@ import com.linkzip.linkzip.ui.theme.LinkZipTheme
 fun AddGroupView(onBackButtonPressed: () -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -90,7 +89,7 @@ fun AddGroupView(onBackButtonPressed: () -> Unit) {
             colors = ButtonDefaults.buttonColors(
                 containerColor = LinkZipTheme.color.wg70
             ),
-        ) {
+        ){
             Text(
                 text = "저장하기",
                 style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.white)

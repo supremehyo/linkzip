@@ -24,15 +24,27 @@ sealed class HomePath(val path: String) {
 @Composable
 fun HomeNavigation(
     mainViewModel: MainViewModel,
-    homeViewModel: HomeViewModel =  hiltViewModel()
+    homeViewModel: HomeViewModel =  hiltViewModel(),
+    callback : (Boolean)->Unit
 ){
     val navController = rememberNavController()
     val screenState by homeViewModel.homeScreenState.collectAsState(initial = HomeScreenState.ALL)
 
     LaunchedEffect(screenState) {
         when(screenState) {
-            HomeScreenState.ALL -> {navController.navigate(HomePath.All.path) }
-            HomeScreenState.FAVORITE -> { navController.navigate(HomePath.Favorite.path) }
+            HomeScreenState.ALL -> {navController.navigate(HomePath.All.path) {
+                popUpTo(HomePath.All.path){
+                    inclusive = true
+                }
+            }}
+            HomeScreenState.FAVORITE -> { navController.navigate(HomePath.Favorite.path){
+                popUpTo(HomePath.Favorite.path){
+                    inclusive = true
+                }
+            }}
+            HomeScreenState.POPUP->{
+                navController.popBackStack()
+            }
         }
     }
 
@@ -41,7 +53,14 @@ fun HomeNavigation(
         navController =  navController,
         startDestination = HomePath.All.path){
         composable(HomePath.All.path) {
-            AllView{   mainViewModel.updateScreenState(MainScreenState.GROUPADD)}
+            AllView(
+                dimmedBoolean = {
+                    callback(it)
+                },
+                onClickAddGroup = {
+                    mainViewModel.updateScreenState(MainScreenState.GROUPADD)
+                }
+            )
         }
         composable(HomePath.Favorite.path) {
             FavoriteView()
