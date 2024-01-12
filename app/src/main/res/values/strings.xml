@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">linkzip</string>
+
+    <!-- 바텀 네비게이션-->
+    <string name="bottom_home_text">홈</string>
+    <string name="bottom_my_text">마이</string>
+    <string name="bottom_home_path">HOME</string>
+    <string name="bottom_my_path">MY_PAGE</string>
+    <string name="onboarding_title_1">링크 그룹 만들기</string>
+    <string name="onboarding_title_2">링크 즐겨찾기</string>
+    <string name="onboarding_title_3">내 모든 링크를\n쉽게 관리해볼까요?</string>
+    <string name="onboarding_content_1">내가 분류하고 싶은 대로 그룹을 만들 수 있어요</string>
+    <string name="onboarding_content_2">자주 방문하는 링크는 빠르게 볼 수 있어요</string>
+    <string name="onboarding_content_3" />
+    <string name="add_group">+ 그룹 추가하기</string>
+    <string name="all">전체</string>
+    <string name="favorite_link">즐겨찾는 링크</string>
 </resources>

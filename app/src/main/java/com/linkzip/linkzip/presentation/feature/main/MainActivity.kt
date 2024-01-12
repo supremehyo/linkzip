@@ -5,29 +5,37 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.linkzip.linkzip.ui.theme.LinkzipTheme
+import com.linkzip.linkzip.data.model.MainScreenState
+import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.navigation.MainNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            LinkzipTheme {
+            LinkZipTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = LinkZipTheme.color.white
                 ) {
-                    Greeting("Android")
+                        val spf = getSharedPreferences("spf", MODE_PRIVATE)
+                        val isFirst = viewModel.checkFirstStart(spf)
+
+                        if(!isFirst){
+                            viewModel.updateScreenState(MainScreenState.MAIN)
+                        }else{
+                            viewModel.updateScreenState(MainScreenState.ONBOARDING)
+                        }
+                        MainNavigation()
                 }
             }
         }
@@ -45,7 +53,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    LinkzipTheme {
+    LinkZipTheme {
         Greeting("Android")
     }
 }
