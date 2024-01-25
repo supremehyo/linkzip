@@ -1,7 +1,6 @@
 package com.linkzip.linkzip.data.room
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -29,11 +28,8 @@ abstract class LinkRoomDataBase : RoomDatabase() {
             .addCallback(object : Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
-                    Log.e("adad ㅂ12ㄷ3", "??")
-
                     Executors.newSingleThreadExecutor().execute {
                         runBlocking {
-                            Log.e("adad", "??")
                             getDatabase(context).iconDao()
                                 .addIcon(
                                     IconData.NO_GROUP,
@@ -57,7 +53,6 @@ abstract class LinkRoomDataBase : RoomDatabase() {
                     }
                 }
             })
-      //      .fallbackToDestructiveMigration()
             .build()
     }
 }
