@@ -80,6 +80,7 @@ fun AddGroupView(
     val focusManager = LocalFocusManager.current
 
     addGroupViewModel.getIconData()
+    val currentIconState = addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -97,7 +98,8 @@ fun AddGroupView(
         iconView(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(horizontal = 22.dp)
+                .padding(horizontal = 22.dp),
+            currentIconState.value
         )
         Spacer(modifier = Modifier.height(41.dp))
         Text(
@@ -106,14 +108,14 @@ fun AddGroupView(
             style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        editGroupName(Modifier.weight(1f))
+        editGroupName(Modifier.weight(1f), currentIconState.value)
 
     }
 }
 
 // 그룹명 작성 TextField
 @Composable
-fun editGroupName(modifier: Modifier) {
+fun editGroupName(modifier: Modifier, currentIconState: IconData) {
     var groupNameText by remember { mutableStateOf(TextFieldValue("")) }
     val maxLength = 12
     val focusRequester = remember { FocusRequester() }
@@ -179,12 +181,13 @@ fun editGroupName(modifier: Modifier) {
         shape = if (isFocused) RoundedCornerShape(0.dp) else RoundedCornerShape(12.dp),
         onClick = { /*TODO*/ },
         colors = ButtonDefaults.buttonColors(
-            containerColor = LinkZipTheme.color.wg70
+            containerColor = Color(currentIconState.iconButtonColor)
         ),
     ) {
         Text(
             text = "저장하기",
-            style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.white)
+            style = LinkZipTheme.typography.medium16
+                .copy(color = LinkZipTheme.color.white)
         )
     }
 
@@ -194,14 +197,14 @@ fun editGroupName(modifier: Modifier) {
 @Composable
 fun iconView(
     modifier: Modifier,
-    addGroupViewModel: AddGroupViewModel = hiltViewModel()
+    currentIconState : IconData
 ) {
-    val currentIconState = addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
+
 
     Box(modifier = modifier) {
         Icon(
             painter = painterResource(
-                id = getDrawableIcon(currentIconState.value),
+                id = getDrawableIcon(currentIconState.iconName),
             ),
             tint = Color.Unspecified,
             contentDescription = ICON_NO_GROUP,
@@ -259,7 +262,7 @@ fun plusIconAndBottomSheet(
 
                                 IconButton(
                                     onClick = {
-                                        addGroupViewModel.updateCurrentIcon(smartCastIconList[item].iconName)
+                                        addGroupViewModel.updateCurrentIcon(smartCastIconList[item])
                                         showBottomSheet = false
                                     }) {
                                     Icon(
