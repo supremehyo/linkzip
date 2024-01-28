@@ -36,6 +36,8 @@ import androidx.compose.ui.window.SecureFlagPolicy
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.model.HomeBottomDialogMenu
 import com.linkzip.linkzip.data.room.GroupData
+import com.linkzip.linkzip.data.room.IconData
+import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 
@@ -96,6 +98,7 @@ fun BottomDialogComponent(
 @Composable
 fun BottomDialogLinkAddGroupMenuComponent(
     groupData: GroupData,
+    iconData : IconData,
     onClickAction : (GroupData) -> Unit
 ){
     Row(
@@ -112,7 +115,7 @@ fun BottomDialogLinkAddGroupMenuComponent(
                 .width(24.dp)
                 .height(24.dp)
                 .padding(end = 12.dp),
-            painter = painterResource(id = groupData.groupIconId.toInt()),
+            painter = painterResource(id = getDrawableIcon(iconData.iconName)),
             contentDescription = "menu_image")
         Text(text = groupData.groupName ,
             style = LinkZipTheme.typography.medium18, color = LinkZipTheme.color.black)

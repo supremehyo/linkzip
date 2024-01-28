@@ -6,6 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.runBlocking
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.Executors
 
 @Database(
@@ -49,6 +52,19 @@ abstract class LinkRoomDataBase : RoomDatabase() {
                                     IconData.AIRPLANE,
                                     IconData.HEART
                                 )
+
+                            val currentTime = Date()
+                            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                            val timeString = formatter.format(currentTime)
+
+                            getDatabase(context).groupDao().insertGroup(
+                                GroupData(
+                                    groupIconId = -1L,
+                                    groupName = "그룹없음",
+                                    createDate = timeString,
+                                    updateDate = timeString
+                                )
+                            )
                         }
                     }
                 }

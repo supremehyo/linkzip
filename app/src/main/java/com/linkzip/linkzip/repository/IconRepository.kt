@@ -8,4 +8,7 @@ class IconRepository @Inject constructor(private val iconDao: IconDao) {
     fun getIconData(): List<IconData> {
         return iconDao.getIconData()
     }
+    fun getIconDataById(iconId : Long) : IconData{
+        return iconDao.getIconDataById(iconId)
+    }
 }

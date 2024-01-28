@@ -1,12 +1,16 @@
 package com.linkzip.linkzip.presentation.feature.home
 
 import android.util.Log
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.room.GroupData
+import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
+import com.linkzip.linkzip.ui.theme.WG70
+import com.linkzip.linkzip.ui.theme.WHITE
 import com.linkzip.linkzip.usecase.AllViewUseCase
 import com.linkzip.linkzip.usecase.FavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,13 +43,21 @@ class HomeViewModel @Inject constructor(
     private val _backDim = MutableSharedFlow<Boolean>()
     val backDim = _backDim.asSharedFlow()
 
-init {
-    print("생성")
-}
+    val _iconListFlow = MutableSharedFlow<UiState<List<IconData>>>()
+    val iconListFlow = _iconListFlow.asSharedFlow()
 
     //link event
     private val _linkEventFlow = MutableSharedFlow<LinkEvent>()
     val linkEventFlow = _linkEventFlow.asSharedFlow()
+
+    fun getIconDataById(iconIdList : List<Long>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            allViewUseCase.getIconDataById(iconIdList).collect {
+                Log.v("getIconData", "${it}")
+                _iconListFlow.emit(it)
+            }
+        }
+    }
 
     private fun postLinkEvent(event : LinkEvent){
         viewModelScope.launch {

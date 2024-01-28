@@ -15,13 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,6 +52,7 @@ fun AllView (
     dimmedBoolean: (Boolean) ->Unit,
     onClickAddGroup: ()->Unit
 ){
+    var isShowIntro by remember { mutableStateOf(true) }
     var dimmedBackground by remember { mutableStateOf(false) }
     val groupEvent by homeViewModel.allGroupListFlow.collectAsStateWithLifecycle(null)
 
@@ -82,10 +76,18 @@ fun AllView (
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(top = 100.dp),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
+
+        // 소개 레이아웃을 지웠는지 체크하는 변수가 필요
+        if(isShowIntro){
+            IntroduceComponent{ isDimmed ->
+                isShowIntro = !isDimmed
+            }
+        }
+
 
         if (groupEvent != null){
          //   GroupList(groupEvent!!)
@@ -106,12 +108,6 @@ fun AllView (
                 style = LinkZipTheme.typography.normal16.copy(color = LinkZipTheme.color.wg50))
         }
     }
-
-    IntroduceComponent{ isDimmed ->
-        dimmedBackground = isDimmed
-        dimmedBoolean(dimmedBackground)
-    }
-
 }
 
 @Composable

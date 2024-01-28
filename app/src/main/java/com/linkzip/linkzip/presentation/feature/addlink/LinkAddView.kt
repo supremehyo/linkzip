@@ -12,12 +12,15 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,10 +37,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.room.GroupData
+import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.presentation.HeaderTitleView
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
@@ -61,17 +66,19 @@ fun LinkAddView(
     homeViewModel: HomeViewModel = hiltViewModel(),
     onBackButtonPressed: () -> Unit
 ) {
-    val menuItems = mutableListOf<GroupData>()
-
+    var menuItems by remember { mutableStateOf(listOf<GroupData>()) }
     val navController = rememberNavController()
     var showDialog by remember { mutableStateOf(false) }
-    var showBottomDialog  by remember { mutableStateOf(false) }
+    var showBottomDialog by remember { mutableStateOf(false) }
+    var groupTitle by remember { mutableStateOf("그룹을 선택해주세요.") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
+    val groupIconList by homeViewModel.iconListFlow.collectAsStateWithLifecycle(null)
+
     var resultData = LinkData(
         link = "",
-        linkGroupId = "",//분류되지 않음 이라는 그룹이 자동으로 생성되어야 할듯함.
+        linkGroupId = "",
         linkTitle = "",
         linkMemo = "",
         createDate = "",
@@ -83,7 +90,7 @@ fun LinkAddView(
         mutableStateOf(
             LinkData(
                 link = "",
-                linkGroupId = "",//분류되지 않음 이라는 그룹이 자동으로 생성되어야 할듯함.
+                linkGroupId = (-1L).toString(),
                 linkTitle = "",
                 linkMemo = "",
                 createDate = "",
@@ -97,49 +104,59 @@ fun LinkAddView(
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.getAllGroups()
 
-            homeViewModel.allGroupListFlow.collect{ state->
-               when(state){
-                   is UiState.Loding->{
+            homeViewModel.allGroupListFlow.collect { state ->
+                when (state) {
+                    is UiState.Loding -> {
 
-                   }
-                   is UiState.Success->{
-                       menuItems.addAll(state.data)
-                   }
-                   else ->{
-                   }
-               }
+                    }
+
+                    is UiState.Success -> {
+                        menuItems = state.data
+                        Log.e("sfsdfsfsf ", "$menuItems")
+                        homeViewModel.getIconDataById(menuItems.map { it.groupIconId })
+                    }
+
+                    else -> {
+                    }
+                }
             }
 
             homeViewModel.linkEventFlow.collect { state ->
                 when (state) {
                     is HomeViewModel.LinkEvent.InsertLinkUiEvent -> {
-                        when(state.uiState){
-                            is UiState.Loding->{
+                        when (state.uiState) {
+                            is UiState.Loding -> {
 
                             }
-                            is UiState.Success->{
+
+                            is UiState.Success -> {
                                 Log.v("resultText2", "dd")
                                 homeViewModel.updateHomeScreenState(HomeScreenState.POPUP)
                                 //완료되면 뒤로 나가기
                             }
-                            else ->{
+
+                            else -> {
                                 Log.v("resultText3", "${state.uiState.toString()}")
                             }
                         }
                     }
-                    is  HomeViewModel.LinkEvent.GetLinksUiEvent -> {
-                        when(state.uiState){
-                            is UiState.Loding->{
+
+                    is HomeViewModel.LinkEvent.GetLinksUiEvent -> {
+                        when (state.uiState) {
+                            is UiState.Loding -> {
 
                             }
-                            is UiState.Success->{
-                                Log.e("insert","${state.uiState.data}")
+
+                            is UiState.Success -> {
+                                Log.e("insert", "${state.uiState.data}")
                             }
-                            else ->{
+
+                            else -> {
 
                             }
                         }
                     }
+
                     else -> {}
                 }
             }
@@ -211,6 +228,7 @@ fun LinkAddView(
             fieldType = FieldSize.NORMAL,
             initialText = resultLinkData.link,
             resultText = {
+                resultLinkData.link = it.second
                 Log.v("resultText", "${it.second}")
             }
         )
@@ -220,7 +238,9 @@ fun LinkAddView(
             style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        dropDownMenu{
+        dropDownMenu(
+            groupTitle = groupTitle
+        ) {
             showBottomDialog = true
         }
         Spacer(modifier = Modifier.height(28.dp))
@@ -236,6 +256,7 @@ fun LinkAddView(
             initialText = resultLinkData.linkTitle,
             fieldType = FieldSize.NORMAL,
             resultText = {
+                resultLinkData.linkTitle = it.second
                 Log.v("resultText", "${it.second}")
             }
         )
@@ -252,6 +273,7 @@ fun LinkAddView(
             initialText = resultLinkData.linkMemo,
             hintText = "링크를 통해 발견한 인사이트가 있나요?",
             resultText = {
+                resultLinkData.linkMemo = it.second
                 Log.v("resultText", "${it.second}")
             }
         )
@@ -276,22 +298,33 @@ fun LinkAddView(
                 showDialog = false
             }
         )
-
-        BottomDialogComponent(
-            onDismissRequest = { showBottomDialog = false },
-            visible = showBottomDialog,
-            height = 150.dp,
-            horizontalMargin = 20.dp
-        ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(29.dp)
+        menuItems?.let {
+            BottomDialogComponent(
+                onDismissRequest = { showBottomDialog = false },
+                visible = showBottomDialog,
+                height = 150.dp,
+                horizontalMargin = 20.dp
             ) {
-                items(menuItems.size) { it ->
-                    BottomDialogLinkAddGroupMenuComponent(
-                        groupData = menuItems[it]
+                Column {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(29.dp)
                     ) {
-                        showBottomDialog = false
+
+                        itemsIndexed(menuItems) { index, data ->
+                            //그룹없음은 앱이 처음 만들어질때 -1로 자동 등록 된다
+                            if (data.groupId != -1L) {
+                                BottomDialogLinkAddGroupMenuComponent(
+                                    groupData = data,
+                                    iconData = (groupIconList as UiState.Success<List<IconData>>).data[index]
+                                ) {
+                                    showBottomDialog = false
+                                    groupTitle = data.groupName
+                                    resultLinkData.linkGroupId = data.groupId.toString()
+                                }
+                            }
+                        }
                     }
+                    Text(text = "그룹 추가하기")
                 }
             }
         }
@@ -300,8 +333,9 @@ fun LinkAddView(
 
 @Composable
 fun dropDownMenu(
-    onClick : ()->Unit
-){
+    groupTitle: String,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -318,7 +352,11 @@ fun dropDownMenu(
             .clickable {
                 onClick()
             },
-    ){
-        Text(text = "그룹을 선택해주세요.", color = LinkZipTheme.color.wg40 , style = LinkZipTheme.typography.medium16)
+    ) {
+        Text(
+            text = "$groupTitle",
+            color = LinkZipTheme.color.wg40,
+            style = LinkZipTheme.typography.medium16
+        )
     }
 }
