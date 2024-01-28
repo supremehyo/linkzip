@@ -44,13 +44,13 @@ import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
-import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogLinkAddGroupMenuComponent
 import com.linkzip.linkzip.presentation.component.CommonButton
 import com.linkzip.linkzip.presentation.component.CommonEditTextField
 import com.linkzip.linkzip.presentation.component.DialogComponent
 import com.linkzip.linkzip.presentation.component.FieldSize
+import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.DisposableEffectWithLifeCycle
@@ -204,7 +204,7 @@ fun LinkAddView(
                 })
             }
     ) {
-        HeaderTitleView(onBackButtonPressed, "링크 추가")
+        HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed, null,"링크 추가")
         Spacer(modifier = Modifier.height(28.dp))
         Text(
             text = "링크(필수)",

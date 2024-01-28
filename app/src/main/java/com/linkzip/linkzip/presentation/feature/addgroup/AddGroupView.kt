@@ -70,6 +70,8 @@ import com.linkzip.linkzip.data.room.IconData.Companion.ICON_RICE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_WINE
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
+import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.ADD_GROUP_TITLE
+import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.EDIT_GROUP_TITLE
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.PLUS
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import java.text.SimpleDateFormat
@@ -79,11 +81,14 @@ import java.util.Locale
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddGroupView(
+    isEdit: GroupData?,
     addGroupViewModel: AddGroupViewModel = hiltViewModel(),
     onBackButtonPressed: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    var groupName = ""
+    var title = ADD_GROUP_TITLE
 
     fun hideKeyBoard() {
         focusManager.clearFocus()
@@ -92,6 +97,16 @@ fun AddGroupView(
 
     addGroupViewModel.getIconData()
     val currentIconState = addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
+
+
+    // null 이면 그룹 추가 화면
+    if(isEdit == null) {
+        groupName = ""
+        title = ADD_GROUP_TITLE
+    } else { // else 면 그룹 수정 화면
+        groupName = "fff"
+        title = EDIT_GROUP_TITLE
+    }
 
     Column(
         modifier = Modifier
@@ -103,7 +118,7 @@ fun AddGroupView(
                 })
             }
     ) {
-        HeaderTitleView(onBackButtonPressed, "그룹 추가")
+        HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed, null, title)
         Spacer(modifier = Modifier.height(28.dp))
         iconView(
             modifier = Modifier
@@ -118,7 +133,7 @@ fun AddGroupView(
             style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        editGroupName(Modifier.weight(1f), currentIconState.value , onBackButtonPressed) { hideKeyBoard() }
+        editGroupName(Modifier.weight(1f), currentIconState.value, groupName, onBackButtonPressed) { hideKeyBoard() }
     }
 }
 
@@ -127,10 +142,11 @@ fun AddGroupView(
 fun editGroupName(
     modifier: Modifier,
     currentIconState: IconData,
+    groupName: String,
     onBackButtonPressed : () ->Unit,
     hideKeyBoard: () -> Unit
 ) {
-    var groupNameText by remember { mutableStateOf(TextFieldValue("")) }
+    var groupNameText by remember { mutableStateOf(TextFieldValue(groupName)) }
     val maxLength = 12
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
@@ -389,4 +405,7 @@ fun getDrawableIcon(iconName: String): Int {
 
 object AddGroupView {
     const val PLUS = "PLUS"
+    const val ADD_GROUP_TITLE = "그룹 추가"
+    const val EDIT_GROUP_TITLE = "그룹 수정"
+
 }

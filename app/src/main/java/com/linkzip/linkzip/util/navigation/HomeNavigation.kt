@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.model.MainScreenState
+import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.presentation.feature.home.all.AllView
 import com.linkzip.linkzip.presentation.feature.home.favorite.FavoriteView
@@ -24,25 +25,31 @@ sealed class HomePath(val path: String) {
 @Composable
 fun HomeNavigation(
     mainViewModel: MainViewModel,
-    homeViewModel: HomeViewModel =  hiltViewModel(),
-    callback : (Boolean)->Unit
-){
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    callback: (Boolean) -> Unit
+) {
     val navController = rememberNavController()
     val screenState by homeViewModel.homeScreenState.collectAsState(initial = HomeScreenState.ALL)
 
     LaunchedEffect(screenState) {
-        when(screenState) {
-            HomeScreenState.ALL -> {navController.navigate(HomePath.All.path) {
-                popUpTo(HomePath.All.path){
-                    inclusive = true
+        when (screenState) {
+            HomeScreenState.ALL -> {
+                navController.navigate(HomePath.All.path) {
+                    popUpTo(HomePath.All.path) {
+                        inclusive = true
+                    }
                 }
-            }}
-            HomeScreenState.FAVORITE -> { navController.navigate(HomePath.Favorite.path){
-                popUpTo(HomePath.Favorite.path){
-                    inclusive = true
+            }
+
+            HomeScreenState.FAVORITE -> {
+                navController.navigate(HomePath.Favorite.path) {
+                    popUpTo(HomePath.Favorite.path) {
+                        inclusive = true
+                    }
                 }
-            }}
-            HomeScreenState.POPUP->{
+            }
+
+            HomeScreenState.POPUP -> {
                 navController.popBackStack()
             }
         }
@@ -50,8 +57,9 @@ fun HomeNavigation(
 
 
     NavHost(
-        navController =  navController,
-        startDestination = HomePath.All.path){
+        navController = navController,
+        startDestination = HomePath.All.path
+    ) {
         composable(HomePath.All.path) {
             AllView(
                 dimmedBoolean = {
@@ -60,6 +68,15 @@ fun HomeNavigation(
                 onClickAddGroup = {
                     // TODO 작업 후, addgroup 으로 되돌리기
                     // mainViewModel.updateScreenState(MainScreenState.GROUPADD)
+                    mainViewModel.updateSelectGroupData(
+                        GroupData(
+                            groupId = 1,
+                            groupIconId = 2,
+                            groupName = "zzz",
+                            createDate = "dd",
+                            updateDate = "ss"
+                        )
+                    )
                     mainViewModel.updateScreenState(MainScreenState.GROUP)
                 }
             )

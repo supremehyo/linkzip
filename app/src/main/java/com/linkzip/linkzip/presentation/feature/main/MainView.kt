@@ -64,6 +64,9 @@ fun MainView(mainViewModel: MainViewModel) {
         HomeBottomDialogMenu.None
     )
 
+    // 선택한 그룹 초기화
+    mainViewModel.clearSelectGroupData()
+
     LaunchedEffect(true){
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.backDim.collect { it->

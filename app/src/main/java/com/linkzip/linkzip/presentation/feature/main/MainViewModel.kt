@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.linkzip.linkzip.data.model.HomeBottomDialogMenu
 import com.linkzip.linkzip.data.model.IS_FRIST
 import com.linkzip.linkzip.data.model.MainScreenState
+import com.linkzip.linkzip.data.room.GroupData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,6 +22,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
     private val _menuState = MutableStateFlow<HomeBottomDialogMenu>(HomeBottomDialogMenu.None)
     val menuState = _menuState.asStateFlow()
 
+    private val _selectGroupData = MutableStateFlow<GroupData?>(null)
+    val selectGroupData = _selectGroupData.asStateFlow()
 
     fun updateScreenState(state: MainScreenState) {
         viewModelScope.launch {
@@ -46,6 +48,18 @@ class MainViewModel @Inject constructor() : ViewModel() {
             return true
         }else{
             return false
+        }
+    }
+
+    fun updateSelectGroupData(groupData: GroupData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _selectGroupData.emit(groupData)
+        }
+    }
+
+    fun clearSelectGroupData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _selectGroupData.emit(null)
         }
     }
 }
