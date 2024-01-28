@@ -4,32 +4,55 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import kotlinx.coroutines.CoroutineScope
+import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.runBlocking
+import java.util.concurrent.Executors
 
-@Database(entities = [LinkData::class,GroupData::class,IconData::class], version = 1)
+@Database(
+    entities = [LinkData::class, GroupData::class, IconData::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class LinkRoomDataBase : RoomDatabase() {
-    abstract fun linkDao() : LinkDao
-    abstract fun groupDao() : GroupDao
-    abstract fun iconDao() : IconDao
+    abstract fun linkDao(): LinkDao
+    abstract fun groupDao(): GroupDao
+    abstract fun iconDao(): IconDao
 
     companion object {
-        @Volatile
-        private var INSTANCE: LinkRoomDataBase? = null
-
-        fun getDatabase(
-            context: Context,
-            scope: CoroutineScope
-        ): LinkRoomDataBase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    LinkRoomDataBase::class.java,
-                    "linkzip-database"
-                )
-                    .build()
-                INSTANCE = instance
-                instance
-            }
-        }
+        fun getDatabase(context: Context): LinkRoomDataBase = Room
+            .databaseBuilder(
+                context,
+                LinkRoomDataBase::class.java,
+                "linkzip-database.db"
+            )
+            .addCallback(object : Callback() {
+                override fun onCreate(db: SupportSQLiteDatabase) {
+                    super.onCreate(db)
+                    Executors.newSingleThreadExecutor().execute {
+                        runBlocking {
+                            getDatabase(context).iconDao()
+                                .addIcon(
+                                    IconData.NO_GROUP,
+                                    IconData.RICE,
+                                    IconData.COFFEE,
+                                    IconData.WINE,
+                                    IconData.GAME,
+                                    IconData.COMPUTER,
+                                    IconData.CAMERA,
+                                    IconData.MONEY,
+                                    IconData.PALETTE,
+                                    IconData.GIFT,
+                                    IconData.MEMO,
+                                    IconData.BOOK,
+                                    IconData.HOME,
+                                    IconData.CAR,
+                                    IconData.AIRPLANE,
+                                    IconData.HEART
+                                )
+                        }
+                    }
+                }
+            })
+            .build()
     }
 }

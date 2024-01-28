@@ -37,7 +37,7 @@ val BROWN_FADECA = Color(0xFFFADECA)
 val RED_FB5B63 = Color(0xFFFB5B63)
 
 val GRAY_353E45 = Color(0xFF353E45)
-val GRAY_F9D9E2 = Color(0xFFE0E6EB)
+val GRAY_E0E6EB = Color(0xFFE0E6EB)
 val GRAY_E2E6E9 = Color(0xFFE2E6E9)
 
 val BLUE_294459 = Color(0xFF294459)
@@ -51,6 +51,8 @@ val GREEN_2FCE7B = Color(0xFF2FCE7B)
 val GREEN_BDF3C2 = Color(0xFFBDF3C2)
 val GREEN_719525 = Color(0xFF719525)
 val GREEN_F3F4C2 = Color(0xFFF3F4C2)
+val GREEN_D4F0EB = Color(0xFFD4F0EB)
+val GREEN_23A79F = Color(0xFF23A79F)
 
 val PURPLE_8E56FF = Color(0xFF8E56FF)
 val PURPLE_EFE7FF = Color(0xFFEFE7FF)
@@ -80,7 +82,7 @@ class LinkZipColorScheme(
     brownFADECA: Color,
     redFB5B63: Color,
     gray353E45: Color,
-    grayF9D9E2: Color,
+    grayE0E6EB: Color,
     grayE2E6E9: Color,
     blue294459: Color,
     blueD6EAF2: Color,
@@ -92,6 +94,8 @@ class LinkZipColorScheme(
     greenBDF3C2: Color,
     green719525: Color,
     greenF3F4C2: Color,
+    greenD4F0EB: Color,
+    green23A79F: Color,
     purple8E56FF: Color,
     purpleEFE7FF: Color,
     pinkFF70CE: Color,
@@ -136,7 +140,7 @@ class LinkZipColorScheme(
         internal set
     var gray353E45 by mutableStateOf(gray353E45, structuralEqualityPolicy())
         internal set
-    var grayF9D9E2 by mutableStateOf(grayF9D9E2, structuralEqualityPolicy())
+    var grayE0E6EB by mutableStateOf(grayE0E6EB, structuralEqualityPolicy())
         internal set
     var grayE2E6E9 by mutableStateOf(grayE2E6E9, structuralEqualityPolicy())
         internal set
@@ -159,6 +163,10 @@ class LinkZipColorScheme(
     var green719525 by mutableStateOf(green719525, structuralEqualityPolicy())
         internal set
     var greenF3F4C2 by mutableStateOf(greenF3F4C2, structuralEqualityPolicy())
+        internal set
+    var green23A79F by mutableStateOf(green23A79F, structuralEqualityPolicy())
+        internal set
+    var greenD4F0EB by mutableStateOf(greenD4F0EB, structuralEqualityPolicy())
         internal set
     var purple8E56FF by mutableStateOf(purple8E56FF, structuralEqualityPolicy())
         internal set
@@ -191,7 +199,7 @@ class LinkZipColorScheme(
         brownFADECA: Color = this.brownFADECA,
         redFB5B63: Color = this.redFB5B63,
         gray353E45: Color = this.gray353E45,
-        grayF9D9E2: Color = this.grayF9D9E2,
+        grayE0E6EB: Color = this.grayE0E6EB,
         grayE2E6E9: Color = this.grayE2E6E9,
         blue294459: Color = this.blue294459,
         blueD6EAF2: Color = this.blueD6EAF2,
@@ -203,6 +211,8 @@ class LinkZipColorScheme(
         greenBDF3C2: Color = this.greenBDF3C2,
         green719525: Color = this.green719525,
         greenF3F4C2: Color = this.greenF3F4C2,
+        green23A79F: Color = this.green23A79F,
+        greenD4F0EB: Color = this.greenD4F0EB,
         purple8E56FF: Color = this.purple8E56FF,
         purpleEFE7FF: Color = this.purpleEFE7FF,
         pinkFF70CE: Color = this.pinkFF70CE,
@@ -228,7 +238,7 @@ class LinkZipColorScheme(
         brownFADECA,
         redFB5B63,
         gray353E45,
-        grayF9D9E2,
+        grayE0E6EB,
         grayE2E6E9,
         blue294459,
         blueD6EAF2,
@@ -240,6 +250,8 @@ class LinkZipColorScheme(
         greenBDF3C2,
         green719525,
         greenF3F4C2,
+        green23A79F,
+        greenD4F0EB,
         purple8E56FF,
         purpleEFE7FF,
         pinkFF70CE,
@@ -284,7 +296,7 @@ fun LinkZipColorScheme.updateColorSchemeFrom(other: LinkZipColorScheme) {
     brownFADECA = other.brownFADECA
     redFB5B63 = other.redFB5B63
     gray353E45 = other.gray353E45
-    grayF9D9E2 = other.grayF9D9E2
+    grayE0E6EB = other.grayE0E6EB
     grayE2E6E9 = other.grayE2E6E9
     blue294459 = other.blue294459
     blueD6EAF2 = other.blueD6EAF2
@@ -296,6 +308,8 @@ fun LinkZipColorScheme.updateColorSchemeFrom(other: LinkZipColorScheme) {
     greenBDF3C2 = other.greenBDF3C2
     green719525 = other.green719525
     greenF3F4C2 = other.greenF3F4C2
+    green23A79F = other.green23A79F
+    greenD4F0EB = other.greenD4F0EB
     purple8E56FF = other.purple8E56FF
     purpleEFE7FF = other.purpleEFE7FF
     pinkFF70CE = other.pinkFF70CE
@@ -341,7 +355,7 @@ fun lightColors(
     brownFADECA: Color = BROWN_FADECA,
     redFB5B63: Color = RED_FB5B63,
     gray353E45: Color = GRAY_353E45,
-    grayF9D9E2: Color = GRAY_F9D9E2,
+    grayE0E6EB: Color = GRAY_E0E6EB,
     grayE2E6E9: Color = GRAY_E2E6E9,
     blue294459: Color = BLUE_294459,
     blueD6EAF2: Color = BLUE_D6EAF2,
@@ -353,6 +367,8 @@ fun lightColors(
     greenBDF3C2: Color = GREEN_BDF3C2,
     green719525: Color = GREEN_719525,
     greenF3F4C2: Color = GREEN_F3F4C2,
+    green23A79F: Color = GREEN_23A79F,
+    greenD4F0EB: Color = GREEN_D4F0EB,
     purple8E56FF: Color = PURPLE_8E56FF,
     purpleEFE7FF: Color = PURPLE_EFE7FF,
     pinkFF70CE: Color = PINK_FF70CE,
@@ -378,7 +394,7 @@ fun lightColors(
     brownFADECA,
     redFB5B63,
     gray353E45,
-    grayF9D9E2,
+    grayE0E6EB,
     grayE2E6E9,
     blue294459,
     blueD6EAF2,
@@ -390,6 +406,8 @@ fun lightColors(
     greenBDF3C2,
     green719525,
     greenF3F4C2,
+    green23A79F,
+    greenD4F0EB,
     purple8E56FF,
     purpleEFE7FF,
     pinkFF70CE,

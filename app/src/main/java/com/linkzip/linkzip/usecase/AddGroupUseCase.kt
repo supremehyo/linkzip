@@ -3,17 +3,18 @@ package com.linkzip.linkzip.usecase
 import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.repository.GroupRepository
+import com.linkzip.linkzip.repository.IconRepository
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-
-class AllViewUseCase @Inject constructor(
- private val groupRepository: GroupRepository
+class AddGroupUseCase @Inject constructor(
+    private val iconRepository: IconRepository,
+    private val groupRepository: GroupRepository
 ) {
-    fun getAllGroups() = flow {
+    fun getIconData() = flow {
         emit(UiState.Loding)
         runCatching {
-            groupRepository.getAllGroups()
+            iconRepository.getIconData()
         }.onSuccess { result ->
             emit(UiState.Success(result))
         }.onFailure {
@@ -21,21 +22,11 @@ class AllViewUseCase @Inject constructor(
         }
     }
 
-    fun deleteGroup(group : GroupData)  = flow {
-        emit(UiState.Loding)
-        runCatching {
-            groupRepository.deleteGroup(group)
-        }.onSuccess { result ->
-            emit(UiState.Success(result))
-        }.onFailure {
-            emit(UiState.Error(it))
-        }
-    }
 
-    fun getGroupByUid(uid : Long)  = flow {
+    fun insertGroup(group: GroupData) = flow {
         emit(UiState.Loding)
         runCatching {
-            groupRepository.getGroupByUid(uid)
+            groupRepository.insertGroup(group)
         }.onSuccess { result ->
             emit(UiState.Success(result))
         }.onFailure {
@@ -43,4 +34,3 @@ class AllViewUseCase @Inject constructor(
         }
     }
 }
-
