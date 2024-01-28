@@ -90,7 +90,7 @@ fun AllView (
 
 
         if (groupEvent != null){
-            GroupList(groupEvent!!)
+         //   GroupList(groupEvent!!)
         }
 
         Box(
