@@ -65,8 +65,7 @@ fun LinkAddView(
     homeViewModel: HomeViewModel = hiltViewModel(),
     onBackButtonPressed: () -> Unit
 ) {
-    val menuItems = mutableListOf<GroupData>()
-
+    var menuItems by remember { mutableStateOf(mutableListOf<GroupData>())}
     val navController = rememberNavController()
     var showDialog by remember { mutableStateOf(false) }
     var showBottomDialog  by remember { mutableStateOf(false) }
@@ -108,6 +107,7 @@ fun LinkAddView(
                    }
                    is UiState.Success->{
                        menuItems.addAll(state.data)
+
                    }
                    else ->{
                    }
@@ -289,9 +289,10 @@ fun LinkAddView(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(29.dp)
             ) {
+                Log.e("group Data" , "${menuItems}")
                 items(menuItems.size) { it ->
                     BottomDialogLinkAddGroupMenuComponent(
-                        groupData = menuItems[it]
+                        groupData = menuItems.get(it)
                     ) {
                         showBottomDialog = false
                     }
