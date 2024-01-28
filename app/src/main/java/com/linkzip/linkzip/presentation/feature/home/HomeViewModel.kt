@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -88,15 +87,6 @@ init {
             _pasteClipBoardEvent.emit(boolean)
         }
     }
-
-    fun insertGroup(group : GroupData){
-        viewModelScope.launch {
-            allViewUseCase.insertGroup(group).collect{ uiState->
-
-            }
-        }
-    }
-
 
     fun deleteGroup(group : GroupData){
         viewModelScope.launch {
