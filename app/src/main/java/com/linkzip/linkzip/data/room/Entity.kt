@@ -50,7 +50,7 @@ data class LinkData(
 
 @Entity(tableName = "group")
 data class GroupData(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     val groupId : Long = 0,
     val groupName : String,
     val groupIconId : Long,
