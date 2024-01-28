@@ -44,7 +44,7 @@ import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
-import com.linkzip.linkzip.presentation.HeaderTitleView
+import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogLinkAddGroupMenuComponent
 import com.linkzip.linkzip.presentation.component.CommonButton

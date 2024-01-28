@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView
 import com.linkzip.linkzip.presentation.feature.addlink.LinkAddView
+import com.linkzip.linkzip.presentation.feature.group.GroupView
 import com.linkzip.linkzip.presentation.feature.main.MainView
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.presentation.feature.onboarding.OnBoardingView
@@ -24,6 +25,7 @@ sealed class MainPath(val path: String) {
     object Main : MainPath("Main")
     object GroupAdd : MainPath("GroupAdd")
     object LinkAdd : MainPath("LinkAdd")
+    object Group : MainPath("Group")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -44,6 +46,7 @@ fun MainNavigation(
                 }
                 MainScreenState.GROUPADD -> { navController.navigateSingleTopTo(MainPath.GroupAdd.path) }
                 MainScreenState.LINKADD ->{ navController.navigateSingleTopTo(MainPath.LinkAdd.path)}
+                MainScreenState.GROUP ->{ navController.navigateSingleTopTo(MainPath.Group.path)}
             }
     }
 
@@ -67,6 +70,11 @@ fun MainNavigation(
         }
         composable(MainPath.LinkAdd.path){
             LinkAddView{
+                mainViewModel.updateScreenState(MainScreenState.MAIN)
+            }
+        }
+        composable(MainPath.Group.path) {
+            GroupView {
                 mainViewModel.updateScreenState(MainScreenState.MAIN)
             }
         }

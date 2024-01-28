@@ -58,7 +58,9 @@ fun HomeNavigation(
                     callback(it)
                 },
                 onClickAddGroup = {
-                    mainViewModel.updateScreenState(MainScreenState.GROUPADD)
+                    // TODO 작업 후, addgroup 으로 되돌리기
+                    // mainViewModel.updateScreenState(MainScreenState.GROUPADD)
+                    mainViewModel.updateScreenState(MainScreenState.GROUP)
                 }
             )
         }

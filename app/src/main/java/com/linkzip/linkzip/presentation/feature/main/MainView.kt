@@ -79,7 +79,8 @@ fun MainView(mainViewModel: MainViewModel) {
             }
             HomeBottomDialogMenu.GroupAdd ->{
                 mainViewModel.updateScreenState(MainScreenState.GROUPADD)
-            }else ->{
+            }
+            else ->{
                 
             }
         }
