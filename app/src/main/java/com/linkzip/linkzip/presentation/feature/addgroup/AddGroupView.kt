@@ -1,6 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
-import android.util.Log
+import CommonToast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -49,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.common.UiState
+import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_AIRPLANE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_BOOK
@@ -69,6 +71,9 @@ import com.linkzip.linkzip.data.room.IconData.Companion.ICON_WINE
 import com.linkzip.linkzip.presentation.HeaderTitleView
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.PLUS
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -79,6 +84,11 @@ fun AddGroupView(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
+    fun hideKeyBoard() {
+        focusManager.clearFocus()
+        keyboardController?.hide()
+    }
+
     addGroupViewModel.getIconData()
     val currentIconState = addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
 
@@ -88,8 +98,7 @@ fun AddGroupView(
             .imePadding()
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                    keyboardController?.hide()
+                    hideKeyBoard()
                 })
             }
     ) {
@@ -108,14 +117,17 @@ fun AddGroupView(
             style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        editGroupName(Modifier.weight(1f), currentIconState.value)
-
+        editGroupName(Modifier.weight(1f), currentIconState.value) { hideKeyBoard() }
     }
 }
 
 // 그룹명 작성 TextField
 @Composable
-fun editGroupName(modifier: Modifier, currentIconState: IconData) {
+fun editGroupName(
+    modifier: Modifier,
+    currentIconState: IconData,
+    hideKeyBoard: () -> Unit
+) {
     var groupNameText by remember { mutableStateOf(TextFieldValue("")) }
     val maxLength = 12
     val focusRequester = remember { FocusRequester() }
@@ -172,6 +184,24 @@ fun editGroupName(modifier: Modifier, currentIconState: IconData) {
         },
     )
     Spacer(modifier = modifier)
+    saveButton(
+        isFocused = isFocused,
+        currentIconState = currentIconState,
+        groupNameText = groupNameText.text,
+        hideKeyBoard
+    )
+}
+
+@Composable
+fun saveButton(
+    isFocused: Boolean,
+    currentIconState: IconData,
+    groupNameText: String,
+    hideKeyBoard: () -> Unit,
+    addGroupViewModel: AddGroupViewModel = hiltViewModel()
+) {
+    val coroutineScope = rememberCoroutineScope()
+
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -179,7 +209,27 @@ fun editGroupName(modifier: Modifier, currentIconState: IconData) {
             .padding(horizontal = if (isFocused) 0.dp else 22.dp)
             .height(55.dp),
         shape = if (isFocused) RoundedCornerShape(0.dp) else RoundedCornerShape(12.dp),
-        onClick = { /*TODO*/ },
+        onClick = {
+            val currentTime = Date()
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val timeString = formatter.format(currentTime)
+
+            addGroupViewModel.insertGroup(
+                GroupData(
+                    groupIconId = currentIconState.iconId,
+                    groupName = groupNameText,
+                    createDate = timeString,
+                    updateDate = timeString
+                ),
+                success = {
+                       // showAddGroupToast()
+                        hideKeyBoard.invoke()
+                },
+                fail = {
+                    hideKeyBoard.invoke()
+                }
+            )
+        },
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(currentIconState.iconButtonColor)
         ),
@@ -190,14 +240,24 @@ fun editGroupName(modifier: Modifier, currentIconState: IconData) {
                 .copy(color = LinkZipTheme.color.white)
         )
     }
+}
 
+
+@Composable
+fun showAddGroupToast() {
+    CommonToast(
+        message = "그룹 추가완료!",
+        icon = R.drawable.ic_check,
+        containerColor = LinkZipTheme.color.wg70,
+        messageColor = LinkZipTheme.color.white
+    )
 }
 
 // icon View
 @Composable
 fun iconView(
     modifier: Modifier,
-    currentIconState : IconData
+    currentIconState: IconData
 ) {
 
 
@@ -280,17 +340,14 @@ fun plusIconAndBottomSheet(
                     }
 
                     is UiState.Loding -> {
-                        Log.e("add_group", "Loading")
                         CircularProgressIndicator()
                     }
 
                     is UiState.Error -> {
-                        Log.e("add_group", "error")
                         CircularProgressIndicator()
                     }
 
                     else -> {
-                        Log.e("add_group", "else")
                         CircularProgressIndicator()
                     }
                 }

@@ -21,17 +21,6 @@ class AllViewUseCase @Inject constructor(
         }
     }
 
-    fun insertGroup(group : GroupData)  = flow {
-        emit(UiState.Loding)
-        runCatching {
-            groupRepository.insertGroup(group)
-        }.onSuccess { result ->
-            emit(UiState.Success(result))
-        }.onFailure {
-            emit(UiState.Error(it))
-        }
-    }
-
     fun deleteGroup(group : GroupData)  = flow {
         emit(UiState.Loding)
         runCatching {
