@@ -24,7 +24,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -45,6 +44,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -69,6 +69,7 @@ import com.linkzip.linkzip.data.room.IconData.Companion.ICON_PALETTE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_RICE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_WINE
 import com.linkzip.linkzip.presentation.HeaderTitleView
+import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.PLUS
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import java.text.SimpleDateFormat
@@ -222,8 +223,8 @@ fun saveButton(
                     updateDate = timeString
                 ),
                 success = {
-                       // showAddGroupToast()
-                        hideKeyBoard.invoke()
+                    // showAddGroupToast()
+                    hideKeyBoard.invoke()
                 },
                 fail = {
                     hideKeyBoard.invoke()
@@ -299,60 +300,63 @@ fun plusIconAndBottomSheet(
             tint = Color.Unspecified
         )
 
-        if (showBottomSheet) {
-            ModalBottomSheet(
-                modifier = Modifier.width(336.dp),
-                onDismissRequest = {
-                    showBottomSheet = false
-                },
-                sheetState = sheetState
-            ) {
-                // BottomSheet View
-                when (allIconList) {
-                    is UiState.Success -> {
-                        LazyVerticalGrid(
-                            modifier = Modifier.padding(horizontal = 18.dp),
-                            columns = GridCells.Fixed(4),
-                            verticalArrangement = Arrangement.spacedBy(20.dp),
-                            horizontalArrangement = Arrangement.spacedBy(20.dp)
-                        ) {
-                            val smartCastIconList =
-                                (allIconList as UiState.Success<List<IconData>>).data
-                            items(smartCastIconList.size) { item ->
+        BottomDialogComponent(
+            onDismissRequest = { showBottomSheet = false },
+            visible = showBottomSheet,
+            height = 434.dp,
+            horizontalMargin = 12.dp
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                text = "그룹 아이콘 선택",
+                style = LinkZipTheme.typography.medium18.copy(color = LinkZipTheme.color.wg70),
+            )
+            when (allIconList) {
+                is UiState.Success -> {
+                    LazyVerticalGrid(
+                        modifier = Modifier.padding(top = 56.dp),
+                        columns = GridCells.Fixed(4),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        val smartCastIconList =
+                            (allIconList as UiState.Success<List<IconData>>).data
+                        items(smartCastIconList.size) { item ->
 
-                                IconButton(
-                                    onClick = {
-                                        addGroupViewModel.updateCurrentIcon(smartCastIconList[item])
-                                        showBottomSheet = false
-                                    }) {
-                                    Icon(
-                                        painter = painterResource(
-                                            id = getDrawableIcon(
-                                                smartCastIconList[item].iconName
-                                            )
-                                        ),
-                                        contentDescription = smartCastIconList[item].iconName,
-                                        tint = Color.Unspecified
-                                    )
-                                }
+                            IconButton(
+                                modifier = Modifier.width(60.dp).height(60.dp),
+                                onClick = {
+                                    addGroupViewModel.updateCurrentIcon(smartCastIconList[item])
+                                    showBottomSheet = false
+                                }) {
+                                Icon(
+                                    painter = painterResource(
+                                        id = getDrawableIcon(
+                                            smartCastIconList[item].iconName
+                                        )
+                                    ),
+                                    contentDescription = smartCastIconList[item].iconName,
+                                    tint = Color.Unspecified
+                                )
                             }
                         }
                     }
-
-                    is UiState.Loding -> {
-                        CircularProgressIndicator()
-                    }
-
-                    is UiState.Error -> {
-                        CircularProgressIndicator()
-                    }
-
-                    else -> {
-                        CircularProgressIndicator()
-                    }
                 }
 
+                is UiState.Loding -> {
+                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
+                }
+
+                is UiState.Error -> {
+                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
+                }
+
+                else -> {
+                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
+                }
             }
+
         }
     }
 }

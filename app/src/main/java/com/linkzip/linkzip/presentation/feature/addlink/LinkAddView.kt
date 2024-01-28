@@ -35,22 +35,18 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
-import com.linkzip.linkzip.R
 import com.linkzip.linkzip.common.UiState
-import com.linkzip.linkzip.data.model.HomeBottomDialogMenu
 import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.presentation.HeaderTitleView
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogLinkAddGroupMenuComponent
-import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
 import com.linkzip.linkzip.presentation.component.CommonButton
 import com.linkzip.linkzip.presentation.component.CommonEditTextField
 import com.linkzip.linkzip.presentation.component.DialogComponent
 import com.linkzip.linkzip.presentation.component.FieldSize
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
-import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.DisposableEffectWithLifeCycle
 import com.linkzip.linkzip.util.LinkScrapData
@@ -284,7 +280,8 @@ fun LinkAddView(
         BottomDialogComponent(
             onDismissRequest = { showBottomDialog = false },
             visible = showBottomDialog,
-            height = 150.dp
+            height = 150.dp,
+            horizontalMargin = 20.dp
         ) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(29.dp)
