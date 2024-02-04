@@ -74,8 +74,9 @@ fun LinkAddView(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
-    val groupIconList by homeViewModel.iconListFlow.collectAsStateWithLifecycle(null)
-
+    var groupIconList by remember { mutableStateOf(listOf<IconData>()) }
+    var iconListFlow by remember { mutableStateOf(listOf<IconData>()) }
+    homeViewModel.getAllGroups()
     var resultData = LinkData(
         link = "",
         linkGroupId = "",
@@ -99,23 +100,34 @@ fun LinkAddView(
             )
         )
     }
-
     LaunchedEffect(true) {
         CoroutineScope(Dispatchers.IO).launch {
-            homeViewModel.getAllGroups()
+            homeViewModel.iconListFlow.collect{ state ->
+                when (state) {
+                    is UiState.Loding -> {
 
+                    }
+                    is UiState.Success -> {
+                        Log.e("sdfsdfsdf" , "${state.data}")
+                        iconListFlow = state.data
+                    }
+
+                    else -> {
+                    }
+                }
+            }
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.allGroupListFlow.collect { state ->
                 when (state) {
                     is UiState.Loding -> {
 
                     }
-
                     is UiState.Success -> {
                         menuItems = state.data
-                        Log.e("sfsdfsfsf ", "$menuItems")
                         homeViewModel.getIconDataById(menuItems.map { it.groupIconId })
                     }
-
                     else -> {
                     }
                 }
@@ -309,22 +321,23 @@ fun LinkAddView(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(29.dp)
                     ) {
-
-                        itemsIndexed(menuItems) { index, data ->
+                        itemsIndexed(it) { index, data ->
                             //그룹없음은 앱이 처음 만들어질때 -1로 자동 등록 된다
-                            if (data.groupId != -1L) {
+                            if (data.groupIconId != -1L) {
+                                Log.e("Sdfsdfsdfsf0" , "${data} ${iconListFlow.size}")
                                 BottomDialogLinkAddGroupMenuComponent(
                                     groupData = data,
-                                    iconData = (groupIconList as UiState.Success<List<IconData>>).data[index]
+                                    iconData = iconListFlow[index]
                                 ) {
                                     showBottomDialog = false
                                     groupTitle = data.groupName
                                     resultLinkData.linkGroupId = data.groupId.toString()
                                 }
+                            }else{
+                                Log.e("Sdfsdfsdfsf1" , "${iconListFlow} ${iconListFlow.size}")
                             }
                         }
                     }
-                    Text(text = "그룹 추가하기")
                 }
             }
         }

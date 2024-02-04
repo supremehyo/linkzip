@@ -31,8 +31,8 @@ class HomeViewModel @Inject constructor(
     private val _homeScreenState = MutableStateFlow(HomeScreenState.ALL)
     val homeScreenState = _homeScreenState.asStateFlow()
 
-    private val _allGroupListFlow = MutableSharedFlow<UiState<List<GroupData>>>()
-    val allGroupListFlow = _allGroupListFlow.asSharedFlow()
+    private val _allGroupListFlow = MutableStateFlow<UiState<List<GroupData>>>(UiState.Loding)
+    val allGroupListFlow = _allGroupListFlow.asStateFlow()
 
     private val _favoriteListFlow = MutableSharedFlow<UiState<List<LinkData>>>()
     val favoriteListFlow = _favoriteListFlow.asSharedFlow()
@@ -53,8 +53,10 @@ class HomeViewModel @Inject constructor(
     fun getIconDataById(iconIdList : List<Long>) {
         viewModelScope.launch(Dispatchers.IO) {
             allViewUseCase.getIconDataById(iconIdList).collect {
-                Log.v("getIconData", "${it}")
-                _iconListFlow.emit(it)
+                if(it != null){
+                    Log.e("아이콘콘" , "$it")
+                    _iconListFlow.emit(it)
+                }
             }
         }
     }
