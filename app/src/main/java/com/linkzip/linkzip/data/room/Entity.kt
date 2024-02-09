@@ -38,7 +38,7 @@ import com.linkzip.linkzip.ui.theme.WHITE
 @Entity
 data class LinkData(
     @PrimaryKey(autoGenerate = true)
-    var uid : Long? = 0,
+    var uid : Long? =null,
     var link : String,
     var linkGroupId : String,
     var linkTitle : String,

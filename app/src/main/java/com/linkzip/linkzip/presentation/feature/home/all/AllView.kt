@@ -41,6 +41,7 @@ import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.presentation.component.IntroduceComponent
 import com.linkzip.linkzip.presentation.component.LinkGroupComponent
+import com.linkzip.linkzip.presentation.component.swipeLinkGroupComponent
 import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
@@ -89,7 +90,9 @@ fun AllView (
 
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 22.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -110,7 +113,6 @@ fun AllView (
                 .clickable { onClickAddGroup.invoke() }
                 .fillMaxWidth(1f)
                 .align(Alignment.CenterHorizontally)
-                .padding(horizontal = 22.dp)
                 .height(80.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(LinkZipTheme.color.wg10),
@@ -126,16 +128,18 @@ fun AllView (
 @Composable
 fun groupIconComponent(list : List<GroupData> , iconListFlow : List<IconData>){
     var noGroup = list.find { it.groupIconId == -1L }
-    Column {
+    Column{
         LazyColumn(){
             itemsIndexed(list.filter { it.groupIconId != -1L }){index , group ->
-                LinkGroupComponent(
-                    group.groupName,
-                    getDrawableIcon(iconListFlow[index].iconName),
-                    LinkZipTheme.color.white,
-                    group.groupId
-                ){ it ->
-                    Log.e("groupClick" , "$it")
+                swipeLinkGroupComponent {
+                    LinkGroupComponent(
+                        group.groupName,
+                        getDrawableIcon(iconListFlow[index].iconName),
+                        LinkZipTheme.color.white,
+                        group.groupId
+                    ){ it ->
+                        Log.e("groupClick" , "$it")
+                    }
                 }
             }
         }

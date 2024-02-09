@@ -112,7 +112,9 @@ fun LinkAddView(
                 menuItems = state
                 homeViewModel.getIconDataById(menuItems.map { it.groupIconId })
             }
+        }
 
+        CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.linkEventFlow.collect { state ->
                 when (state) {
                     is HomeViewModel.LinkEvent.InsertLinkUiEvent -> {
@@ -120,13 +122,9 @@ fun LinkAddView(
                             is UiState.Loding -> {
 
                             }
-
                             is UiState.Success -> {
-                                Log.v("resultText2", "dd")
-                                homeViewModel.updateHomeScreenState(HomeScreenState.POPUP)
-                                //완료되면 뒤로 나가기
+                                onBackButtonPressed.invoke()
                             }
-
                             else -> {
                                 Log.v("resultText3", "${state.uiState.toString()}")
                             }

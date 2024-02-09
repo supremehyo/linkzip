@@ -1,14 +1,18 @@
 package com.linkzip.linkzip.util.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -40,7 +44,7 @@ fun MainBottomNavigation(
     val currentRoute = navBackStackEntry?.destination?.route
     NavigationBar(
         containerColor = LinkZipTheme.color.wg10,
-        contentColor = LinkZipTheme.color.blue294459
+        contentColor = LinkZipTheme.color.wg10
     ) {
         for (item in items) {
             NavigationBarItem(
@@ -53,6 +57,11 @@ fun MainBottomNavigation(
                             .height(26.dp)
                     )
                 },
+                colors = NavigationBarItemDefaults.colors(
+                    unselectedIconColor = Color.Black,
+                    selectedIconColor =  Color.Black,
+                    indicatorColor = LinkZipTheme.color.wg10
+                ),
                 label = { Text(stringResource(id = item.title), fontSize = 9.sp) },
                 selected = currentRoute == item.path,
                 alwaysShowLabel = false,
