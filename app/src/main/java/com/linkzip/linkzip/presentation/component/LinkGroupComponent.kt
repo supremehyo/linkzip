@@ -119,19 +119,28 @@ fun IntroduceComponent(
                 detectTransformGestures { _, pan, _, _ ->
                     val translationX = pan.x
                     onLeftSwipe(translationX) { it ->
-                        if((offsetX * -1) > 300.dp){
-                            visible = false
-                            offsetX = (offsetX + it).coerceAtLeast((-301).dp)
-                            isDimmed(true)
-                        }
-                        else if ((offsetX * -1) > 80.dp) {
-                            offsetX = (offsetX + it)
-                            buttonVisible = true
-                        }
-                        else {
-                            offsetX = (offsetX + it).coerceAtMost(0.dp)
-                            isDimmed(false)
-                            buttonVisible = false
+                        if((offsetX * -1) < 100.dp){
+                            if((offsetX * -1) > 300.dp){
+                                visible = false
+                                offsetX = (offsetX + it).coerceAtLeast((-301).dp)
+                                Log.e("dddd1","${(offsetX * -1)}")
+                                isDimmed(true)
+                            }
+                            else if ((offsetX * -1) > 80.dp) {
+                                offsetX = (offsetX + it)
+                                Log.e("dddd2","${(offsetX * -1)}")
+                                buttonVisible = true
+                            }
+                            else {
+                                offsetX = (offsetX + it).coerceAtMost(0.dp)
+                                Log.e("dddd","${(offsetX * -1)}")
+                                isDimmed(false)
+                                buttonVisible = false
+                            }
+                        }else{
+                            if(it.value > 0){
+                                offsetX = (offsetX + it)
+                            }
                         }
                     }
                 }
