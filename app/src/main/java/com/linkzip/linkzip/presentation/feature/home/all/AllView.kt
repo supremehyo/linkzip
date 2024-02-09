@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,8 +38,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.room.GroupData
+import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.presentation.component.IntroduceComponent
 import com.linkzip.linkzip.presentation.component.LinkGroupComponent
+import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import kotlinx.coroutines.CoroutineScope
@@ -54,7 +57,8 @@ fun AllView (
 ){
     var isShowIntro by remember { mutableStateOf(true) }
     var dimmedBackground by remember { mutableStateOf(false) }
-    val groupEvent by homeViewModel.allGroupListFlow.collectAsStateWithLifecycle(null)
+    val iconListFlow by homeViewModel.iconListFlow.collectAsStateWithLifecycle(null)
+    val groupListFlow by homeViewModel.allGroupListFlow.collectAsStateWithLifecycle(null)
 
     var randomColors = listOf(
         LinkZipTheme.color.orangeFFE6C1,
@@ -69,11 +73,20 @@ fun AllView (
         }
     }
 
+    LaunchedEffect(groupListFlow){
+        CoroutineScope(Dispatchers.IO).launch {
+            groupListFlow?.let { list->
+                homeViewModel.getIconDataById(list.map { it.groupIconId })
+            }
+        }
+    }
     LaunchedEffect(true){
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.getAllGroups()
         }
     }
+
+
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -89,10 +102,9 @@ fun AllView (
         }
 
 
-        if (groupEvent != null){
-         //   GroupList(groupEvent!!)
+        if(groupListFlow?.isNotEmpty() == true && iconListFlow?.isNotEmpty() == true){
+            groupIconComponent(groupListFlow!! , iconListFlow!!)
         }
-
         Box(
             modifier= Modifier
                 .clickable { onClickAddGroup.invoke() }
@@ -110,31 +122,32 @@ fun AllView (
     }
 }
 
-@Composable
-fun GroupList(
-    state : UiState<List<GroupData>>
-){
 
-    when(state){
-        is UiState.Success ->{
-            LazyColumn(){
-                items(state.data){ group ->
-                    LinkGroupComponent(
-                        group.groupName,
-                        R.drawable.guide_image,
-                        LinkZipTheme.color.orangeFFE6C1,
-                        1L
-                    ){ it ->
-                        Log.e("groupClick" , "$it")
-                    }
+@Composable
+fun groupIconComponent(list : List<GroupData> , iconListFlow : List<IconData>){
+    var noGroup = list.find { it.groupIconId == -1L }
+    Column {
+        LazyColumn(){
+            itemsIndexed(list.filter { it.groupIconId != -1L }){index , group ->
+                LinkGroupComponent(
+                    group.groupName,
+                    getDrawableIcon(iconListFlow[index].iconName),
+                    LinkZipTheme.color.white,
+                    group.groupId
+                ){ it ->
+                    Log.e("groupClick" , "$it")
                 }
             }
         }
-        is UiState.Loding -> {
-
-        }
-        is UiState.Error -> {
-            Log.e("group List Error" , state.error?.message.toString())
+        noGroup?.let { it->
+            LinkGroupComponent(
+                it.groupName,
+                getDrawableIcon(IconData.ICON_NO_GROUP),
+                LinkZipTheme.color.white,
+                it.groupId
+            ){ it ->
+                Log.e("groupClick" , "$it")
+            }
         }
     }
 }

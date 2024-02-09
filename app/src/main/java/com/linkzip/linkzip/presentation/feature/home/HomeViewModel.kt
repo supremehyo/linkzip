@@ -31,7 +31,7 @@ class HomeViewModel @Inject constructor(
     private val _homeScreenState = MutableStateFlow(HomeScreenState.ALL)
     val homeScreenState = _homeScreenState.asStateFlow()
 
-    private val _allGroupListFlow = MutableStateFlow<UiState<List<GroupData>>>(UiState.Loding)
+    private val _allGroupListFlow = MutableStateFlow<List<GroupData>>(emptyList())
     val allGroupListFlow = _allGroupListFlow.asStateFlow()
 
     private val _favoriteListFlow = MutableSharedFlow<UiState<List<LinkData>>>()
@@ -43,8 +43,8 @@ class HomeViewModel @Inject constructor(
     private val _backDim = MutableSharedFlow<Boolean>()
     val backDim = _backDim.asSharedFlow()
 
-    val _iconListFlow = MutableSharedFlow<UiState<List<IconData>>>()
-    val iconListFlow = _iconListFlow.asSharedFlow()
+    val _iconListFlow = MutableStateFlow<List<IconData>>(emptyList())
+    val iconListFlow = _iconListFlow.asStateFlow()
 
     //link event
     private val _linkEventFlow = MutableSharedFlow<LinkEvent>()

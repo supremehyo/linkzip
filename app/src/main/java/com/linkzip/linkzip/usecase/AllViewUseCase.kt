@@ -14,14 +14,7 @@ class AllViewUseCase @Inject constructor(
     private val groupRepository: GroupRepository
 ) {
     fun getAllGroups() = flow {
-        emit(UiState.Loding)
-        runCatching {
-            groupRepository.getAllGroups()
-        }.onSuccess { result ->
-            emit(UiState.Success(result))
-        }.onFailure {
-            emit(UiState.Error(it))
-        }
+        emit(groupRepository.getAllGroups())
     }
 
     fun deleteGroup(group : GroupData)  = flow {
@@ -47,18 +40,11 @@ class AllViewUseCase @Inject constructor(
     }
 
     fun getIconDataById(iconIdList : List<Long>) = flow{
-        emit(UiState.Loding)
-        runCatching {
-            var iconList = mutableListOf<IconData>()
-            iconIdList.forEach { iconId ->
-                iconList.add(iconRepository.getIconDataById(iconId))
-            }
-            iconList
-        }.onSuccess { result ->
-            emit(UiState.Success(result))
-        }.onFailure {
-            emit(UiState.Error(it))
+        var iconList = mutableListOf<IconData>()
+        iconIdList.forEach { iconId ->
+            iconList.add(iconRepository.getIconDataById(iconId))
         }
+        emit(iconList)
     }
 }
 

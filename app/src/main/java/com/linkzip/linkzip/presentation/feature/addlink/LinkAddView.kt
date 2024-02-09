@@ -103,34 +103,14 @@ fun LinkAddView(
     LaunchedEffect(true) {
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.iconListFlow.collect{ state ->
-                when (state) {
-                    is UiState.Loding -> {
-
-                    }
-                    is UiState.Success -> {
-                        Log.e("sdfsdfsdf" , "${state.data}")
-                        iconListFlow = state.data
-                    }
-
-                    else -> {
-                    }
-                }
+                iconListFlow = state
             }
         }
 
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.allGroupListFlow.collect { state ->
-                when (state) {
-                    is UiState.Loding -> {
-
-                    }
-                    is UiState.Success -> {
-                        menuItems = state.data
-                        homeViewModel.getIconDataById(menuItems.map { it.groupIconId })
-                    }
-                    else -> {
-                    }
-                }
+                menuItems = state
+                homeViewModel.getIconDataById(menuItems.map { it.groupIconId })
             }
 
             homeViewModel.linkEventFlow.collect { state ->
@@ -324,7 +304,6 @@ fun LinkAddView(
                         itemsIndexed(it) { index, data ->
                             //그룹없음은 앱이 처음 만들어질때 -1로 자동 등록 된다
                             if (data.groupIconId != -1L) {
-                                Log.e("Sdfsdfsdfsf0" , "${data} ${iconListFlow.size}")
                                 BottomDialogLinkAddGroupMenuComponent(
                                     groupData = data,
                                     iconData = iconListFlow[index]
@@ -334,7 +313,7 @@ fun LinkAddView(
                                     resultLinkData.linkGroupId = data.groupId.toString()
                                 }
                             }else{
-                                Log.e("Sdfsdfsdfsf1" , "${iconListFlow} ${iconListFlow.size}")
+
                             }
                         }
                     }
