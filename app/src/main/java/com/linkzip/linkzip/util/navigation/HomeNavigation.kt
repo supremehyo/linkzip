@@ -10,7 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.model.MainScreenState
-import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.presentation.feature.home.all.AllView
 import com.linkzip.linkzip.presentation.feature.home.favorite.FavoriteView
@@ -66,18 +65,18 @@ fun HomeNavigation(
                     callback(it)
                 },
                 onClickAddGroup = {
-                    // TODO 작업 후, addgroup 으로 되돌리기
-                    // mainViewModel.updateScreenState(MainScreenState.GROUPADD)
-                    mainViewModel.updateSelectGroupData(
-                        GroupData(
-                            groupId = 1,
-                            groupIconId = 2,
-                            groupName = "zzz",
-                            createDate = "dd",
-                            updateDate = "ss"
-                        )
-                    )
-                    mainViewModel.updateScreenState(MainScreenState.GROUP)
+                    //TODO 밑에 주석 지워주기
+                     mainViewModel.updateScreenState(MainScreenState.GROUPADD)
+//                    mainViewModel.updateSelectGroupData(
+//                        GroupData(
+//                            groupId = 1,
+//                            groupIconId = 2,
+//                            groupName = "zzz",
+//                            createDate = "dd",
+//                            updateDate = "ss"
+//                        )
+//                    )
+//                    mainViewModel.updateScreenState(MainScreenState.GROUP)
                 }
             )
         }
