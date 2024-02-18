@@ -61,7 +61,7 @@ fun LinkGroupComponent(
                 .clickable {
                     clickAction(linkGroupId)
                 }
-                .width(316.dp)
+                .fillMaxWidth(1f)
                 .height(80.dp)
                 .background(Color.Transparent),
             shape = RoundedCornerShape(12.dp),
@@ -97,7 +97,67 @@ fun LinkGroupComponent(
     }
 }
 
+@Composable
+fun swipeLinkGroupComponent(
+    content: @Composable () -> Unit,
+){
+    var visible by remember { mutableStateOf(true) }
+    var buttonVisible by remember { mutableStateOf(false) }
+    var offsetX by remember { mutableStateOf(0.dp) }
+    val alpha by animateFloatAsState(targetValue = if (visible) 1f else 0f, label = "",)
+    val buttonAlpha by animateFloatAsState(targetValue = if (buttonVisible) 1f else 0f, label = "",)
 
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .alpha(alpha)
+            .pointerInput(Unit) {
+                detectTransformGestures { _, pan, _, _ ->
+                    val translationX = pan.x
+                    onLeftSwipe(translationX) { it ->
+                        if ((offsetX * -1) < 100.dp) {
+                            if ((offsetX * -1) > 300.dp) {
+                                visible = false
+                                offsetX = (offsetX + it).coerceAtLeast((-301).dp)
+                                Log.e("dddd1", "${(offsetX * -1)}")
+                            } else if ((offsetX * -1) > 80.dp) {
+                                offsetX = (offsetX + it)
+                                Log.e("dddd2", "${(offsetX * -1)}")
+                                buttonVisible = true
+                            } else {
+                                offsetX = (offsetX + it).coerceAtMost(0.dp)
+                                Log.e("dddd", "${(offsetX * -1)}")
+                                buttonVisible = false
+                            }
+                        } else {
+                            if (it.value > 0) {
+                                offsetX = (offsetX + it)
+                            }
+                        }
+                    }
+                }
+            }
+    ) {
+        Box(modifier =  Modifier.offset(x = offsetX)){ content() }
+        Box(modifier = Modifier.alpha(buttonAlpha).width(80.dp).height(80.dp).offset(x = -24.dp).align(Alignment.CenterEnd)
+            .clip(RoundedCornerShape(12.dp))
+            .background(color = LinkZipTheme.color.redFB5B63)
+            .padding(
+                vertical = 10.dp
+            )
+            .clickable {
+
+            },
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.delete),
+                contentDescription = "delete",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,26 +172,34 @@ fun IntroduceComponent(
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(1f)
             .alpha(alpha)
-            .padding(start = 22.dp)
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, _, _ ->
                     val translationX = pan.x
                     onLeftSwipe(translationX) { it ->
-                        if((offsetX * -1) > 300.dp){
-                            visible = false
-                            offsetX = (offsetX + it).coerceAtLeast((-301).dp)
-                            isDimmed(true)
-                        }
-                        else if ((offsetX * -1) > 80.dp) {
-                            offsetX = (offsetX + it)
-                            buttonVisible = true
-                        }
-                        else {
-                            offsetX = (offsetX + it).coerceAtMost(0.dp)
-                            isDimmed(false)
-                            buttonVisible = false
+                        if((offsetX * -1) < 100.dp){
+                            if((offsetX * -1) > 300.dp){
+                                visible = false
+                                offsetX = (offsetX + it).coerceAtLeast((-301).dp)
+                                Log.e("dddd1","${(offsetX * -1)}")
+                                isDimmed(true)
+                            }
+                            else if ((offsetX * -1) > 80.dp) {
+                                offsetX = (offsetX + it)
+                                Log.e("dddd2","${(offsetX * -1)}")
+                                buttonVisible = true
+                            }
+                            else {
+                                offsetX = (offsetX + it).coerceAtMost(0.dp)
+                                Log.e("dddd","${(offsetX * -1)}")
+                                isDimmed(false)
+                                buttonVisible = false
+                            }
+                        }else{
+                            if(it.value > 0){
+                                offsetX = (offsetX + it)
+                            }
                         }
                     }
                 }

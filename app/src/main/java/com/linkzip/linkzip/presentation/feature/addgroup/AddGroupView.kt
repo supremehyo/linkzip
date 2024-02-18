@@ -118,7 +118,7 @@ fun AddGroupView(
             style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        editGroupName(Modifier.weight(1f), currentIconState.value) { hideKeyBoard() }
+        editGroupName(Modifier.weight(1f), currentIconState.value , onBackButtonPressed) { hideKeyBoard() }
     }
 }
 
@@ -127,6 +127,7 @@ fun AddGroupView(
 fun editGroupName(
     modifier: Modifier,
     currentIconState: IconData,
+    onBackButtonPressed : () ->Unit,
     hideKeyBoard: () -> Unit
 ) {
     var groupNameText by remember { mutableStateOf(TextFieldValue("")) }
@@ -189,7 +190,8 @@ fun editGroupName(
         isFocused = isFocused,
         currentIconState = currentIconState,
         groupNameText = groupNameText.text,
-        hideKeyBoard
+        onBackButtonPressed = onBackButtonPressed,
+        hideKeyBoard =  hideKeyBoard
     )
 }
 
@@ -199,6 +201,7 @@ fun saveButton(
     currentIconState: IconData,
     groupNameText: String,
     hideKeyBoard: () -> Unit,
+    onBackButtonPressed :() ->Unit,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -225,6 +228,7 @@ fun saveButton(
                 success = {
                     // showAddGroupToast()
                     hideKeyBoard.invoke()
+                    onBackButtonPressed.invoke()
                 },
                 fail = {
                     hideKeyBoard.invoke()
