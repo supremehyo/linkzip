@@ -24,25 +24,31 @@ sealed class HomePath(val path: String) {
 @Composable
 fun HomeNavigation(
     mainViewModel: MainViewModel,
-    homeViewModel: HomeViewModel =  hiltViewModel(),
-    callback : (Boolean)->Unit
-){
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    callback: (Boolean) -> Unit
+) {
     val navController = rememberNavController()
     val screenState by homeViewModel.homeScreenState.collectAsState(initial = HomeScreenState.ALL)
 
     LaunchedEffect(screenState) {
-        when(screenState) {
-            HomeScreenState.ALL -> {navController.navigate(HomePath.All.path) {
-                popUpTo(HomePath.All.path){
-                    inclusive = true
+        when (screenState) {
+            HomeScreenState.ALL -> {
+                navController.navigate(HomePath.All.path) {
+                    popUpTo(HomePath.All.path) {
+                        inclusive = true
+                    }
                 }
-            }}
-            HomeScreenState.FAVORITE -> { navController.navigate(HomePath.Favorite.path){
-                popUpTo(HomePath.Favorite.path){
-                    inclusive = true
+            }
+
+            HomeScreenState.FAVORITE -> {
+                navController.navigate(HomePath.Favorite.path) {
+                    popUpTo(HomePath.Favorite.path) {
+                        inclusive = true
+                    }
                 }
-            }}
-            HomeScreenState.POPUP->{
+            }
+
+            HomeScreenState.POPUP -> {
                 navController.popBackStack()
             }
         }
@@ -50,15 +56,23 @@ fun HomeNavigation(
 
 
     NavHost(
-        navController =  navController,
-        startDestination = HomePath.All.path){
+        navController = navController,
+        startDestination = HomePath.All.path
+    ) {
         composable(HomePath.All.path) {
             AllView(
                 dimmedBoolean = {
                     callback(it)
                 },
                 onClickAddGroup = {
-                    mainViewModel.updateScreenState(MainScreenState.GROUPADD)
+                     mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
+                },
+                onClickGroup = { group, icon ->
+                    synchronized(this) {
+                        MainScreenState.GROUP.data = Pair(group, icon)
+                        mainViewModel.updateScreenState(MainScreenState.GROUP.state)
+                    }
+
                 }
             )
         }

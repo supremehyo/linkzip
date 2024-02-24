@@ -17,7 +17,7 @@ class AllViewUseCase @Inject constructor(
         emit(groupRepository.getAllGroups())
     }
 
-    fun deleteGroup(group : GroupData)  = flow {
+    fun deleteGroup(group: GroupData) = flow {
         emit(UiState.Loding)
         runCatching {
             groupRepository.deleteGroup(group)
@@ -28,7 +28,7 @@ class AllViewUseCase @Inject constructor(
         }
     }
 
-    fun getGroupByUid(uid : Long)  = flow {
+    fun getGroupByUid(uid: Long) = flow {
         emit(UiState.Loding)
         runCatching {
             groupRepository.getGroupByUid(uid)
@@ -39,7 +39,7 @@ class AllViewUseCase @Inject constructor(
         }
     }
 
-    fun getIconDataById(iconIdList : List<Long>) = flow{
+    fun getIconListById(iconIdList: List<Long>) = flow {
         var iconList = mutableListOf<IconData>()
         iconIdList.forEach { iconId ->
             iconList.add(iconRepository.getIconDataById(iconId))

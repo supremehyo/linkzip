@@ -12,14 +12,12 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -39,21 +37,19 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.common.UiState
-import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
-import com.linkzip.linkzip.presentation.HeaderTitleView
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogLinkAddGroupMenuComponent
 import com.linkzip.linkzip.presentation.component.CommonButton
 import com.linkzip.linkzip.presentation.component.CommonEditTextField
 import com.linkzip.linkzip.presentation.component.DialogComponent
 import com.linkzip.linkzip.presentation.component.FieldSize
+import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.DisposableEffectWithLifeCycle
@@ -113,7 +109,7 @@ fun LinkAddView(
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.allGroupListFlow.collect { state ->
                 menuItems = state
-                homeViewModel.getIconDataById(menuItems.map { it.groupIconId })
+                homeViewModel.getIconListById(menuItems.map { it.groupIconId })
             }
         }
 
@@ -207,7 +203,7 @@ fun LinkAddView(
                 })
             }
     ) {
-        HeaderTitleView(onBackButtonPressed, "링크 추가")
+        HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed, null,"링크 추가")
         Spacer(modifier = Modifier.height(28.dp))
         Text(
             text = "링크(필수)",

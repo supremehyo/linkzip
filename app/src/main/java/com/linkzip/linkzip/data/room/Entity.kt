@@ -83,22 +83,22 @@ data class IconData(
         const val ICON_AIRPLANE = "icon_airplane"
         const val ICON_HEART = "icon_heart"
 
-        val NO_GROUP = IconData(0, ICON_NO_GROUP, WG70.toArgb(), WHITE.toArgb())
-        val RICE = IconData(1, ICON_RICE, ORANGE_FFAA2C.toArgb(), ORANGE_FFE6C1.toArgb())
-        val COFFEE = IconData(2, ICON_COFFEE, BROWN_BC783C.toArgb(), BROWN_FADECA.toArgb())
-        val WINE = IconData(3, ICON_WINE, RED_FB5B63.toArgb(), PINK_F9D9E2.toArgb())
-        val GAME = IconData(4, ICON_GAME, GRAY_353E45.toArgb(), GRAY_E0E6EB.toArgb())
-        val COMPUTER = IconData(5, ICON_COMPUTER, GRAY_353E45.toArgb(), GRAY_E2E6E9.toArgb())
-        val CAMERA = IconData(6, ICON_CAMERA, BLUE_294459.toArgb(), BLUE_D6EAF2.toArgb())
-        val MONEY = IconData(7, ICON_MONEY, GREEN_2FCE7B.toArgb(), GREEN_BDF3C2.toArgb())
-        val PALETTE = IconData(8, ICON_PALETTE, ORANGE_FFAA2C.toArgb(), ORANGE_FFE6C1.toArgb())
-        val GIFT = IconData(9, ICON_GIFT, ORANGE_FFC737.toArgb(), ORANGE_FFEEB1.toArgb())
-        val MEMO = IconData(10, ICON_MEMO, GREEN_719525.toArgb(), GREEN_F3F4C2.toArgb())
-        val BOOK = IconData(11, ICON_BOOK, BLUE_40C3EC.toArgb(), BLUE_C0F0FF.toArgb())
-        val HOME = IconData(12, ICON_HOME, GREEN_23A79F.toArgb(), GREEN_D4F0EB.toArgb())
-        val CAR = IconData(13, ICON_CAR, BLUE_4088F4.toArgb(), BLUE_C8DDFD.toArgb())
-        val AIRPLANE = IconData(14, ICON_AIRPLANE, PURPLE_8E56FF.toArgb(), PURPLE_EFE7FF.toArgb())
-        val HEART = IconData(15, ICON_HEART, PINK_FF70CE.toArgb(), PINK_FFE8F7.toArgb())
+        val NO_GROUP = IconData(1, ICON_NO_GROUP, WG70.toArgb(), WHITE.toArgb())
+        val RICE = IconData(2, ICON_RICE, ORANGE_FFAA2C.toArgb(), ORANGE_FFE6C1.toArgb())
+        val COFFEE = IconData(3, ICON_COFFEE, BROWN_BC783C.toArgb(), BROWN_FADECA.toArgb())
+        val WINE = IconData(4, ICON_WINE, RED_FB5B63.toArgb(), PINK_F9D9E2.toArgb())
+        val GAME = IconData(5, ICON_GAME, GRAY_353E45.toArgb(), GRAY_E0E6EB.toArgb())
+        val COMPUTER = IconData(6, ICON_COMPUTER, GRAY_353E45.toArgb(), GRAY_E2E6E9.toArgb())
+        val CAMERA = IconData(7, ICON_CAMERA, BLUE_294459.toArgb(), BLUE_D6EAF2.toArgb())
+        val MONEY = IconData(8, ICON_MONEY, GREEN_2FCE7B.toArgb(), GREEN_BDF3C2.toArgb())
+        val PALETTE = IconData(9, ICON_PALETTE, ORANGE_FFAA2C.toArgb(), ORANGE_FFE6C1.toArgb())
+        val GIFT = IconData(10, ICON_GIFT, ORANGE_FFC737.toArgb(), ORANGE_FFEEB1.toArgb())
+        val MEMO = IconData(11, ICON_MEMO, GREEN_719525.toArgb(), GREEN_F3F4C2.toArgb())
+        val BOOK = IconData(12, ICON_BOOK, BLUE_40C3EC.toArgb(), BLUE_C0F0FF.toArgb())
+        val HOME = IconData(13, ICON_HOME, GREEN_23A79F.toArgb(), GREEN_D4F0EB.toArgb())
+        val CAR = IconData(14, ICON_CAR, BLUE_4088F4.toArgb(), BLUE_C8DDFD.toArgb())
+        val AIRPLANE = IconData(15, ICON_AIRPLANE, PURPLE_8E56FF.toArgb(), PURPLE_EFE7FF.toArgb())
+        val HEART = IconData(16, ICON_HEART, PINK_FF70CE.toArgb(), PINK_FFE8F7.toArgb())
     }
 }
 

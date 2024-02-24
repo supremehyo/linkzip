@@ -75,11 +75,12 @@ fun MainView(mainViewModel: MainViewModel) {
     DisposableEffect(menuState){
         when(menuState){
             HomeBottomDialogMenu.LinkAdd ->{
-                mainViewModel.updateScreenState(MainScreenState.LINKADD)
+                mainViewModel.updateScreenState(MainScreenState.LINKADD.state)
             }
             HomeBottomDialogMenu.GroupAdd ->{
-                mainViewModel.updateScreenState(MainScreenState.GROUPADD)
-            }else ->{
+                mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
+            }
+            else ->{
                 
             }
         }
