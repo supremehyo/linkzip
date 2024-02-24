@@ -38,9 +38,9 @@ class MainActivity : ComponentActivity() {
                     val isFirst = viewModel.checkFirstStart(spf)
 
                     if (!isFirst) {
-                        viewModel.updateScreenState(MainScreenState.MAIN)
+                        viewModel.updateScreenState(MainScreenState.MAIN.state)
                     } else {
-                        viewModel.updateScreenState(MainScreenState.ONBOARDING)
+                        viewModel.updateScreenState(MainScreenState.ONBOARDING.state)
                     }
                     MainNavigation()
                 }

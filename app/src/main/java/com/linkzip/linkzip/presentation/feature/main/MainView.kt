@@ -64,9 +64,6 @@ fun MainView(mainViewModel: MainViewModel) {
         HomeBottomDialogMenu.None
     )
 
-    // 선택한 그룹 초기화
-    mainViewModel.clearSelectGroupData()
-
     LaunchedEffect(true){
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.backDim.collect { it->
@@ -78,10 +75,10 @@ fun MainView(mainViewModel: MainViewModel) {
     DisposableEffect(menuState){
         when(menuState){
             HomeBottomDialogMenu.LinkAdd ->{
-                mainViewModel.updateScreenState(MainScreenState.LINKADD)
+                mainViewModel.updateScreenState(MainScreenState.LINKADD.state)
             }
             HomeBottomDialogMenu.GroupAdd ->{
-                mainViewModel.updateScreenState(MainScreenState.GROUPADD)
+                mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
             }
             else ->{
                 

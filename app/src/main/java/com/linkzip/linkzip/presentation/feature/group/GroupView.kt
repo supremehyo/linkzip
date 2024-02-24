@@ -10,22 +10,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.room.GroupData
+import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun GroupView(groupData: GroupData?, onBackButtonPressed: () -> Unit, onActionButtonPressed: () -> Unit) {
-    val backgroundColor = LinkZipTheme.color.orangeFFE6C1
-    val groupName = groupData?.groupName
+fun GroupView(
+    groupData: Pair<GroupData, IconData>?,
+    onBackButtonPressed: () -> Unit,
+    onActionButtonPressed: () -> Unit
+) {
+    val backgroundColor = groupData?.second?.iconHeaderColor
+    val groupName = groupData?.first?.groupName
 
     Column(
         modifier = Modifier
@@ -33,7 +37,7 @@ fun GroupView(groupData: GroupData?, onBackButtonPressed: () -> Unit, onActionBu
             .imePadding()
     ) {
         HeaderTitleView(
-            backgroundColor = backgroundColor,
+            backgroundColor = Color(backgroundColor ?: LinkZipTheme.color.white.toArgb()),
             onBackButtonPressed = onBackButtonPressed,
             onActionButtonPressed = onActionButtonPressed,
             title = groupName ?: "error"

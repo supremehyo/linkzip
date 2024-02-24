@@ -16,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.data.room.GroupData
+import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView
 import com.linkzip.linkzip.presentation.feature.addlink.LinkAddView
 import com.linkzip.linkzip.presentation.feature.group.GroupView
@@ -25,7 +26,7 @@ import com.linkzip.linkzip.presentation.feature.onboarding.OnBoardingView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.extention.navigateSingleTopTo
 
-sealed class MainPath(val path: String, var data: GroupData?) {
+sealed class MainPath(val path: String, var data: Pair<GroupData, IconData>?) {
     object Onboarding : MainPath("Onboarding", null)
     object Main : MainPath("Main", null)
     object GroupAdd : MainPath("GroupAdd", null)
@@ -42,29 +43,27 @@ fun MainNavigation(
     val screenState by mainViewModel.screenState.collectAsStateWithLifecycle()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination?.route
-    val selectGroupData by mainViewModel.selectGroupData.collectAsStateWithLifecycle()
 
     LaunchedEffect(screenState) {
         when (screenState) {
-            MainScreenState.ONBOARDING -> {
+            MainScreenState.ONBOARDING.state -> {
                 navController.navigateSingleTopTo(MainPath.Onboarding.path)
             }
 
-            MainScreenState.MAIN -> {
+            MainScreenState.MAIN.state -> {
                 navController.navigateSingleTopTo(MainPath.Main.path)
             }
 
-            MainScreenState.GROUPADD -> {
-                MainPath.GroupAdd.data = selectGroupData
+            MainScreenState.GROUPADD.state -> {
                 navController.navigateSingleTopTo(MainPath.GroupAdd.path)
             }
 
-            MainScreenState.LINKADD -> {
+            MainScreenState.LINKADD.state -> {
                 navController.navigateSingleTopTo(MainPath.LinkAdd.path)
             }
 
-            MainScreenState.GROUP -> {
-                MainPath.GroupAdd.data = selectGroupData
+            MainScreenState.GROUP.state -> {
+                MainPath.Group.data = MainScreenState.GROUP.data
                 navController.navigateSingleTopTo(MainPath.Group.path)
             }
         }
@@ -78,7 +77,7 @@ fun MainNavigation(
     ) {
         composable(MainPath.Onboarding.path) {
             OnBoardingView {
-                mainViewModel.updateScreenState(MainScreenState.MAIN)
+                mainViewModel.updateScreenState(MainScreenState.MAIN.state)
             }
         }
         composable(MainPath.Main.path) {
@@ -86,26 +85,31 @@ fun MainNavigation(
             val window = (view.context as Activity).window
             window.statusBarColor = LinkZipTheme.color.white.toArgb()
 
+            // 그룹 데이터 초기화
+            MainPath.GroupAdd.data = null
+
             MainView(mainViewModel)
         }
         composable(MainPath.GroupAdd.path) {
             AddGroupView(MainPath.GroupAdd.data) {
-                mainViewModel.updateScreenState(MainScreenState.MAIN)
+                mainViewModel.updateScreenState(MainScreenState.MAIN.state)
             }
         }
         composable(MainPath.LinkAdd.path) {
             LinkAddView {
-                mainViewModel.updateScreenState(MainScreenState.MAIN)
+                mainViewModel.updateScreenState(MainScreenState.MAIN.state)
             }
         }
         composable(MainPath.Group.path) {
             GroupView(
                 groupData = MainPath.Group.data,
                 onBackButtonPressed = {
-                mainViewModel.updateScreenState(MainScreenState.MAIN)
+                mainViewModel.updateScreenState(MainScreenState.MAIN.state)
             }, onActionButtonPressed = {
-                mainViewModel.updateScreenState(MainScreenState.GROUPADD)
+                    MainPath.GroupAdd.data = MainScreenState.GROUP.data
+                mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
             })
+            it.updateState()
         }
     }
 }

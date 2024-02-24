@@ -65,18 +65,14 @@ fun HomeNavigation(
                     callback(it)
                 },
                 onClickAddGroup = {
-                    //TODO 밑에 주석 지워주기
-                     mainViewModel.updateScreenState(MainScreenState.GROUPADD)
-//                    mainViewModel.updateSelectGroupData(
-//                        GroupData(
-//                            groupId = 1,
-//                            groupIconId = 2,
-//                            groupName = "zzz",
-//                            createDate = "dd",
-//                            updateDate = "ss"
-//                        )
-//                    )
-//                    mainViewModel.updateScreenState(MainScreenState.GROUP)
+                     mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
+                },
+                onClickGroup = { group, icon ->
+                    synchronized(this) {
+                        MainScreenState.GROUP.data = Pair(group, icon)
+                        mainViewModel.updateScreenState(MainScreenState.GROUP.state)
+                    }
+
                 }
             )
         }

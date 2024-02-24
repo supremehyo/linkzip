@@ -81,7 +81,7 @@ import java.util.Locale
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddGroupView(
-    isEdit: GroupData?,
+    groupData: Pair<GroupData, IconData>?,
     addGroupViewModel: AddGroupViewModel = hiltViewModel(),
     onBackButtonPressed: () -> Unit
 ) {
@@ -98,13 +98,13 @@ fun AddGroupView(
     addGroupViewModel.getIconData()
     val currentIconState = addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
 
-
     // null 이면 그룹 추가 화면
-    if(isEdit == null) {
+    if (groupData == null) {
         groupName = ""
         title = ADD_GROUP_TITLE
     } else { // else 면 그룹 수정 화면
-        groupName = "fff"
+        addGroupViewModel.updateCurrentIcon(groupData.second)
+        groupName = groupData.first.groupName
         title = EDIT_GROUP_TITLE
     }
 
@@ -133,7 +133,12 @@ fun AddGroupView(
             style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        editGroupName(Modifier.weight(1f), currentIconState.value, groupName, onBackButtonPressed) { hideKeyBoard() }
+        editGroupName(
+            Modifier.weight(1f),
+            currentIconState.value,
+            groupName,
+            onBackButtonPressed
+        ) { hideKeyBoard() }
     }
 }
 
@@ -143,7 +148,7 @@ fun editGroupName(
     modifier: Modifier,
     currentIconState: IconData,
     groupName: String,
-    onBackButtonPressed : () ->Unit,
+    onBackButtonPressed: () -> Unit,
     hideKeyBoard: () -> Unit
 ) {
     var groupNameText by remember { mutableStateOf(TextFieldValue(groupName)) }
@@ -207,7 +212,7 @@ fun editGroupName(
         currentIconState = currentIconState,
         groupNameText = groupNameText.text,
         onBackButtonPressed = onBackButtonPressed,
-        hideKeyBoard =  hideKeyBoard
+        hideKeyBoard = hideKeyBoard
     )
 }
 
@@ -217,7 +222,7 @@ fun saveButton(
     currentIconState: IconData,
     groupNameText: String,
     hideKeyBoard: () -> Unit,
-    onBackButtonPressed :() ->Unit,
+    onBackButtonPressed: () -> Unit,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -345,7 +350,9 @@ fun plusIconAndBottomSheet(
                         items(smartCastIconList.size) { item ->
 
                             IconButton(
-                                modifier = Modifier.width(60.dp).height(60.dp),
+                                modifier = Modifier
+                                    .width(60.dp)
+                                    .height(60.dp),
                                 onClick = {
                                     addGroupViewModel.updateCurrentIcon(smartCastIconList[item])
                                     showBottomSheet = false
