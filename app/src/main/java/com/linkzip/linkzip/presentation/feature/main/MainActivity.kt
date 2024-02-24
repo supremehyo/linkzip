@@ -47,7 +47,8 @@ class MainActivity : ComponentActivity() {
                         val isFirst = viewModel.checkFirstStart(spf)
 
                         if(!isFirst){
-                            viewModel.updateScreenState(MainScreenState.MAIN)
+                            //viewModel.updateScreenState(MainScreenState.MAIN)
+                            viewModel.updateScreenState(MainScreenState.ONBOARDING)
                         }else{
                             viewModel.updateScreenState(MainScreenState.ONBOARDING)
                         }

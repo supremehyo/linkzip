@@ -23,81 +23,44 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
+//버튼 제대로 움직이는지 검증 필요
 @Composable
 fun CommonButton(
     buttonName : String,
     enable : Boolean,
     buttonColor : Color,
+    isFocused: Boolean?= false,
     buttonCompleteName : String? = null,
     keyBoardUpOption : Boolean? = null,
     onClickEvent : () -> Unit
 ) {
     var isEnabled by remember { mutableStateOf(enable) }
     var isKeyBoardUp by remember { mutableStateOf(keyBoardUpOption) }
-
-    if(isKeyBoardUp == true){
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 0.dp)
-                .padding(vertical = 16.dp)
-                .height(55.dp)
-                .clip(RoundedCornerShape(12.dp)),
-            onClick = { isEnabled = !isEnabled
-                onClickEvent()},
-            colors =
-            ButtonDefaults.buttonColors(
-                containerColor = if(enable) LinkZipTheme.color.wg70 else LinkZipTheme.color.wg20
-            ),
-            enabled = isEnabled,
-            shape = MaterialTheme.shapes.small.copy(all = CornerSize(0.dp))
-        ) {
-            Text(
-                text = if(buttonCompleteName != null && isEnabled) buttonCompleteName else buttonName,
-                style = LinkZipTheme.typography.medium16.copy(color =
-                if(enable) LinkZipTheme.color.white else LinkZipTheme.color.wg40
-                )
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = if (isFocused == true) 0.dp else 22.dp)
+            .height(55.dp)
+            .clip(RoundedCornerShape(12.dp)),
+        onClick = { isEnabled = !isEnabled
+            onClickEvent()},
+        colors =
+        ButtonDefaults.buttonColors(
+            containerColor = if(enable) LinkZipTheme.color.wg70 else LinkZipTheme.color.wg20
+        ),
+        enabled = isEnabled,
+        shape =  if (isFocused == true) RoundedCornerShape(0.dp) else RoundedCornerShape(12.dp),
+    ) {
+        Text(
+            text = if(buttonCompleteName != null && isEnabled) buttonCompleteName else buttonName,
+            style = LinkZipTheme.typography.medium16.copy(color =
+            if(enable) LinkZipTheme.color.white else LinkZipTheme.color.wg40
             )
-        }
-    }else{
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 22.dp)
-                .padding(vertical = 16.dp)
-                .height(55.dp),
-            onClick = {
-                isEnabled = !isEnabled
-                onClickEvent()
-                      },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if(enable) LinkZipTheme.color.wg70 else LinkZipTheme.color.wg20
-            ),
-            enabled = isEnabled,
-            shape = MaterialTheme.shapes.small.copy(all = CornerSize(0.dp))
-        ) {
-            Text(
-                text = if(buttonCompleteName != null && isEnabled) buttonCompleteName else buttonName,
-                style = LinkZipTheme.typography.medium16.copy(color =
-                if(enable) LinkZipTheme.color.white else LinkZipTheme.color.wg40
-                )
-            )
-        }
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun CommonButtonPreview() {
-    LinkZipTheme {
-        CommonButton(
-            enable = false,
-            keyBoardUpOption = true,
-            buttonName = "저장하기",
-            buttonColor = LinkZipTheme.color.black,
-            onClickEvent = {
-
-            }
-        )
-    }
 }

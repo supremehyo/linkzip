@@ -29,16 +29,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
+import com.linkzip.linkzip.R
 import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.room.GroupData
@@ -67,13 +70,13 @@ fun LinkAddView(
     onBackButtonPressed: () -> Unit
 ) {
     var menuItems by remember { mutableStateOf(listOf<GroupData>()) }
-    val navController = rememberNavController()
     var showDialog by remember { mutableStateOf(false) }
     var showBottomDialog by remember { mutableStateOf(false) }
     var groupTitle by remember { mutableStateOf("그룹을 선택해주세요.") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
+    var isFocused by remember { mutableStateOf(false) }
     var groupIconList by remember { mutableStateOf(listOf<IconData>()) }
     var iconListFlow by remember { mutableStateOf(listOf<IconData>()) }
     homeViewModel.getAllGroups()
@@ -220,6 +223,9 @@ fun LinkAddView(
             resultText = {
                 resultLinkData.link = it.second
                 Log.v("resultText", "${it.second}")
+            },
+            isFocus = {
+                isFocused = it
             }
         )
         Spacer(modifier = Modifier.height(28.dp))
@@ -248,6 +254,9 @@ fun LinkAddView(
             resultText = {
                 resultLinkData.linkTitle = it.second
                 Log.v("resultText", "${it.second}")
+            },
+            isFocus = {
+                isFocused = it
             }
         )
         Spacer(modifier = Modifier.height(28.dp))
@@ -265,6 +274,9 @@ fun LinkAddView(
             resultText = {
                 resultLinkData.linkMemo = it.second
                 Log.v("resultText", "${it.second}")
+            },
+            isFocus = {
+                isFocused = it
             }
         )
 
@@ -275,7 +287,8 @@ fun LinkAddView(
             buttonColor = LinkZipTheme.color.black,
             onClickEvent = {
                 homeViewModel.insertLink(resultLinkData)
-            }
+            },
+            isFocused = isFocused
         )
 
         DialogComponent(
@@ -296,11 +309,16 @@ fun LinkAddView(
                 horizontalMargin = 20.dp
             ) {
                 Column {
+                    Text(
+                        text = stringResource(R.string.selet_group),
+                        style = LinkZipTheme.typography.medium18,
+                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 20.dp , bottom = 32.dp)
+                    )
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(29.dp)
                     ) {
                         itemsIndexed(it) { index, data ->
-                            //그룹없음은 앱이 처음 만들어질때 -1로 자동 등록 된다
+                            //그룹 없음
                             if (data.groupIconId != -1L) {
                                 BottomDialogLinkAddGroupMenuComponent(
                                     groupData = data,
