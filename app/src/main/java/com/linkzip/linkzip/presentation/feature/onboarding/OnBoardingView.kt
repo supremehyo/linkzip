@@ -1,12 +1,12 @@
 package com.linkzip.linkzip.presentation.feature.onboarding
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.model.MainScreenState
+import com.linkzip.linkzip.presentation.component.CommonButton
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.ui.theme.LinkZipTypography
@@ -60,17 +61,21 @@ val pageContent = listOf(
 @Composable
 fun OnBoardingView(
     mainViewModel: MainViewModel = hiltViewModel(),
-    onClick : () -> Unit
+    onClick: () -> Unit
 ) {
     val navController = rememberNavController()
     val pagerState = rememberPagerState(pageCount = { 3 })
     Scaffold(
         modifier = Modifier
+            .background(LinkZipTheme.color.wg10)
             .padding(top = 115.dp)
             .fillMaxHeight(),
-    ) { innerPadding->
+    ) { _ ->
         Column(
-            modifier = Modifier.padding(innerPadding).background(LinkZipTheme.color.wg10),
+            modifier = Modifier
+                .fillMaxHeight()
+                .background(LinkZipTheme.color.wg10)
+                .padding(bottom = 19.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -86,7 +91,7 @@ fun OnBoardingView(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text =  stringResource(pageTitle[page]),
+                        text = stringResource(pageTitle[page]),
                         modifier = Modifier.padding(bottom = 8.dp),
                         style = LinkZipTypography.textStyle.bold22.copy(
                             textAlign = TextAlign.Center
@@ -99,6 +104,16 @@ fun OnBoardingView(
                         style = LinkZipTypography.textStyle.medium14,
                         color = LinkZipTheme.color.black
                     )
+                }
+            }
+            Box(modifier = Modifier.fillMaxWidth())
+            if (pagerState.currentPage == 2) {
+                CommonButton(
+                    buttonName = "시작하기",
+                    enable = true,
+                    buttonColor = LinkZipTheme.color.wg70
+                ) {
+                    onClick()
                 }
             }
         }
@@ -121,27 +136,6 @@ fun OnBoardingView(
                 )
             }
         }
-
-        if(pagerState.currentPage == 2){
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 22.dp)
-                    .height(55.dp)
-                    .offset(y = 645.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = LinkZipTheme.color.wg70
-                ),
-                onClick = {
-                    onClick()
-
-                }
-            ){
-                Text("시작하기",
-                    style = LinkZipTypography.textStyle.medium16, color = LinkZipTheme.color.white)
-            }
-        }
     }
 }
 
@@ -149,6 +143,8 @@ fun OnBoardingView(
 @Composable
 fun GreetingPreview() {
     LinkZipTheme {
+        OnBoardingView {
 
+        }
     }
 }

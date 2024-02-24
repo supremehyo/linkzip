@@ -58,13 +58,14 @@ fun MainBottomNavigation(
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    unselectedIconColor = Color.Black,
+                    unselectedIconColor = LinkZipTheme.color.wg30,
                     selectedIconColor =  Color.Black,
                     indicatorColor = LinkZipTheme.color.wg10
                 ),
-                label = { Text(stringResource(id = item.title), fontSize = 9.sp) },
+                label = { Text(stringResource(id = item.title), fontSize = 9.sp ,
+                    color = if(currentRoute == item.path) Color.Black else LinkZipTheme.color.wg30) },
                 selected = currentRoute == item.path,
-                alwaysShowLabel = false,
+                alwaysShowLabel = true,
                 onClick = {
                     navController.navigate(item.path) {
                         navController.graph.startDestinationRoute?.let {

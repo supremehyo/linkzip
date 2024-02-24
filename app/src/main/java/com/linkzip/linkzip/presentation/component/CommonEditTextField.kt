@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.input.TextFieldValue
@@ -38,7 +39,8 @@ fun CommonEditTextField(
     fieldType : FieldSize,
     textCountOption : Boolean,
     resultText : (Pair<String,String>) -> Unit,
-    hintText : String
+    hintText : String,
+    isFocus : (Boolean) -> Unit
 ){
     var groupNameText by remember { mutableStateOf(TextFieldValue("")) }
     val maxLength = 12
@@ -59,6 +61,7 @@ fun CommonEditTextField(
             .focusRequester(focusRequester)
             .onFocusChanged { focusState ->
                 isFocused = focusState.isFocused
+                isFocus(isFocused)
             },
         value = groupNameText,
         onValueChange = {

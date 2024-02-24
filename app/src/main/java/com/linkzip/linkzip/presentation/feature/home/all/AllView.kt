@@ -83,8 +83,7 @@ fun AllView(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 22.dp),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
