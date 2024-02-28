@@ -33,4 +33,15 @@ class AddGroupUseCase @Inject constructor(
             emit(UiState.Error(it))
         }
     }
+
+    fun updateGroup(uid: Long, name: String, iconId: Long, date: String) = flow {
+        emit(UiState.Loding)
+        runCatching {
+            groupRepository.updateGroupById(uid, name, iconId, date)
+        }.onSuccess { result ->
+            emit(UiState.Success(result))
+        }.onFailure {
+            emit(UiState.Error(it))
+        }
+    }
 }

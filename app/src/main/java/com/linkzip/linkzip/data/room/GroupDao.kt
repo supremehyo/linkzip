@@ -28,6 +28,8 @@ interface GroupDao {
     @Query("DELETE FROM `group`")
     fun clearGroups()
 
+    @Query("UPDATE `group` SET groupName = :name, groupIconId = :iconId, updateDate = :date WHERE groupId = :uid")
+    fun updateGroupById(uid: Long, name: String, iconId: Long, date: String)
 
     @Transaction
     @Query("SELECT * FROM `group` ORDER BY groupId DESC") //ASC
