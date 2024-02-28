@@ -83,6 +83,7 @@ fun LinkAddView(
         linkMemo = "",
         createDate = "",
         updateDate = "",
+        linkThumbnail = "",
         favorite = false
     )
 
@@ -95,6 +96,7 @@ fun LinkAddView(
                 linkMemo = "",
                 createDate = "",
                 updateDate = "",
+                linkThumbnail = "",
                 favorite = false
             )
         )

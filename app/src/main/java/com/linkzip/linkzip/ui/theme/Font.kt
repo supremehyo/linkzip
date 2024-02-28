@@ -31,6 +31,7 @@ data class LinkZipTypography(
     val bold20 : TextStyle,
     val bold18 : TextStyle,
     val bold16 : TextStyle,
+    val bold14 : TextStyle,
     val semiBold10 : TextStyle,
     val medium12 : TextStyle,
     val medium14 : TextStyle,
@@ -62,6 +63,14 @@ data class LinkZipTypography(
                 fontFamily = pretendard,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false,
+                ),
+            ),
+            bold14 = TextStyle(
+                fontFamily = pretendard,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
                 platformStyle = PlatformTextStyle(
                     includeFontPadding = false,
                 ),
@@ -156,6 +165,7 @@ val LocalLinkZipTypography = staticCompositionLocalOf {
         medium18 = LinkZipTypography.textStyle.medium18,
         bold18 = LinkZipTypography.textStyle.bold18,
         bold20 = LinkZipTypography.textStyle.bold20,
-        bold16 = LinkZipTypography.textStyle.bold16
+        bold16 = LinkZipTypography.textStyle.bold16,
+        bold14 = LinkZipTypography.textStyle.bold14
     )
 }

@@ -10,15 +10,18 @@ import androidx.room.Transaction
 @Dao
 interface LinkDao {
     @Query("SELECT * FROM LinkData")
-    fun getLinkDataList() : List<LinkData>
+    fun getLinkDataList(): List<LinkData>
+
+    @Query("SELECT * FROM LinkData WHERE linkGroupId = :groupId")
+    fun getLinkListByGroup(groupId: Long): List<LinkData>
 
     @Query("SELECT * FROM LinkData WHERE uid= :id")
-    fun getLinkDataByUid(id : Long) : LinkData
+    fun getLinkDataByUid(id: Long): LinkData
 
     @Query("SELECT * FROM LinkData WHERE favorite = 1")
-    fun getFavoriteLinkList() : List<LinkData>
+    fun getFavoriteLinkList(): List<LinkData>
 
-    @Insert (onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertLink(linkData: LinkData)
 
     @Query("DELETE FROM LinkData WHERE uid = :uid")
@@ -29,5 +32,11 @@ interface LinkDao {
     fun deleteLinksByGroupId(groupUid: Long)
 
     @Query("UPDATE LinkData SET link = :link , linkGroupId = :linkGroupId,linkTitle = :linkTitle, linkMemo = :linkMemo  WHERE uid = :uid")
-    fun updateLinkData(uid : Int, link: String, linkGroupId : String, linkTitle: String, linkMemo:String)
+    fun updateLinkData(
+        uid: Int,
+        link: String,
+        linkGroupId: String,
+        linkTitle: String,
+        linkMemo: String
+    )
 }

@@ -1,6 +1,7 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
 import CommonToast
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -21,16 +22,15 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -70,9 +70,11 @@ import com.linkzip.linkzip.data.room.IconData.Companion.ICON_RICE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_WINE
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
+import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.ADD
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.ADD_GROUP_TITLE
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.EDIT_GROUP_TITLE
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.PLUS
+import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.UPDATE
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -87,8 +89,6 @@ fun AddGroupView(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    var groupName = ""
-    var title = ADD_GROUP_TITLE
 
     fun hideKeyBoard() {
         focusManager.clearFocus()
@@ -96,16 +96,22 @@ fun AddGroupView(
     }
 
     addGroupViewModel.getIconData()
-    val currentIconState = addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
+    val currentIconState by addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
 
-    // null 이면 그룹 추가 화면
-    if (groupData == null) {
-        groupName = ""
-        title = ADD_GROUP_TITLE
-    } else { // else 면 그룹 수정 화면
-        addGroupViewModel.updateCurrentIcon(groupData.second)
-        groupName = groupData.first.groupName
-        title = EDIT_GROUP_TITLE
+    // 이펙트를 사용하여 한 번만 실행
+    LaunchedEffect(groupData) {
+        if (groupData != null) {
+            addGroupViewModel.updateCurrentIcon(groupData.second)
+        }
+    }
+
+    // 그룹 추가/수정 화면 관련
+    val (groupName, title) = remember(groupData) {
+        if (groupData == null) {
+            "" to ADD_GROUP_TITLE
+        } else {
+            groupData.first.groupName to EDIT_GROUP_TITLE
+        }
     }
 
     Column(
@@ -120,11 +126,11 @@ fun AddGroupView(
     ) {
         HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed, null, title)
         Spacer(modifier = Modifier.height(28.dp))
-        iconView(
+        IconView(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 22.dp),
-            currentIconState.value
+            currentIconState
         )
         Spacer(modifier = Modifier.height(41.dp))
         Text(
@@ -133,9 +139,10 @@ fun AddGroupView(
             style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        editGroupName(
+        EditGroupName(
+            groupData,
             Modifier.weight(1f),
-            currentIconState.value,
+            currentIconState,
             groupName,
             onBackButtonPressed
         ) { hideKeyBoard() }
@@ -144,7 +151,8 @@ fun AddGroupView(
 
 // 그룹명 작성 TextField
 @Composable
-fun editGroupName(
+fun EditGroupName(
+    groupData: Pair<GroupData, IconData>?,
     modifier: Modifier,
     currentIconState: IconData,
     groupName: String,
@@ -207,7 +215,8 @@ fun editGroupName(
         },
     )
     Spacer(modifier = modifier)
-    saveButton(
+    SaveButton(
+        groupData = groupData,
         isFocused = isFocused,
         currentIconState = currentIconState,
         groupNameText = groupNameText.text,
@@ -217,7 +226,8 @@ fun editGroupName(
 }
 
 @Composable
-fun saveButton(
+fun SaveButton(
+    groupData: Pair<GroupData, IconData>?,
     isFocused: Boolean,
     currentIconState: IconData,
     groupNameText: String,
@@ -225,8 +235,6 @@ fun saveButton(
     onBackButtonPressed: () -> Unit,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -235,26 +243,49 @@ fun saveButton(
             .height(55.dp),
         shape = if (isFocused) RoundedCornerShape(0.dp) else RoundedCornerShape(12.dp),
         onClick = {
+            val isAddOrUpdate = if (groupData == null) ADD else UPDATE
+
             val currentTime = Date()
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             val timeString = formatter.format(currentTime)
 
-            addGroupViewModel.insertGroup(
-                GroupData(
-                    groupIconId = currentIconState.iconId,
-                    groupName = groupNameText,
-                    createDate = timeString,
-                    updateDate = timeString
-                ),
-                success = {
-                    // showAddGroupToast()
-                    hideKeyBoard.invoke()
-                    onBackButtonPressed.invoke()
-                },
-                fail = {
-                    hideKeyBoard.invoke()
+            when (isAddOrUpdate) {
+                ADD -> {
+                    addGroupViewModel.insertGroup(
+                        GroupData(
+                            groupIconId = currentIconState.iconId,
+                            groupName = groupNameText,
+                            createDate = timeString,
+                            updateDate = timeString
+                        ),
+                        success = {
+                            // showAddGroupToast()
+                            hideKeyBoard.invoke()
+                            onBackButtonPressed.invoke()
+                        },
+                        fail = {
+                            hideKeyBoard.invoke()
+                        }
+                    )
                 }
-            )
+
+                UPDATE -> {
+                    addGroupViewModel.updateGroup(
+                        uid = groupData?.first?.groupId ?: throw NullPointerException(),
+                        name = groupNameText,
+                        iconId = currentIconState.iconId,
+                        date = timeString,
+                        success = {
+                            // showAddGroupToast()
+                            hideKeyBoard.invoke()
+                            onBackButtonPressed.invoke()
+                        },
+                        fail = {
+                            hideKeyBoard.invoke()
+                        }
+                    )
+                }
+            }
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(currentIconState.iconButtonColor)
@@ -270,7 +301,7 @@ fun saveButton(
 
 
 @Composable
-fun showAddGroupToast() {
+fun ShowAddGroupToast() {
     CommonToast(
         message = "그룹 추가완료!",
         icon = R.drawable.ic_check,
@@ -281,12 +312,11 @@ fun showAddGroupToast() {
 
 // icon View
 @Composable
-fun iconView(
+fun IconView(
     modifier: Modifier,
     currentIconState: IconData
 ) {
-
-
+    Log.e("adad", "$currentIconState")
     Box(modifier = modifier) {
         Icon(
             painter = painterResource(
@@ -298,18 +328,16 @@ fun iconView(
                 .width(120.dp)
                 .height(120.dp)
         )
-        plusIconAndBottomSheet(Modifier.align(Alignment.BottomEnd))
+        PlusIconAndBottomSheet(Modifier.align(Alignment.BottomEnd))
     }
 }
 
 // plus 클릭 시, 아이콘 추가 BottomSheet 생성
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun plusIconAndBottomSheet(
+fun PlusIconAndBottomSheet(
     modifier: Modifier,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
-    val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
 
     val allIconList by addGroupViewModel.iconListFlow.collectAsStateWithLifecycle(null)
@@ -414,5 +442,6 @@ object AddGroupView {
     const val PLUS = "PLUS"
     const val ADD_GROUP_TITLE = "그룹 추가"
     const val EDIT_GROUP_TITLE = "그룹 수정"
-
+    const val ADD = "ADD"
+    const val UPDATE = "UPDATE"
 }

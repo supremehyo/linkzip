@@ -18,6 +18,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -63,6 +66,40 @@ class AddGroupViewModel @Inject constructor(
                             success.invoke()
                         }
                     }
+
+                    else -> {
+                        withContext(Dispatchers.Main) {
+                            fail.invoke()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateGroup(
+        uid: Long,
+        name: String,
+        iconId: Long,
+        date: String,
+        success: () -> Unit,
+        fail: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            addGroupUseCase.updateGroup(
+                uid = uid,
+                name = name,
+                iconId = iconId,
+                date = date
+            ).collect {
+                Log.v("updateGrup", "${it}")
+                when (it) {
+                    is UiState.Success -> {
+                        withContext(Dispatchers.Main) {
+                            success.invoke()
+                        }
+                    }
+
                     else -> {
                         withContext(Dispatchers.Main) {
                             fail.invoke()

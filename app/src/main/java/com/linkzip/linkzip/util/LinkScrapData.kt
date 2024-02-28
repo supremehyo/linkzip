@@ -24,6 +24,7 @@ suspend fun LinkScrapData(url : String) : LinkData? {
             linkMemo = "",
             createDate = "",
             updateDate = "",
+            linkThumbnail = "",
             favorite = false
         )
         var job = CoroutineScope(Dispatchers.IO).async {
