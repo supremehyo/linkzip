@@ -11,6 +11,10 @@ class LinkRepository @Inject constructor(
         return linkDao.getLinkDataList()
     }
 
+    fun getLinkListByGroup(groupId: Long) : List<LinkData> {
+        return linkDao.getLinkListByGroup(groupId)
+    }
+
     fun getFavoriteLinkList() : List<LinkData>{
         return linkDao.getFavoriteLinkList()
     }

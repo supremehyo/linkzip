@@ -40,6 +40,7 @@ data class LinkData(
     @PrimaryKey(autoGenerate = true)
     var uid : Long? =null,
     var link : String,
+    var linkThumbnail: String,
     var linkGroupId : String,
     var linkTitle : String,
     var linkMemo : String,
