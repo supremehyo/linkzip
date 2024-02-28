@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -65,48 +66,56 @@ fun OnBoardingView(
 ) {
     val navController = rememberNavController()
     val pagerState = rememberPagerState(pageCount = { 3 })
-    Scaffold(
-        modifier = Modifier
-            .background(LinkZipTheme.color.wg10)
-            .padding(top = 115.dp)
-            .fillMaxHeight(),
-    ) { _ ->
+    HorizontalPager(
+        state = pagerState,
+    ) { page ->
         Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .background(LinkZipTheme.color.wg10)
-                .padding(bottom = 19.dp),
+                .padding(bottom = 19.dp, top = 115.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            HorizontalPager(
-                state = pagerState,
-            ) { page ->
-                // Our page content
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(bottom = 37.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = stringResource(pageTitle[page]),
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        style = LinkZipTypography.textStyle.bold22.copy(
-                            textAlign = TextAlign.Center
-                        ),
-                        color = LinkZipTheme.color.black
+            // Our page content
+            Column(
+                modifier = Modifier.height(100.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = stringResource(pageTitle[page]),
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    style = LinkZipTypography.textStyle.bold22.copy(
+                        textAlign = TextAlign.Center
+                    ),
+                    color = LinkZipTheme.color.black
 
-                    )
-                    Text(
-                        text = stringResource(pageContent[page]),
-                        style = LinkZipTypography.textStyle.medium14,
-                        color = LinkZipTheme.color.black
-                    )
+                )
+                Text(
+                    text = stringResource(pageContent[page]),
+                    style = LinkZipTypography.textStyle.medium14,
+                    color = LinkZipTheme.color.black
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    repeat(pagerState.pageCount) { iteration ->
+                        val color =
+                            if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 6.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                                .size(10.dp)
+                        )
+                    }
                 }
             }
-            Box(modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.weight(1f))
             if (pagerState.currentPage == 2) {
                 CommonButton(
                     buttonName = "시작하기",
@@ -115,25 +124,6 @@ fun OnBoardingView(
                 ) {
                     onClick()
                 }
-            }
-        }
-        Row(
-            Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .offset(y = 88.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(pagerState.pageCount) { iteration ->
-                val color =
-                    if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(10.dp)
-                )
             }
         }
     }
