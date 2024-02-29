@@ -29,7 +29,6 @@ fun CommonToast(
 
     Row(
         modifier = Modifier
-            .padding(16.dp)
             .fillMaxWidth()
             .background(containerColor)
             .clip(RoundedCornerShape(12.dp)),

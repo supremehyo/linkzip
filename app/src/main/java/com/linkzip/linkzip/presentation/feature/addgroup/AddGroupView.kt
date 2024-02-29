@@ -235,6 +235,8 @@ fun SaveButton(
     onBackButtonPressed: () -> Unit,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
+    var isShowToast by remember { mutableStateOf(false) }
+
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -259,9 +261,9 @@ fun SaveButton(
                             updateDate = timeString
                         ),
                         success = {
-                            // showAddGroupToast()
                             hideKeyBoard.invoke()
                             onBackButtonPressed.invoke()
+                            isShowToast = true
                         },
                         fail = {
                             hideKeyBoard.invoke()
@@ -276,9 +278,9 @@ fun SaveButton(
                         iconId = currentIconState.iconId,
                         date = timeString,
                         success = {
-                            // showAddGroupToast()
                             hideKeyBoard.invoke()
                             onBackButtonPressed.invoke()
+                            isShowToast = true
                         },
                         fail = {
                             hideKeyBoard.invoke()
@@ -296,6 +298,10 @@ fun SaveButton(
             style = LinkZipTheme.typography.medium16
                 .copy(color = LinkZipTheme.color.white)
         )
+    }
+
+    if (isShowToast) {
+        ShowAddGroupToast()
     }
 }
 
