@@ -87,7 +87,7 @@ fun MainBottomNavigationGraph(navController: NavHostController, mainViewModel: M
             HomeView(mainViewModel)
         }
         composable(MainBottomPath.MyPage.path) {
-             MyPageView()
+             MyPageView(mainViewModel.versionCode)
 //            // TODO 후에 Mypage로 변경, 테스트 때문에 그룹 추가하기로 보여짐
 //            AddGroupView { navController.popBackStack() }
         }

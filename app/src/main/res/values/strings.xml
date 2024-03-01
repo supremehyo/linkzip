@@ -27,4 +27,8 @@
     <string name="my_page_title">링크zip에서\n내 링크를 가장 쉽게 관리해보세요</string>
     <string name="myPage_button_title_1">사용 방법이 기억나지 않는다면</string>
     <string name="myPage_button_sub_title_1">링크zip을 소개해요</string>
+    <string name="myPage_button_title_2">원하는 기능 또는 피드백이 있나요?</string>
+    <string name="myPage_button_sub_title_2">의견 남기기</string>
+
+    <string name="add_link_title">링크 추가</string>
 </resources>

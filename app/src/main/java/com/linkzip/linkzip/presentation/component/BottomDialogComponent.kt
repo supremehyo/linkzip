@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -45,7 +46,6 @@ import com.linkzip.linkzip.ui.theme.LinkZipTheme
 fun BottomDialogComponent(
     onDismissRequest: () -> Unit,
     visible: Boolean,
-    height : Dp,
     horizontalMargin: Dp,
     content: @Composable () -> Unit
 ) {
@@ -65,7 +65,7 @@ fun BottomDialogComponent(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(height)
+                    .wrapContentHeight()
                     .padding(horizontal = horizontalMargin)
                     .offset(y = (-30).dp),
                 shape = RoundedCornerShape(16.dp),
@@ -73,7 +73,7 @@ fun BottomDialogComponent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight()
+                        .wrapContentHeight()
                         .background(color = LinkZipTheme.color.white)
                 ) {
                     Image(
@@ -85,8 +85,7 @@ fun BottomDialogComponent(
                         .background(color = LinkZipTheme.color.white)
                         .padding(horizontal = 20.dp)
                         .padding(vertical = 30.dp)
-                        .fillMaxWidth()
-                        .fillMaxHeight()){
+                        .fillMaxWidth()){
                         content()
                     }
                 }

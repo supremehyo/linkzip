@@ -30,6 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -75,6 +77,7 @@ fun LinkAddView(
     var isFocused by remember { mutableStateOf(false) }
     var groupIconList by remember { mutableStateOf(listOf<IconData>()) }
     var iconListFlow by remember { mutableStateOf(listOf<IconData>()) }
+    var saveButtonColor by remember { mutableStateOf(Color.Black) }
     homeViewModel.getAllGroups()
     var resultData = LinkData(
         link = "",
@@ -196,7 +199,6 @@ fun LinkAddView(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 22.dp)
             .imePadding()
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
@@ -205,89 +207,100 @@ fun LinkAddView(
                 })
             }
     ) {
-        HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed, null,"링크 추가")
-        Spacer(modifier = Modifier.height(28.dp))
-        Text(
-            text = "링크(필수)",
-            style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
+        HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed, null,
+            stringResource(R.string.add_link_title)
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        CommonEditTextField(
-            title = "링크",
-            textCountOption = false,
-            hintText = "복사한 URL을 붙여넣어주세요.",
-            fieldType = FieldSize.NORMAL,
-            initialText = resultLinkData.link,
-            resultText = {
-                resultLinkData.link = it.second
-                Log.v("resultText", "${it.second}")
-            },
-            isFocus = {
-                isFocused = it
-            }
-        )
-        Spacer(modifier = Modifier.height(28.dp))
-        Text(
-            text = "그룹",
-            style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        dropDownMenu(
-            groupTitle = groupTitle
+        Column(
+            modifier = Modifier.padding(horizontal = 22.dp)
         ) {
-            showBottomDialog = true
+            Spacer(modifier = Modifier.height(28.dp))
+            Text(
+                text = "링크(필수)",
+                style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            CommonEditTextField(
+                title = "링크",
+                textCountOption = false,
+                hintText = "복사한 URL을 붙여넣어주세요.",
+                maxLength = 1000,
+                fieldType = FieldSize.NORMAL,
+                initialText = resultLinkData.link,
+                resultText = {
+                    resultLinkData.link = it.second
+                    Log.v("resultText", "${it.second}")
+                },
+                isFocus = {
+                    isFocused = it
+                }
+            )
+            Spacer(modifier = Modifier.height(28.dp))
+            Text(
+                text = "그룹",
+                style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            dropDownMenu(
+                groupTitle = groupTitle
+            ) {
+                showBottomDialog = true
+            }
+            Spacer(modifier = Modifier.height(28.dp))
+            Text(
+                text = "제목",
+                style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            CommonEditTextField(
+                title = "제목",
+                textCountOption = false,
+                hintText = "ex.탕후루 만들기",
+                initialText = resultLinkData.linkTitle,
+                fieldType = FieldSize.NORMAL,
+                resultText = {
+                    resultLinkData.linkTitle = it.second
+                    Log.v("resultText", "${it.second}")
+                },
+                isFocus = {
+                    isFocused = it
+                }
+            )
+            Spacer(modifier = Modifier.height(28.dp))
+            Text(
+                text = "메모",
+                style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            CommonEditTextField(
+                title = "메모",
+                textCountOption = false,
+                fieldType = FieldSize.LARGE,
+                initialText = resultLinkData.linkMemo,
+                hintText = "링크를 통해 발견한 인사이트가 있나요?",
+                resultText = {
+                    resultLinkData.linkMemo = it.second
+                    Log.v("resultText", "${it.second}")
+                },
+                isFocus = {
+                    isFocused = it
+                }
+            )
         }
-        Spacer(modifier = Modifier.height(28.dp))
-        Text(
-            text = "제목",
-            style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        CommonEditTextField(
-            title = "제목",
-            textCountOption = false,
-            hintText = "ex.탕후루 만들기",
-            initialText = resultLinkData.linkTitle,
-            fieldType = FieldSize.NORMAL,
-            resultText = {
-                resultLinkData.linkTitle = it.second
-                Log.v("resultText", "${it.second}")
-            },
-            isFocus = {
-                isFocused = it
-            }
-        )
-        Spacer(modifier = Modifier.height(28.dp))
-        Text(
-            text = "메모",
-            style = LinkZipTheme.typography.medium14.copy(color = LinkZipTheme.color.wg50)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        CommonEditTextField(
-            title = "메모",
-            textCountOption = false,
-            fieldType = FieldSize.LARGE,
-            initialText = resultLinkData.linkMemo,
-            hintText = "링크를 통해 발견한 인사이트가 있나요?",
-            resultText = {
-                resultLinkData.linkMemo = it.second
-                Log.v("resultText", "${it.second}")
-            },
-            isFocus = {
-                isFocused = it
-            }
-        )
-
-        CommonButton(
-            enable = true,
-            keyBoardUpOption = true,
-            buttonName = "저장하기",
-            buttonColor = LinkZipTheme.color.black,
-            onClickEvent = {
-                homeViewModel.insertLink(resultLinkData)
-            },
-            isFocused = isFocused
-        )
+        Spacer(modifier = Modifier.weight(1f))
+        Box(
+            modifier = Modifier.padding(bottom = 19.dp)
+        ) {
+            CommonButton(
+                enable = true,
+                keyBoardUpOption = true,
+                buttonName = "저장하기",
+                buttonColor = saveButtonColor,
+                onClickEvent = {
+                    homeViewModel.insertLink(resultLinkData)
+                },
+                isFocused = isFocused
+            )
+        }
 
         DialogComponent(
             onDismissRequest = { showDialog = false },
@@ -303,14 +316,17 @@ fun LinkAddView(
             BottomDialogComponent(
                 onDismissRequest = { showBottomDialog = false },
                 visible = showBottomDialog,
-                height = 150.dp,
                 horizontalMargin = 20.dp
             ) {
-                Column {
+                Column(
+                    verticalArrangement = Arrangement.Top
+                ) {
                     Text(
                         text = stringResource(R.string.selet_group),
                         style = LinkZipTheme.typography.medium18,
-                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 20.dp , bottom = 32.dp)
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(bottom = 32.dp)
                     )
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(29.dp)
@@ -325,6 +341,8 @@ fun LinkAddView(
                                     showBottomDialog = false
                                     groupTitle = data.groupName
                                     resultLinkData.linkGroupId = data.groupId.toString()
+                                    Log.e("clickColor"," ${iconListFlow[index].iconButtonColor} ${ Color(iconListFlow[index].iconButtonColor)}")
+                                    saveButtonColor = Color(iconListFlow[index].iconButtonColor)
                                 }
                             }else{
 

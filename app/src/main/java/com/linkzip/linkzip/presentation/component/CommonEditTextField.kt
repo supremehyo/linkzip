@@ -37,13 +37,13 @@ fun CommonEditTextField(
     title : String,
     initialText : String = "",
     fieldType : FieldSize,
+    maxLength : Int = 12,
     textCountOption : Boolean,
     resultText : (Pair<String,String>) -> Unit,
     hintText : String,
     isFocus : (Boolean) -> Unit
 ){
     var groupNameText by remember { mutableStateOf(TextFieldValue("")) }
-    val maxLength = 12
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
     var height = when(fieldType){

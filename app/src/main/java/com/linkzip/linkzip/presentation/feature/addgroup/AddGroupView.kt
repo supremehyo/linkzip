@@ -98,7 +98,6 @@ fun AddGroupView(
     addGroupViewModel.getIconData()
     val currentIconState by addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
 
-    // 이펙트를 사용하여 한 번만 실행
     LaunchedEffect(groupData) {
         if (groupData != null) {
             addGroupViewModel.updateCurrentIcon(groupData.second)
@@ -235,7 +234,7 @@ fun SaveButton(
     onBackButtonPressed: () -> Unit,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
-    var isShowToast by remember { mutableStateOf(false) }
+    var isShowToast by remember { mutableStateOf(AddGroupResultState.NONE) }
 
     Button(
         modifier = Modifier
@@ -250,44 +249,48 @@ fun SaveButton(
             val currentTime = Date()
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             val timeString = formatter.format(currentTime)
+            if(groupNameText.isNotEmpty()){
+                when (isAddOrUpdate) {
+                    ADD -> {
+                        addGroupViewModel.insertGroup(
+                            GroupData(
+                                groupIconId = currentIconState.iconId,
+                                groupName = groupNameText,
+                                createDate = timeString,
+                                updateDate = timeString
+                            ),
+                            success = {
+                                hideKeyBoard.invoke()
+                                onBackButtonPressed.invoke()
+                                isShowToast = AddGroupResultState.SUCCESS
+                            },
+                            fail = {
+                                hideKeyBoard.invoke()
+                            }
+                        )
+                    }
 
-            when (isAddOrUpdate) {
-                ADD -> {
-                    addGroupViewModel.insertGroup(
-                        GroupData(
-                            groupIconId = currentIconState.iconId,
-                            groupName = groupNameText,
-                            createDate = timeString,
-                            updateDate = timeString
-                        ),
-                        success = {
-                            hideKeyBoard.invoke()
-                            onBackButtonPressed.invoke()
-                            isShowToast = true
-                        },
-                        fail = {
-                            hideKeyBoard.invoke()
-                        }
-                    )
+                    UPDATE -> {
+                        addGroupViewModel.updateGroup(
+                            uid = groupData?.first?.groupId ?: throw NullPointerException(),
+                            name = groupNameText,
+                            iconId = currentIconState.iconId,
+                            date = timeString,
+                            success = {
+                                hideKeyBoard.invoke()
+                                onBackButtonPressed.invoke()
+                                isShowToast = AddGroupResultState.SUCCESS
+                            },
+                            fail = {
+                                hideKeyBoard.invoke()
+                            }
+                        )
+                    }
                 }
-
-                UPDATE -> {
-                    addGroupViewModel.updateGroup(
-                        uid = groupData?.first?.groupId ?: throw NullPointerException(),
-                        name = groupNameText,
-                        iconId = currentIconState.iconId,
-                        date = timeString,
-                        success = {
-                            hideKeyBoard.invoke()
-                            onBackButtonPressed.invoke()
-                            isShowToast = true
-                        },
-                        fail = {
-                            hideKeyBoard.invoke()
-                        }
-                    )
-                }
+            }else{
+                isShowToast = AddGroupResultState.FAIL
             }
+
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(currentIconState.iconButtonColor)
@@ -300,8 +303,10 @@ fun SaveButton(
         )
     }
 
-    if (isShowToast) {
+    if (isShowToast == AddGroupResultState.SUCCESS) {
         ShowAddGroupToast()
+    }else if(isShowToast  == AddGroupResultState.FAIL){
+        ShowAddGroupFailToast()
     }
 }
 
@@ -310,6 +315,16 @@ fun SaveButton(
 fun ShowAddGroupToast() {
     CommonToast(
         message = "그룹 추가완료!",
+        icon = R.drawable.ic_check,
+        containerColor = LinkZipTheme.color.wg70,
+        messageColor = LinkZipTheme.color.white
+    )
+}
+
+@Composable
+fun ShowAddGroupFailToast() {
+    CommonToast(
+        message = "그룹 추가실패!",
         icon = R.drawable.ic_check,
         containerColor = LinkZipTheme.color.wg70,
         messageColor = LinkZipTheme.color.white
@@ -362,7 +377,6 @@ fun PlusIconAndBottomSheet(
         BottomDialogComponent(
             onDismissRequest = { showBottomSheet = false },
             visible = showBottomSheet,
-            height = 434.dp,
             horizontalMargin = 12.dp
         ) {
             Text(
@@ -450,4 +464,8 @@ object AddGroupView {
     const val EDIT_GROUP_TITLE = "그룹 수정"
     const val ADD = "ADD"
     const val UPDATE = "UPDATE"
+}
+
+enum class AddGroupResultState{
+    SUCCESS , FAIL , NONE
 }

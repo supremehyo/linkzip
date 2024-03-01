@@ -12,6 +12,7 @@ enum class HomeScreenState {
 }
 
 sealed class MainScreenState(val state: String, var data: Pair<GroupData, IconData>?) {
+    object NONE : MainScreenState("NONE", null)
     object ONBOARDING : MainScreenState("ONBOARDING", null)
     object MAIN : MainScreenState("MAIN", null)
     object GROUPADD : MainScreenState("GROUPADD", null)
