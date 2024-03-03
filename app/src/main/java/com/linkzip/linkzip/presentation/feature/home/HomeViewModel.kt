@@ -51,7 +51,6 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             allViewUseCase.getIconListById(iconIdList).collect {
                 if(it != null){
-                    Log.e("아이콘콘" , "$it")
                     _iconListFlow.emit(it)
                 }
             }

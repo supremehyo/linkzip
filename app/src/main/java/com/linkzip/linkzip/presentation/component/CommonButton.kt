@@ -29,7 +29,7 @@ fun CommonButton(
     buttonName : String,
     enable : Boolean,
     buttonColor : Color,
-    isFocused: Boolean?= false,
+    isFocused: Boolean= false,
     buttonCompleteName : String? = null,
     keyBoardUpOption : Boolean? = null,
     onClickEvent : () -> Unit
@@ -40,16 +40,15 @@ fun CommonButton(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = if (isFocused == true) 0.dp else 22.dp)
-            .height(55.dp)
-            .clip(RoundedCornerShape(12.dp)),
+            .height(55.dp),
+        shape = if (isFocused) RoundedCornerShape(0.dp) else RoundedCornerShape(12.dp),
         onClick = { isEnabled = !isEnabled
             onClickEvent()},
         colors =
         ButtonDefaults.buttonColors(
-            containerColor = if(enable) LinkZipTheme.color.wg70 else LinkZipTheme.color.wg20
+            containerColor = if(enable) buttonColor else LinkZipTheme.color.wg20
         ),
         enabled = isEnabled,
-        shape =  if (isFocused == true) RoundedCornerShape(0.dp) else RoundedCornerShape(12.dp),
     ) {
         Text(
             text = if(buttonCompleteName != null && isEnabled) buttonCompleteName else buttonName,

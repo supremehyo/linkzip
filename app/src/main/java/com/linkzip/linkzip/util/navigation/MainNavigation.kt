@@ -27,6 +27,7 @@ import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.extention.navigateSingleTopTo
 
 sealed class MainPath(val path: String, var data: Pair<GroupData, IconData>?) {
+    object None : MainPath("None", null)
     object Onboarding : MainPath("Onboarding", null)
     object Main : MainPath("Main", null)
     object GroupAdd : MainPath("GroupAdd", null)
@@ -41,11 +42,13 @@ fun MainNavigation(
 ) {
     val navController = rememberNavController()
     val screenState by mainViewModel.screenState.collectAsStateWithLifecycle()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination?.route
 
     LaunchedEffect(screenState) {
         when (screenState) {
+            MainScreenState.NONE.state -> {
+                navController.navigateSingleTopTo(MainPath.None.path)
+            }
+
             MainScreenState.ONBOARDING.state -> {
                 navController.navigateSingleTopTo(MainPath.Onboarding.path)
             }
@@ -73,8 +76,12 @@ fun MainNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = MainPath.Onboarding.path
+        startDestination = MainPath.None.path
     ) {
+        composable(MainPath.None.path) {
+
+        }
+
         composable(MainPath.Onboarding.path) {
             OnBoardingView {
                 mainViewModel.updateScreenState(MainScreenState.MAIN.state)

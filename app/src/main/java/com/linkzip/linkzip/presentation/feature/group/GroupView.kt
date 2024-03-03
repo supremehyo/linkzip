@@ -81,9 +81,8 @@ fun GroupView(
             iconFile = R.drawable.icon_pin,
             message = stringResource(R.string.favorite_link)
         )
-        LazyColumn(
-            contentPadding = PaddingValues(22.dp, 16.dp, 22.dp, 16.dp),
-        ) {
+        Box(modifier = Modifier.height(8.dp))
+        LazyColumn {
             itemsIndexed(linkList) { index, data ->
                 LinkInGroup(data)
             }
@@ -112,7 +111,8 @@ fun TextWithIcon(modifier: Modifier, iconFile: Int, message: String) {
 fun LinkInGroup(link: LinkData) {
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(horizontal = 22.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

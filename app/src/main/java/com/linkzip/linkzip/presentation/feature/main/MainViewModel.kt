@@ -1,6 +1,9 @@
 package com.linkzip.linkzip.presentation.feature.main
 
+import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.linkzip.linkzip.data.model.HomeBottomDialogMenu
@@ -14,11 +17,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
-    private val _screenState = MutableStateFlow(MainScreenState.ONBOARDING.state)
+    private val _screenState = MutableStateFlow(MainScreenState.NONE.state)
     val screenState = _screenState.asStateFlow()
 
     private val _menuState = MutableStateFlow<HomeBottomDialogMenu>(HomeBottomDialogMenu.None)
     val menuState = _menuState.asStateFlow()
+
+    var versionCode = ""
 
     fun updateScreenState(state: String) {
         viewModelScope.launch {
@@ -43,6 +48,16 @@ class MainViewModel @Inject constructor() : ViewModel() {
             return true
         }else{
             return false
+        }
+    }
+
+    fun getAppVersion(context: Context) {
+        versionCode = try {
+            val packageInfo: PackageInfo =
+                context.packageManager.getPackageInfo(context.packageName, 0)
+            packageInfo.versionName
+        } catch (e: PackageManager.NameNotFoundException) {
+            "N/A"
         }
     }
 }

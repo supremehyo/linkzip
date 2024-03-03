@@ -70,6 +70,8 @@ fun MainView(mainViewModel: MainViewModel) {
                 println("ddd")
             }
         }
+
+        mainViewModel.updateMenuState(HomeBottomDialogMenu.None)
     }
 
     DisposableEffect(menuState){
@@ -135,13 +137,12 @@ fun MainView(mainViewModel: MainViewModel) {
                 BottomDialogComponent(
                     onDismissRequest = { showDialog = false },
                     visible = showDialog,
-                    height = 150.dp,
                     horizontalMargin = 20.dp
                 ) {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(29.dp)
                     ) {
-                        items(menuItems.size) { it ->
+                        items(menuItems.size-1) { it ->
                             BottomDialogMenuComponent(
                                 menuImage = R.drawable.guide_image,
                                 menuTitle = menuItems[it]
