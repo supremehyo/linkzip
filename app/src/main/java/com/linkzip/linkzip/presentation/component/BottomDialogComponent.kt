@@ -113,11 +113,11 @@ fun BottomDialogLinkAddGroupMenuComponent(
     ) {
         Image(
             modifier = Modifier
-                .width(60.dp)
-                .height(60.dp),
+                .width(30.dp)
+                .height(30.dp),
             painter = painterResource(id = getDrawableIcon(iconData.iconName)),
             contentDescription = "menu_image")
-        Box(modifier = Modifier.width(16.dp))
+        Box(modifier = Modifier.width(12.dp))
         Text(text = groupData.groupName ,
             style = LinkZipTheme.typography.medium18, color = LinkZipTheme.color.black)
     }

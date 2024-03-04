@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.model.BottomDialogMenu
 import com.linkzip.linkzip.data.room.GroupData
@@ -77,11 +78,21 @@ fun GroupView(
             title = groupName ?: "error"
         )
         Spacer(modifier = Modifier.height(32.dp))
-        TextWithIcon(
-            modifier = Modifier.padding(start = 22.dp),
-            iconFile = R.drawable.icon_pin,
-            message = stringResource(R.string.favorite_link)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 22.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextWithIcon(
+                iconFile = R.drawable.icon_pin,
+                message = stringResource(R.string.favorite_link)
+            )
+            TextWithIcon(
+                iconFile = R.drawable.ic_uncheck_gray,
+                message = stringResource(R.string.select_link)
+            )
+        }
         Box(modifier = Modifier.height(8.dp))
         LazyColumn {
             itemsIndexed(linkList) { index, data ->
@@ -93,8 +104,8 @@ fun GroupView(
 
 
 @Composable
-fun TextWithIcon(modifier: Modifier, iconFile: Int, message: String) {
-    Row(modifier = modifier) {
+fun TextWithIcon(iconFile: Int, message: String) {
+    Row {
         Icon(
             painter = painterResource(id = iconFile),
             contentDescription = "favorite",
@@ -120,6 +131,7 @@ fun LinkInGroup(link: LinkData) {
 
     var showDialog by remember { mutableStateOf(false) }
 
+    Log.e("adad", link.linkThumbnail)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -130,14 +142,14 @@ fun LinkInGroup(link: LinkData) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
+            AsyncImage(
                 modifier = Modifier
                     .width(128.dp)
                     .height(72.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.FillBounds,
-                painter = painterResource(id = R.drawable.ic_launcher_background),
-                contentDescription = null
+                model = link.linkThumbnail,
+                contentDescription = null,
             )
             Box(modifier = Modifier.width(20.dp))
             Column {
@@ -166,7 +178,7 @@ fun LinkInGroup(link: LinkData) {
         BottomDialogComponent(
             onDismissRequest = { showDialog = false },
             visible = showDialog,
-            horizontalMargin = 20.dp
+            horizontalMargin = 29.5.dp
         ) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(29.dp)

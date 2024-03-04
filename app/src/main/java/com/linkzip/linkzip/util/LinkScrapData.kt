@@ -9,7 +9,6 @@ import com.linkzip.linkzip.data.room.LinkData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -27,6 +26,7 @@ suspend fun LinkScrapData(url : String) : LinkData? {
             linkThumbnail = "",
             favorite = false
         )
+
         var job = CoroutineScope(Dispatchers.IO).async {
             val document = Jsoup.connect(url).get()
             val elements = document.select("meta[property^=og:]")
@@ -55,14 +55,18 @@ suspend fun LinkScrapData(url : String) : LinkData? {
                             }
                         }
                         "og:image" -> {
-                            Log.e("og:image" , el.attr("content"))
+                            el.attr("content")?.let { content ->
+                                Log.e("og:image" , el.attr("content"))
+                                resultLinkData = resultLinkData.copy(linkThumbnail = content)
+                                Log.e("data" , "$resultLinkData")
+                            }
                         }
                     }
                 }
             }
             resultLinkData = resultLinkData.copy(createDate = getCurrentDateFormatted())
-            resultLinkData = resultLinkData.copy(updateDate = getCurrentDateFormatted())
         }
+
         job.await()
         return resultLinkData
     }else{

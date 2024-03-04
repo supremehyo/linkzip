@@ -296,7 +296,10 @@ fun LinkAddView(
                 buttonName = "저장하기",
                 buttonColor = saveButtonColor,
                 onClickEvent = {
-                    homeViewModel.insertLink(resultLinkData)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        resultLinkData = resultLinkData.copy(linkThumbnail = (LinkScrapData(resultData.link)?.linkThumbnail) ?: EMPTY_THUMBNAIL)
+                        homeViewModel.insertLink(resultLinkData)
+                    }
                 },
                 isFocused = isFocused
             )
@@ -384,3 +387,5 @@ fun dropDownMenu(
         )
     }
 }
+
+const val EMPTY_THUMBNAIL = "https://mblogthumb-phinf.pstatic.net/MjAyMjA1MzFfMTY4/MDAxNjUzOTI5Mjc3NzU5.4ESIx_02zDPDaboENohTwq1ejlla-rEnFjgR5Cnp6q4g.q2K3wfKEV7JpSFs0BRAAebNJNKPL7JA8xyTvAG0F0DAg.JPEG.jikim97/resized%EF%BC%BFresized%EF%BC%BFresized%EF%BC%BFIMG%EF%BC%BF0571.jpg?type=w800"
