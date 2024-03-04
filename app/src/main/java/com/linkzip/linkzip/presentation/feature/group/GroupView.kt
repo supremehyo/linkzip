@@ -23,6 +23,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,15 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
+import com.linkzip.linkzip.data.model.BottomDialogMenu
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
+import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
-import com.linkzip.linkzip.presentation.component.LinkGroupComponent
-import com.linkzip.linkzip.presentation.component.swipeLinkGroupComponent
-import com.linkzip.linkzip.presentation.feature.addgroup.IconView
-import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 @Composable
@@ -109,6 +110,16 @@ fun TextWithIcon(modifier: Modifier, iconFile: Int, message: String) {
 
 @Composable
 fun LinkInGroup(link: LinkData) {
+
+    val menuItems = listOf(
+        BottomDialogMenu.ShareLink,
+        BottomDialogMenu.ModifyLink,
+        BottomDialogMenu.FavoriteLink,
+        BottomDialogMenu.None
+    )
+
+    var showDialog by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,7 +129,7 @@ fun LinkInGroup(link: LinkData) {
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
-        ){
+        ) {
             Image(
                 modifier = Modifier
                     .width(128.dp)
@@ -142,12 +153,33 @@ fun LinkInGroup(link: LinkData) {
                 )
             }
         }
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = {
+            showDialog = !showDialog
+        }) {
             Icon(
                 painter = painterResource(id = R.drawable.icon_threedots),
                 contentDescription = null
             )
         }
 
+        Log.e("adad", showDialog.toString())
+        BottomDialogComponent(
+            onDismissRequest = { showDialog = false },
+            visible = showDialog,
+            horizontalMargin = 20.dp
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(29.dp)
+            ) {
+                items(menuItems.size - 1) { it ->
+                    BottomDialogMenuComponent(
+                        menuItems = menuItems[it]
+                    ) {
+                        //   mainViewModel.updateMenuState(it)
+                        showDialog = false
+                    }
+                }
+            }
+        }
     }
 }

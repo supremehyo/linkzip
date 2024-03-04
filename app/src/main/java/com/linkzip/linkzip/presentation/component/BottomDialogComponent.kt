@@ -35,7 +35,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.compose.ui.window.SecureFlagPolicy
 import com.linkzip.linkzip.R
-import com.linkzip.linkzip.data.model.HomeBottomDialogMenu
+import com.linkzip.linkzip.data.model.BottomDialogMenu
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
@@ -68,7 +68,7 @@ fun BottomDialogComponent(
                     .wrapContentHeight()
                     .padding(horizontal = horizontalMargin)
                     .offset(y = (-30).dp),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(24.dp),
             ) {
                 Column(
                     modifier = Modifier
@@ -79,7 +79,9 @@ fun BottomDialogComponent(
                     Image(
                         painter = painterResource(id = R.drawable.bottom_dialog_top),
                         contentDescription = "bottom_dialog_top",
-                        modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .fillMaxWidth(),
                         alignment = Alignment.Center)
                     Box(modifier = Modifier
                         .background(color = LinkZipTheme.color.white)
@@ -102,7 +104,7 @@ fun BottomDialogLinkAddGroupMenuComponent(
 ){
     Row(
         modifier = Modifier
-            .fillMaxWidth(1f)
+            .fillMaxWidth()
             .clickable {
                 onClickAction(groupData)
             },
@@ -111,11 +113,11 @@ fun BottomDialogLinkAddGroupMenuComponent(
     ) {
         Image(
             modifier = Modifier
-                .width(24.dp)
-                .height(24.dp)
-                .padding(end = 12.dp),
+                .width(60.dp)
+                .height(60.dp),
             painter = painterResource(id = getDrawableIcon(iconData.iconName)),
             contentDescription = "menu_image")
+        Box(modifier = Modifier.width(16.dp))
         Text(text = groupData.groupName ,
             style = LinkZipTheme.typography.medium18, color = LinkZipTheme.color.black)
     }
@@ -124,15 +126,14 @@ fun BottomDialogLinkAddGroupMenuComponent(
 
 @Composable
 fun BottomDialogMenuComponent(
-    menuImage : Int,
-    menuTitle : HomeBottomDialogMenu,
-    onClickAction : (HomeBottomDialogMenu) -> Unit
+    menuItems: BottomDialogMenu,
+    onClickAction : (BottomDialogMenu) -> Unit
 ){
     Row(
         modifier = Modifier
-            .fillMaxWidth(1f)
+            .fillMaxWidth()
             .clickable {
-                onClickAction(menuTitle)
+                onClickAction(menuItems)
             },
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
@@ -140,12 +141,12 @@ fun BottomDialogMenuComponent(
         Image(
             modifier = Modifier
                 .width(24.dp)
-                .height(24.dp)
-                .padding(end = 12.dp),
-            painter = painterResource(id = menuImage),
+                .height(24.dp),
+            painter = painterResource(id = menuItems.iconImg),
             contentDescription = "menu_image")
-        Text(text = stringResource(id = menuTitle.title),
-            style = LinkZipTheme.typography.medium18, color = LinkZipTheme.color.black)
+        Box(modifier = Modifier.width(12.dp))
+        Text(text = stringResource(id = menuItems.title),
+            style = LinkZipTheme.typography.medium18, color = LinkZipTheme.color.wg70)
     }
 }
 
