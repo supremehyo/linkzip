@@ -1,8 +1,11 @@
 package com.linkzip.linkzip.presentation.feature.group
 
 import android.util.Log
+import android.view.GestureDetector
+import android.webkit.WebView
 import android.widget.ImageView
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -96,7 +99,11 @@ fun GroupView(
         Box(modifier = Modifier.height(8.dp))
         LazyColumn {
             itemsIndexed(linkList) { index, data ->
-                LinkInGroup(data)
+                Box(modifier = Modifier.clickable {
+                    Log.e("adad", "click Link TODO")
+                }) {
+                    LinkInGroup(data)
+                }
             }
         }
     }
