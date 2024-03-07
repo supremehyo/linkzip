@@ -5,6 +5,7 @@ import android.view.GestureDetector
 import android.webkit.WebView
 import android.widget.ImageView
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -26,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,13 +64,15 @@ fun GroupView(
     onActionButtonPressed: () -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
-    val backgroundColor = groupData?.second?.iconHeaderColor
-    val groupName = groupData?.first?.groupName
-
+    val backgroundColor = remember { groupData?.second?.iconHeaderColor }
+    val groupName = remember { groupData?.first?.groupName }
 
     val linkList by groupViewModel.linkListByGroup.collectAsStateWithLifecycle()
+    val favoriteList by groupViewModel.favoriteList.collectAsStateWithLifecycle()
+    val unFavoriteList by groupViewModel.unFavoriteList.collectAsStateWithLifecycle()
 
     LaunchedEffect(linkList) {
+        Log.e("adad", "$linkList")
         groupViewModel.getLinkListByGroup(groupData?.first?.groupId ?: throw NullPointerException())
     }
 
@@ -99,8 +104,41 @@ fun GroupView(
             )
         }
         Box(modifier = Modifier.height(8.dp))
+//        LazyColumn {
+//            itemsIndexed(favoriteList) { index, data ->
+//                Box(modifier = Modifier.clickable {
+//                    Log.e("adad", "click Link TODO")
+//                }) {
+//                    LinkInGroup(data)
+//                }
+//            }
+//        }
         LazyColumn {
-            itemsIndexed(linkList) { index, data ->
+            items(
+                key = { data: LinkData -> data.uid ?: throw NullPointerException() },
+                items = favoriteList
+            ) {data ->
+                Log.e("adad", "11111")
+                Box(modifier = Modifier.clickable {
+                    Log.e("adad", "click Link TODO")
+                }) {
+                    LinkInGroup(data)
+                }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .height(4.dp)
+                .fillMaxWidth()
+                .background(LinkZipTheme.color.wg10)
+        )
+        LazyColumn {
+            items(
+                key = { data: LinkData -> data.favorite },
+                items = unFavoriteList
+            ) {data ->
+                Log.e("adad", "2222")
                 Box(modifier = Modifier.clickable {
                     Log.e("adad", "click Link TODO")
                 }) {
@@ -110,7 +148,6 @@ fun GroupView(
         }
     }
 }
-
 
 @Composable
 fun TextWithIcon(iconFile: Int, message: String) {
@@ -127,13 +164,6 @@ fun TextWithIcon(iconFile: Int, message: String) {
         )
     }
 }
-val favoriteMenuItems =
-    mutableListOf(
-        BottomDialogMenu.ShareLink,
-        BottomDialogMenu.ModifyLink,
-        BottomDialogMenu.FavoriteLink,
-        BottomDialogMenu.None
-    )
 
 @Composable
 fun LinkInGroup(link: LinkData, groupViewModel: GroupViewModel = hiltViewModel()) {
@@ -198,7 +228,7 @@ fun LinkInGroup(link: LinkData, groupViewModel: GroupViewModel = hiltViewModel()
             )
         }
 
-        val menuItems = if(link.favorite) unFavoriteMenuItems else favoriteMenuItems
+        val menuItems = if (link.favorite) unFavoriteMenuItems else favoriteMenuItems
 
         BottomDialogComponent(
             onDismissRequest = { showDialog = false },

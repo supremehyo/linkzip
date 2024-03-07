@@ -29,10 +29,17 @@ class GroupViewModel @Inject  constructor(
     private val _linkListByGroup = MutableStateFlow<List<LinkData>>(emptyList())
     val linkListByGroup = _linkListByGroup.asStateFlow()
 
+    private val _favoriteList = MutableStateFlow<List<LinkData>>(emptyList())
+    val favoriteList = _favoriteList.asStateFlow()
+
+    private val _unFavoriteList = MutableStateFlow<List<LinkData>>(emptyList())
+    val unFavoriteList = _unFavoriteList.asStateFlow()
     fun getLinkListByGroup(groupId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             groupUseCase.getLinkListByGroup(groupId).collect {
                 _linkListByGroup.emit(it)
+                Log.e("adad", "getlink")
+                setFavoriteList(_linkListByGroup.value)
             }
         }
     }
@@ -44,7 +51,7 @@ class GroupViewModel @Inject  constructor(
                     is UiState.Success -> {
                         withContext(Dispatchers.Main) {
                             _linkListByGroup.value.find { it.uid == link.uid }?.favorite = favorite
-                            success.invoke()
+                              success.invoke()
                         }
                     }
                     is UiState.Error -> {
@@ -55,6 +62,15 @@ class GroupViewModel @Inject  constructor(
                     else -> {}
                 }
             }
+        }
+    }
+
+    fun setFavoriteList(list: List<LinkData>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _favoriteList.value = list.filter { it.favorite }
+            _unFavoriteList.value = list.filter { !it.favorite }
+
+            Log.e("adad 11", "${_favoriteList.value} ${_unFavoriteList.value}")
         }
     }
 }
