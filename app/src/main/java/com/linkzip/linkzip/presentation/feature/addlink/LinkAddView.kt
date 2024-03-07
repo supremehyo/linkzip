@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -70,7 +71,7 @@ fun LinkAddView(
     var menuItems by remember { mutableStateOf(listOf<GroupData>()) }
     var showDialog by remember { mutableStateOf(false) }
     var showBottomDialog by remember { mutableStateOf(false) }
-    var groupTitle by remember { mutableStateOf("그룹을 선택해주세요.") }
+    var groupTitle by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
@@ -78,17 +79,23 @@ fun LinkAddView(
     var groupIconList by remember { mutableStateOf(listOf<IconData>()) }
     var iconListFlow by remember { mutableStateOf(listOf<IconData>()) }
     var saveButtonColor by remember { mutableStateOf(Color.Black) }
+
+
     homeViewModel.getAllGroups()
-    var resultData = LinkData(
-        link = "",
-        linkGroupId = "",
-        linkTitle = "",
-        linkMemo = "",
-        createDate = "",
-        updateDate = "",
-        linkThumbnail = "",
-        favorite = false
-    )
+    var result by remember {
+        mutableStateOf(
+            LinkData(
+                link = "",
+                linkGroupId = (-1L).toString(),
+                linkTitle = "",
+                linkMemo = "",
+                createDate = "",
+                updateDate = "",
+                linkThumbnail = "",
+                favorite = false
+            )
+        )
+    }
 
     var resultLinkData by remember {
         mutableStateOf(
@@ -171,11 +178,9 @@ fun LinkAddView(
                         val text = clipData.getItemAt(0).text.toString()
                         // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
                         CoroutineScope(Dispatchers.IO).launch {
-                            var result = LinkScrapData(text)
-                            if (result != null) {
-                                resultLinkData = result
-                                showDialog = !showDialog
-                            }
+                            result = LinkScrapData(text)!!
+                            Log.e("sdfsdfsff","$result")
+                            showDialog = !showDialog
                         }
                     }
                 }
@@ -185,11 +190,9 @@ fun LinkAddView(
                     val text = clipData.getItemAt(0).text.toString()
                     // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
                     CoroutineScope(Dispatchers.IO).launch {
-                        var result = LinkScrapData(text)
-                        if (result != null) {
-                            resultData = result
-                            showDialog = !showDialog
-                        }
+                        result = LinkScrapData(text)!!
+                        Log.e("sdfsdfsff","$result")
+                        showDialog = !showDialog
                     }
                 }
             }
@@ -290,16 +293,30 @@ fun LinkAddView(
         Box(
             modifier = Modifier.padding(bottom = 19.dp)
         ) {
-            CommonButton(
-                enable = true,
-                keyBoardUpOption = true,
-                buttonName = "저장하기",
-                buttonColor = saveButtonColor,
-                onClickEvent = {
-                    homeViewModel.insertLink(resultLinkData)
-                },
-                isFocused = isFocused
-            )
+            if(resultLinkData.link.isEmpty()){
+                CommonButton(
+                    enable = false,
+                    keyBoardUpOption = true,
+                    buttonName = "저장하기",
+                    buttonColor =  LinkZipTheme.color.wg20,
+                    onClickEvent = {
+                        homeViewModel.insertLink(resultLinkData)
+                    },
+                    isFocused = isFocused
+                )
+            }else{
+                CommonButton(
+                    enable = true,
+                    keyBoardUpOption = true,
+                    buttonName = "저장하기",
+                    buttonColor =  saveButtonColor ,
+                    onClickEvent = {
+                        homeViewModel.insertLink(resultLinkData)
+                    },
+                    isFocused = isFocused
+                )
+            }
+
         }
 
         DialogComponent(
@@ -310,6 +327,9 @@ fun LinkAddView(
             content = "복사한 링크를 붙여넣을까요?",
             onClickEvent = {
                 showDialog = false
+                if (result != null) {
+                    resultLinkData = result
+                }
             }
         )
         menuItems?.let {
@@ -329,11 +349,11 @@ fun LinkAddView(
                             .padding(bottom = 32.dp)
                     )
                     LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(29.dp)
+                        verticalArrangement = Arrangement.spacedBy(29.dp),
+                        modifier = Modifier.heightIn(min = 0.dp, max = 600.dp)
                     ) {
                         itemsIndexed(it) { index, data ->
                             //그룹 없음
-                            if (data.groupIconId != -1L) {
                                 BottomDialogLinkAddGroupMenuComponent(
                                     groupData = data,
                                     iconData = iconListFlow[index]
@@ -341,12 +361,8 @@ fun LinkAddView(
                                     showBottomDialog = false
                                     groupTitle = data.groupName
                                     resultLinkData.linkGroupId = data.groupId.toString()
-                                    Log.e("clickColor"," ${iconListFlow[index].iconButtonColor} ${ Color(iconListFlow[index].iconButtonColor)}")
                                     saveButtonColor = Color(iconListFlow[index].iconButtonColor)
                                 }
-                            }else{
-
-                            }
                         }
                     }
                 }
@@ -354,6 +370,8 @@ fun LinkAddView(
         }
     }
 }
+
+
 
 @Composable
 fun dropDownMenu(
@@ -378,8 +396,8 @@ fun dropDownMenu(
             },
     ) {
         Text(
-            text = "$groupTitle",
-            color = LinkZipTheme.color.wg40,
+            text = if(groupTitle.isEmpty()) "그룹을 선택해주세요." else "$groupTitle",
+            color = if(groupTitle.isEmpty()) LinkZipTheme.color.wg40 else LinkZipTheme.color.black,
             style = LinkZipTheme.typography.medium16
         )
     }
