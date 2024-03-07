@@ -1,6 +1,7 @@
 package com.linkzip.linkzip.presentation.feature.home.all
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -23,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -36,7 +39,9 @@ import com.linkzip.linkzip.presentation.component.LinkGroupComponent
 import com.linkzip.linkzip.presentation.component.swipeLinkGroupComponent
 import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
+import com.linkzip.linkzip.presentation.feature.home.favorite.SwipeScreen
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.ShareButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -87,14 +92,13 @@ fun AllView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-
+        //ShareButton("dd")
         // 소개 레이아웃을 지웠는지 체크하는 변수가 필요
         if (isShowIntro) {
             IntroduceComponent { isDimmed ->
                 isShowIntro = !isDimmed
             }
         }
-
 
         if (groupListFlow?.isNotEmpty() == true && iconListFlow?.isNotEmpty() == true) {
             groupIconComponent(groupListFlow!!, iconListFlow!!, onClickGroup)
@@ -126,19 +130,33 @@ fun groupIconComponent(
 ) {
     var noGroup = list.find { it.groupIconId == -1L }
     Column {
-        LazyColumn() {
+        LazyColumn(
+            modifier = Modifier.heightIn(0.dp , 400.dp)
+        ) {
             itemsIndexed(list.filter { it.groupIconId != -1L }) { index, group ->
-                swipeLinkGroupComponent {
-                    LinkGroupComponent(
-                        group.groupName,
-                        getDrawableIcon(iconListFlow[index].iconName),
-                        LinkZipTheme.color.white,
-                        group.groupId
-                    ) { it ->
-                        onClickGroup.invoke(group, iconListFlow[index])
-                        Log.e("groupClick", "$it ${group.groupName}")
+                SwipeScreen(
+                    buttonComposable = {
+                        Image(
+                            painter = painterResource(id = R.drawable.delete),
+                            contentDescription = "delete",
+                        )
+                    },
+                    contentComposable = {
+                        LinkGroupComponent(
+                            group.groupName,
+                            getDrawableIcon(iconListFlow[index].iconName),
+                            LinkZipTheme.color.white,
+                            group.groupId
+                        ) { it ->
+                            onClickGroup.invoke(group, iconListFlow[index])
+                            Log.e("groupClick", "$it ${group.groupName}")
+                        }
+                    },
+                    buttonModifier = Modifier,
+                    clickAction = {
+                        Log.v("클릭","딸깍")
                     }
-                }
+                )
             }
         }
         noGroup?.let { group ->

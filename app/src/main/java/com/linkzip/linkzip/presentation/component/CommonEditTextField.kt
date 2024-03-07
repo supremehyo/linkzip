@@ -3,6 +3,7 @@ package com.linkzip.linkzip.presentation.component
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +25,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
@@ -31,29 +34,30 @@ enum class FieldSize {
     NORMAL, LARGE
 }
 
-//처음부터 값을 입력시키는 필드도 있어야함. ex.링크에서 바로 가져와서 넣기 위해서
 @Composable
 fun CommonEditTextField(
-    title : String,
-    initialText : String = "",
-    fieldType : FieldSize,
-    maxLength : Int = 12,
-    textCountOption : Boolean,
-    resultText : (Pair<String,String>) -> Unit,
-    hintText : String,
-    isFocus : (Boolean) -> Unit
-){
-    var groupNameText by remember { mutableStateOf(TextFieldValue("")) }
+    title: String,
+    initialText: String = "",
+    fieldType: FieldSize,
+    maxLength: Int = 12,
+    textCountOption: Boolean,
+    resultText: (Pair<String, String>) -> Unit,
+    hintText: String,
+    isFocus: (Boolean) -> Unit
+) {
+    var groupNameText by remember { mutableStateOf(TextFieldValue(text = initialText, selection = TextRange(initialText.length))) }
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
-    var height = when(fieldType){
-        FieldSize.NORMAL ->{
-            50.dp
-        }
-        FieldSize.LARGE->{
-            162.dp
-        }
+
+    LaunchedEffect(initialText) {
+        groupNameText = TextFieldValue(text = initialText, selection = TextRange(initialText.length))
     }
+
+    var height = when (fieldType) {
+        FieldSize.NORMAL -> 50.dp
+        FieldSize.LARGE -> 162.dp
+    }
+
     BasicTextField(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,38 +69,30 @@ fun CommonEditTextField(
             },
         value = groupNameText,
         onValueChange = {
-            if (it.text.count() <= maxLength) groupNameText = it
-            resultText(Pair(title,groupNameText.text))
+            groupNameText = it
+            resultText(Pair(title, groupNameText.text))
         },
         textStyle = LinkZipTheme.typography.medium16,
         decorationBox = { innerTextField ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        color = LinkZipTheme.color.wg10,
-                        shape = RoundedCornerShape(size = 12.dp)
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = if (isFocused) LinkZipTheme.color.wg40 else LinkZipTheme.color.wg10,
-                        shape = RoundedCornerShape(size = 12.dp)
-                    )
+                    .background(color = LinkZipTheme.color.wg10, shape = RoundedCornerShape(size = 12.dp))
+                    .border(width = 1.dp, color = if (isFocused) LinkZipTheme.color.wg40 else LinkZipTheme.color.wg10, shape = RoundedCornerShape(size = 12.dp))
                     .padding(vertical = 16.dp, horizontal = 14.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // TextField hint
                 if (groupNameText.text.isEmpty()) {
-                    Text(
-                        text = if(initialText.isNotBlank()) initialText else hintText,
-                        style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg40)
-                    )
+                    if(!isFocused){
+                        Text(
+                            text = hintText,
+                            style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg40)
+                        )
+                    }
                 }
 
-                // TextField
                 innerTextField()
 
-                // TextField count
                 if (groupNameText.text.isNotEmpty() && textCountOption) {
                     Text(
                         text = "${groupNameText.text.count()}/$maxLength",
@@ -104,6 +100,7 @@ fun CommonEditTextField(
                     )
                 }
             }
-        },
+        }
     )
 }
+

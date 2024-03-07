@@ -43,6 +43,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -158,7 +159,7 @@ fun EditGroupName(
     onBackButtonPressed: () -> Unit,
     hideKeyBoard: () -> Unit
 ) {
-    var groupNameText by remember { mutableStateOf(TextFieldValue(groupName)) }
+    var groupNameText by remember { mutableStateOf(TextFieldValue(text = groupName , selection = TextRange(0))) }
     val maxLength = 12
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
@@ -194,10 +195,12 @@ fun EditGroupName(
             ) {
                 // TextField hint
                 if (groupNameText.text.isEmpty()) {
-                    Text(
-                        text = "면접질문, 운동, 브이로그 등",
-                        style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg40)
-                    )
+                    if(!isFocused) {
+                        Text(
+                            text = "면접질문, 운동, 브이로그 등",
+                            style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg40)
+                        )
+                    }
                 }
 
                 // TextField

@@ -38,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.linkzip.linkzip.R
+import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
+import com.linkzip.linkzip.presentation.feature.home.favorite.SwipeScreen
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 
@@ -162,77 +164,30 @@ fun swipeLinkGroupComponent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IntroduceComponent(
-    isDimmed : (Boolean)->Unit
+    onClickGroup : (Boolean)->Unit
 ) {
-    var visible by remember { mutableStateOf(true) }
-    var buttonVisible by remember { mutableStateOf(false) }
-    var offsetX by remember { mutableStateOf(0.dp) }
-    val alpha by animateFloatAsState(targetValue = if (visible) 1f else 0f, label = "",)
-    val buttonAlpha by animateFloatAsState(targetValue = if (buttonVisible) 1f else 0f, label = "",)
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth(1f)
-            .alpha(alpha)
-            .pointerInput(Unit) {
-                detectTransformGestures { _, pan, _, _ ->
-                    val translationX = pan.x
-                    onLeftSwipe(translationX) { it ->
-                        if((offsetX * -1) < 100.dp){
-                            if((offsetX * -1) > 300.dp){
-                                visible = false
-                                offsetX = (offsetX + it).coerceAtLeast((-301).dp)
-                                Log.e("dddd1","${(offsetX * -1)}")
-                                isDimmed(true)
-                            }
-                            else if ((offsetX * -1) > 80.dp) {
-                                offsetX = (offsetX + it)
-                                Log.e("dddd2","${(offsetX * -1)}")
-                                buttonVisible = true
-                            }
-                            else {
-                                offsetX = (offsetX + it).coerceAtMost(0.dp)
-                                Log.e("dddd","${(offsetX * -1)}")
-                                isDimmed(false)
-                                buttonVisible = false
-                            }
-                        }else{
-                            if(it.value > 0){
-                                offsetX = (offsetX + it)
-                            }
-                        }
-                    }
-                }
-            }
-    ) {
-        //이렇게가 아니라 삭제하는 함수를 불러야함
+    SwipeScreen(
+        buttonComposable = {
+            Image(
+                painter = painterResource(id = R.drawable.delete),
+                contentDescription = "delete",
+            )
+        },
+        contentComposable = {
             LinkGroupComponent(
                 "만나서 반가워요\n링크zip을 소개할게요!",
                 R.drawable.guide_image,
                 LinkZipTheme.color.orangeFFE6C1,
                 1L,
-                modifier = Modifier.offset(x = offsetX)
             ) {
-
+                onClickGroup.invoke(true)
             }
-            Box(modifier = Modifier.alpha(buttonAlpha).width(80.dp).height(80.dp).offset(x = -24.dp).align(Alignment.CenterEnd)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(color = LinkZipTheme.color.redFB5B63)
-                            .padding(
-                                vertical = 10.dp
-                            )
-                            .clickable {
-
-                            },
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.delete),
-                            contentDescription = "delete",
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-            }
-
-    }
+        },
+        buttonModifier = Modifier,
+        clickAction = {
+            Log.v("클릭","딸깍")
+        }
+    )
 }
 
 private fun onLeftSwipe(translationX: Float,callback : (Dp)->Unit) {
