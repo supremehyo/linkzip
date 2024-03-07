@@ -31,12 +31,18 @@ interface LinkDao {
     @Query("DELETE FROM LinkData WHERE linkGroupId = :groupUid")
     fun deleteLinksByGroupId(groupUid: Long)
 
-    @Query("UPDATE LinkData SET link = :link , linkGroupId = :linkGroupId,linkTitle = :linkTitle, linkMemo = :linkMemo  WHERE uid = :uid")
+    @Query("UPDATE LinkData SET link = :link , linkGroupId = :linkGroupId, linkTitle = :linkTitle, linkMemo = :linkMemo  WHERE uid = :uid")
     fun updateLinkData(
-        uid: Int,
+        uid: Long,
         link: String,
         linkGroupId: String,
         linkTitle: String,
         linkMemo: String
+    )
+
+    @Query("UPDATE LinkData SET favorite = :favorite WHERE uid = :uid")
+    fun updateFavoriteLink(
+        favorite: Boolean,
+        uid: Long
     )
 }

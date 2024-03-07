@@ -8,6 +8,7 @@ import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.usecase.AddGroupUseCase
+import com.linkzip.linkzip.usecase.FavoriteUseCase
 import com.linkzip.linkzip.usecase.GroupUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,12 +16,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class GroupViewModel @Inject  constructor(
-    private val groupUseCase: GroupUseCase
+    private val groupUseCase: GroupUseCase,
+    private val favoriteUseCase: FavoriteUseCase
 ) : ViewModel() {
     private val _linkListByGroup = MutableStateFlow<List<LinkData>>(emptyList())
     val linkListByGroup = _linkListByGroup.asStateFlow()
@@ -28,10 +32,29 @@ class GroupViewModel @Inject  constructor(
     fun getLinkListByGroup(groupId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             groupUseCase.getLinkListByGroup(groupId).collect {
-                Log.v("getLink", "${it}")
                 _linkListByGroup.emit(it)
             }
         }
     }
 
+    fun updateFavoriteLink(favorite: Boolean, link: LinkData, success: ()->Unit, fail: ()->Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            favoriteUseCase.updateFavoriteLink(favorite, link.uid ?: throw NullPointerException()).collect {
+                when (it) {
+                    is UiState.Success -> {
+                        withContext(Dispatchers.Main) {
+                            _linkListByGroup.value.find { it.uid == link.uid }?.favorite = favorite
+                            success.invoke()
+                        }
+                    }
+                    is UiState.Error -> {
+                        withContext(Dispatchers.Main) {
+                            fail.invoke()
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
 }

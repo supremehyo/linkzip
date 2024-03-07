@@ -337,7 +337,6 @@ fun IconView(
     modifier: Modifier,
     currentIconState: IconData
 ) {
-    Log.e("adad", "$currentIconState")
     Box(modifier = modifier) {
         Icon(
             painter = painterResource(

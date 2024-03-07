@@ -81,7 +81,7 @@ fun LinkAddView(
     homeViewModel.getAllGroups()
     var resultData = LinkData(
         link = "",
-        linkGroupId = "",
+        linkGroupId = -1L,
         linkTitle = "",
         linkMemo = "",
         createDate = "",
@@ -94,7 +94,7 @@ fun LinkAddView(
         mutableStateOf(
             LinkData(
                 link = "",
-                linkGroupId = (-1L).toString(),
+                linkGroupId = -1L,
                 linkTitle = "",
                 linkMemo = "",
                 createDate = "",
@@ -297,7 +297,10 @@ fun LinkAddView(
                 buttonColor = saveButtonColor,
                 onClickEvent = {
                     CoroutineScope(Dispatchers.IO).launch {
-                        resultLinkData = resultLinkData.copy(linkThumbnail = (LinkScrapData(resultData.link)?.linkThumbnail) ?: EMPTY_THUMBNAIL)
+                        if(resultLinkData.linkThumbnail.isEmpty()) {
+                            resultLinkData = resultLinkData.copy(linkThumbnail = EMPTY_THUMBNAIL)
+                        }
+
                         homeViewModel.insertLink(resultLinkData)
                     }
                 },
@@ -343,7 +346,7 @@ fun LinkAddView(
                                 ) {
                                     showBottomDialog = false
                                     groupTitle = data.groupName
-                                    resultLinkData.linkGroupId = data.groupId.toString()
+                                    resultLinkData.linkGroupId = data.groupId
                                     Log.e("clickColor"," ${iconListFlow[index].iconButtonColor} ${ Color(iconListFlow[index].iconButtonColor)}")
                                     saveButtonColor = Color(iconListFlow[index].iconButtonColor)
                                 }

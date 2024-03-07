@@ -11,5 +11,7 @@ sealed class BottomDialogMenu(
     data object ShareLink : BottomDialogMenu(R.string.link_bottom_dialog_menu_share, R.drawable.icon_share)
     data object ModifyLink : BottomDialogMenu(R.string.link_bottom_dialog_menu_modify, R.drawable.icon_edit)
     data object FavoriteLink : BottomDialogMenu(R.string.link_bottom_dialog_menu_favorite, R.drawable.icon_pin)
+
+    data object UnFavoriteLink : BottomDialogMenu(R.string.link_bottom_dialog_menu_unfavorite, R.drawable.icon_pin)
     data object None : BottomDialogMenu(R.string.none, 0)
 }

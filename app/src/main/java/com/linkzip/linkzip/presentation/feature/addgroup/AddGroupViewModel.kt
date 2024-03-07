@@ -67,11 +67,13 @@ class AddGroupViewModel @Inject constructor(
                             success.invoke()
                         }
                     }
-
-                    else -> {
+                    is UiState.Error -> {
                         withContext(Dispatchers.Main) {
                             fail.invoke()
                         }
+                    }
+                    else -> {
+
                     }
                 }
             }
@@ -100,11 +102,13 @@ class AddGroupViewModel @Inject constructor(
                             success.invoke()
                         }
                     }
-
-                    else -> {
+                    is UiState.Error -> {
                         withContext(Dispatchers.Main) {
                             fail.invoke()
                         }
+                    }
+                    else -> {
+
                     }
                 }
             }

@@ -52,6 +52,7 @@ import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import okhttp3.internal.notifyAll
 
 @Composable
 fun GroupView(
@@ -63,11 +64,12 @@ fun GroupView(
     val backgroundColor = groupData?.second?.iconHeaderColor
     val groupName = groupData?.first?.groupName
 
-    LaunchedEffect(groupData) {
-        groupViewModel.getLinkListByGroup(groupData?.first?.groupId ?: throw NullPointerException())
-    }
 
     val linkList by groupViewModel.linkListByGroup.collectAsStateWithLifecycle()
+
+    LaunchedEffect(linkList) {
+        groupViewModel.getLinkListByGroup(groupData?.first?.groupId ?: throw NullPointerException())
+    }
 
     Column(
         modifier = Modifier
@@ -125,20 +127,35 @@ fun TextWithIcon(iconFile: Int, message: String) {
         )
     }
 }
-
-@Composable
-fun LinkInGroup(link: LinkData) {
-
-    val menuItems = listOf(
+val favoriteMenuItems =
+    mutableListOf(
         BottomDialogMenu.ShareLink,
         BottomDialogMenu.ModifyLink,
         BottomDialogMenu.FavoriteLink,
         BottomDialogMenu.None
     )
 
+@Composable
+fun LinkInGroup(link: LinkData, groupViewModel: GroupViewModel = hiltViewModel()) {
+
+    val favoriteMenuItems =
+        mutableListOf(
+            BottomDialogMenu.ShareLink,
+            BottomDialogMenu.ModifyLink,
+            BottomDialogMenu.FavoriteLink,
+            BottomDialogMenu.None
+        )
+
+    val unFavoriteMenuItems =
+        mutableListOf(
+            BottomDialogMenu.ShareLink,
+            BottomDialogMenu.ModifyLink,
+            BottomDialogMenu.UnFavoriteLink,
+            BottomDialogMenu.None
+        )
+
     var showDialog by remember { mutableStateOf(false) }
 
-    Log.e("adad", link.linkThumbnail)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -181,7 +198,8 @@ fun LinkInGroup(link: LinkData) {
             )
         }
 
-        Log.e("adad", showDialog.toString())
+        val menuItems = if(link.favorite) unFavoriteMenuItems else favoriteMenuItems
+
         BottomDialogComponent(
             onDismissRequest = { showDialog = false },
             visible = showDialog,
@@ -194,8 +212,30 @@ fun LinkInGroup(link: LinkData) {
                     BottomDialogMenuComponent(
                         menuItems = menuItems[it]
                     ) {
-                        //   mainViewModel.updateMenuState(it)
                         showDialog = false
+                        when (it) {
+                            BottomDialogMenu.ShareLink -> {
+
+                            }
+
+                            BottomDialogMenu.ModifyLink -> {
+
+                            }
+
+                            BottomDialogMenu.FavoriteLink, BottomDialogMenu.UnFavoriteLink -> {
+                                groupViewModel.updateFavoriteLink(
+                                    !link.favorite,
+                                    link,
+                                    success = {
+                                        Log.e("adad", "success")
+                                    },
+                                    fail = {
+                                        Log.e("adad", "fail")
+                                    })
+                            }
+
+                            else -> {}
+                        }
                     }
                 }
             }
