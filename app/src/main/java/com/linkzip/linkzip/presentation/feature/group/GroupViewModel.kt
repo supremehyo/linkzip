@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class GroupViewModel @Inject  constructor(
+class GroupViewModel @Inject constructor(
     private val groupUseCase: GroupUseCase,
     private val favoriteUseCase: FavoriteUseCase
 ) : ViewModel() {
@@ -44,21 +44,26 @@ class GroupViewModel @Inject  constructor(
         }
     }
 
-    fun updateFavoriteLink(favorite: Boolean, link: LinkData, success: ()->Unit, fail: ()->Unit) {
+    fun updateFavoriteLink(link: LinkData, success: () -> Unit, fail: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            favoriteUseCase.updateFavoriteLink(favorite, link.uid ?: throw NullPointerException()).collect {
+            favoriteUseCase.updateFavoriteLink(
+                !link.favorite,
+                link.uid ?: throw NullPointerException()
+            ).collect {
                 when (it) {
                     is UiState.Success -> {
-                        _linkListByGroup.value.find { it.uid == link.uid }?.favorite = favorite
+                        modifyFavoriteLink(link)
                         withContext(Dispatchers.Main) {
-                              success.invoke()
+                            success.invoke()
                         }
                     }
+
                     is UiState.Error -> {
                         withContext(Dispatchers.Main) {
                             fail.invoke()
                         }
                     }
+
                     else -> {}
                 }
             }
@@ -72,8 +77,9 @@ class GroupViewModel @Inject  constructor(
         }
     }
 
-    fun modifyFavoriteLink() {
+    private fun modifyFavoriteLink(link: LinkData) {
         viewModelScope.launch(Dispatchers.IO) {
+            _linkListByGroup.value.find { it.uid == link.uid }?.favorite = !link.favorite
             setFavoriteList(_linkListByGroup.value)
         }
     }

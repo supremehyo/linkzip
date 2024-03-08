@@ -248,11 +248,9 @@ fun LinkInGroup(link: LinkData, groupViewModel: GroupViewModel = hiltViewModel()
 
                             BottomDialogMenu.FavoriteLink, BottomDialogMenu.UnFavoriteLink -> {
                                 groupViewModel.updateFavoriteLink(
-                                    !link.favorite,
                                     link,
                                     success = {
                                         Log.e("adad", "success")
-                                        groupViewModel.modifyFavoriteLink()
                                     },
                                     fail = {
                                         Log.e("adad", "fail")
