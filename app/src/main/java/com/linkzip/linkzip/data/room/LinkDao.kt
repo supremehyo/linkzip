@@ -12,7 +12,7 @@ interface LinkDao {
     @Query("SELECT * FROM LinkData")
     fun getLinkDataList(): List<LinkData>
 
-    @Query("SELECT * FROM LinkData WHERE linkGroupId = :groupId")
+    @Query("SELECT * FROM LinkData WHERE linkGroupId = :groupId ORDER BY favorite")
     fun getLinkListByGroup(groupId: Long): List<LinkData>
 
     @Query("SELECT * FROM LinkData WHERE uid= :id")

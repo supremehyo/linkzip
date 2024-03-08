@@ -12,6 +12,7 @@ import com.linkzip.linkzip.usecase.FavoriteUseCase
 import com.linkzip.linkzip.usecase.GroupUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -29,16 +30,15 @@ class GroupViewModel @Inject  constructor(
     private val _linkListByGroup = MutableStateFlow<List<LinkData>>(emptyList())
     val linkListByGroup = _linkListByGroup.asStateFlow()
 
-    private val _favoriteList = MutableStateFlow<List<LinkData>>(emptyList())
-    val favoriteList = _favoriteList.asStateFlow()
+    private val _favoriteList = MutableSharedFlow<MutableList<LinkData>>()
+    val favoriteList = _favoriteList.asSharedFlow()
 
-    private val _unFavoriteList = MutableStateFlow<List<LinkData>>(emptyList())
-    val unFavoriteList = _unFavoriteList.asStateFlow()
+    private val _unFavoriteList = MutableSharedFlow<MutableList<LinkData>>()
+    val unFavoriteList = _unFavoriteList.asSharedFlow()
     fun getLinkListByGroup(groupId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             groupUseCase.getLinkListByGroup(groupId).collect {
                 _linkListByGroup.emit(it)
-                Log.e("adad", "getlink")
                 setFavoriteList(_linkListByGroup.value)
             }
         }
@@ -49,8 +49,8 @@ class GroupViewModel @Inject  constructor(
             favoriteUseCase.updateFavoriteLink(favorite, link.uid ?: throw NullPointerException()).collect {
                 when (it) {
                     is UiState.Success -> {
+                        _linkListByGroup.value.find { it.uid == link.uid }?.favorite = favorite
                         withContext(Dispatchers.Main) {
-                            _linkListByGroup.value.find { it.uid == link.uid }?.favorite = favorite
                               success.invoke()
                         }
                     }
@@ -65,12 +65,16 @@ class GroupViewModel @Inject  constructor(
         }
     }
 
-    fun setFavoriteList(list: List<LinkData>) {
+    private fun setFavoriteList(list: List<LinkData>) {
         viewModelScope.launch(Dispatchers.IO) {
-            _favoriteList.value = list.filter { it.favorite }
-            _unFavoriteList.value = list.filter { !it.favorite }
+            _favoriteList.emit(list.filter { it.favorite }.toMutableList())
+            _unFavoriteList.emit(list.filter { !it.favorite }.toMutableList())
+        }
+    }
 
-            Log.e("adad 11", "${_favoriteList.value} ${_unFavoriteList.value}")
+    fun modifyFavoriteLink() {
+        viewModelScope.launch(Dispatchers.IO) {
+            setFavoriteList(_linkListByGroup.value)
         }
     }
 }

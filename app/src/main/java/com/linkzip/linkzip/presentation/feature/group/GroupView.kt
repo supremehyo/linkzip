@@ -55,6 +55,7 @@ import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import kotlinx.coroutines.delay
 import okhttp3.internal.notifyAll
 
 @Composable
@@ -68,11 +69,10 @@ fun GroupView(
     val groupName = remember { groupData?.first?.groupName }
 
     val linkList by groupViewModel.linkListByGroup.collectAsStateWithLifecycle()
-    val favoriteList by groupViewModel.favoriteList.collectAsStateWithLifecycle()
-    val unFavoriteList by groupViewModel.unFavoriteList.collectAsStateWithLifecycle()
+    val favoriteList by groupViewModel.favoriteList.collectAsStateWithLifecycle(emptyList())
+    val unFavoriteList by groupViewModel.unFavoriteList.collectAsStateWithLifecycle(emptyList())
 
     LaunchedEffect(linkList) {
-        Log.e("adad", "$linkList")
         groupViewModel.getLinkListByGroup(groupData?.first?.groupId ?: throw NullPointerException())
     }
 
@@ -104,25 +104,17 @@ fun GroupView(
             )
         }
         Box(modifier = Modifier.height(8.dp))
-//        LazyColumn {
-//            itemsIndexed(favoriteList) { index, data ->
-//                Box(modifier = Modifier.clickable {
-//                    Log.e("adad", "click Link TODO")
-//                }) {
-//                    LinkInGroup(data)
-//                }
-//            }
-//        }
-        LazyColumn {
-            items(
-                key = { data: LinkData -> data.uid ?: throw NullPointerException() },
-                items = favoriteList
-            ) {data ->
-                Log.e("adad", "11111")
-                Box(modifier = Modifier.clickable {
-                    Log.e("adad", "click Link TODO")
-                }) {
-                    LinkInGroup(data)
+        if (favoriteList.isNotEmpty()) {
+            LazyColumn {
+                items(
+                    key = { data: LinkData -> data },
+                    items = favoriteList
+                ) { data ->
+                    Box(modifier = Modifier.clickable {
+                        Log.e("adad", "click Link TODO")
+                    }) {
+                        LinkInGroup(data)
+                    }
                 }
             }
         }
@@ -133,16 +125,18 @@ fun GroupView(
                 .fillMaxWidth()
                 .background(LinkZipTheme.color.wg10)
         )
-        LazyColumn {
-            items(
-                key = { data: LinkData -> data.favorite },
-                items = unFavoriteList
-            ) {data ->
-                Log.e("adad", "2222")
-                Box(modifier = Modifier.clickable {
-                    Log.e("adad", "click Link TODO")
-                }) {
-                    LinkInGroup(data)
+
+        if (unFavoriteList.isNotEmpty()) {
+            LazyColumn {
+                items(
+                    key = { data: LinkData -> data },
+                    items = unFavoriteList
+                ) { data ->
+                    Box(modifier = Modifier.clickable {
+                        Log.e("adad", "click Link TODO")
+                    }) {
+                        LinkInGroup(data)
+                    }
                 }
             }
         }
@@ -258,6 +252,7 @@ fun LinkInGroup(link: LinkData, groupViewModel: GroupViewModel = hiltViewModel()
                                     link,
                                     success = {
                                         Log.e("adad", "success")
+                                        groupViewModel.modifyFavoriteLink()
                                     },
                                     fail = {
                                         Log.e("adad", "fail")
