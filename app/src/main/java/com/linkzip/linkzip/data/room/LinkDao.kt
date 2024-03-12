@@ -1,11 +1,9 @@
 package com.linkzip.linkzip.data.room
 
-import android.net.Uri
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 
 @Dao
 interface LinkDao {
@@ -35,7 +33,7 @@ interface LinkDao {
     fun updateLinkData(
         uid: Long,
         link: String,
-        linkGroupId: String,
+        linkGroupId: Long,
         linkTitle: String,
         linkMemo: String
     )

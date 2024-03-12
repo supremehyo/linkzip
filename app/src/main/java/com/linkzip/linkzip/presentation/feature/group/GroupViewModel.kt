@@ -1,23 +1,17 @@
 package com.linkzip.linkzip.presentation.feature.group
 
-import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.linkzip.linkzip.common.UiState
-import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
-import com.linkzip.linkzip.usecase.AddGroupUseCase
 import com.linkzip.linkzip.usecase.FavoriteUseCase
 import com.linkzip.linkzip.usecase.GroupUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -70,17 +64,53 @@ class GroupViewModel @Inject constructor(
         }
     }
 
-    private fun setFavoriteList(list: List<LinkData>) {
+    fun updateLinkData(
+        uid: Long,
+        link: String,
+        groupId: Long,
+        title: String,
+        memo: String,
+        success: () -> Unit,
+        fail: () -> Unit
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
-            _favoriteList.emit(list.filter { it.favorite }.toMutableList())
-            _unFavoriteList.emit(list.filter { !it.favorite }.toMutableList())
-        }
-    }
+            groupUseCase.updateLinkData(
+                uid = uid,
+                link = link,
+                linkGroupId = groupId,
+                linkTitle = title,
+                linkMemo = memo
+            ).collect {
+            when (it) {
+                is UiState.Success -> {
+                    withContext(Dispatchers.Main) {
+                        success.invoke()
+                    }
+                }
 
-    private fun modifyFavoriteLink(link: LinkData) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _linkListByGroup.value.find { it.uid == link.uid }?.favorite = !link.favorite
-            setFavoriteList(_linkListByGroup.value)
+                is UiState.Error -> {
+                    withContext(Dispatchers.Main) {
+                        fail.invoke()
+                    }
+                }
+
+                else -> {}
+            }
         }
     }
+}
+
+private fun setFavoriteList(list: List<LinkData>) {
+    viewModelScope.launch(Dispatchers.IO) {
+        _favoriteList.emit(list.filter { it.favorite }.toMutableList())
+        _unFavoriteList.emit(list.filter { !it.favorite }.toMutableList())
+    }
+}
+
+private fun modifyFavoriteLink(link: LinkData) {
+    viewModelScope.launch(Dispatchers.IO) {
+        _linkListByGroup.value.find { it.uid == link.uid }?.favorite = !link.favorite
+        setFavoriteList(_linkListByGroup.value)
+    }
+}
 }

@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
@@ -57,13 +58,20 @@ fun MemoView(data: Triple<GroupData?, IconData?, LinkData?>?, onBackButtonPresse
             onActionButtonPressed = null,
             title = "메모"
         )
-        EditLinkMemo(data = data, modifier = Modifier.weight(1f))
+        EditLinkMemo(data = data, modifier = Modifier.weight(1f), {
+            hideKeyBoard()
+        })
 
     }
 }
 
 @Composable
-fun EditLinkMemo(data: Triple<GroupData?, IconData?, LinkData?>?, modifier: Modifier) {
+fun EditLinkMemo(
+    data: Triple<GroupData?, IconData?, LinkData?>?,
+    modifier: Modifier,
+    hideKeyBoard: () -> Unit,
+    groupViewModel: GroupViewModel = hiltViewModel()
+) {
     var isFocused by remember { mutableStateOf(false) }
     var memoText by remember { mutableStateOf(TextFieldValue(data?.third?.linkMemo ?: "")) }
     val maxMemoLength = 100
@@ -116,7 +124,23 @@ fun EditLinkMemo(data: Triple<GroupData?, IconData?, LinkData?>?, modifier: Modi
         buttonColor = Color(data!!.second!!.iconButtonColor),
         isFocused = isFocused,
         onClickEvent = {
-
+            data.third?.let {
+                groupViewModel.updateLinkData(
+                    uid = it.uid ?: throw NullPointerException(),
+                    link = it.link,
+                    groupId = it.linkGroupId,
+                    title = it.linkTitle,
+                    memo = memoText.text,
+                    success = {
+                        Log.e("adadad"," success")
+                        hideKeyBoard()
+                    },
+                    fail = {
+                        Log.e("adadad"," fail")
+                        hideKeyBoard()
+                    }
+                )
+            }
         }
     )
 }

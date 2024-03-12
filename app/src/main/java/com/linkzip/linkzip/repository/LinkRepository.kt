@@ -1,6 +1,5 @@
 package com.linkzip.linkzip.repository
 
-import android.util.Log
 import com.linkzip.linkzip.data.room.LinkDao
 import com.linkzip.linkzip.data.room.LinkData
 import javax.inject.Inject
@@ -30,5 +29,15 @@ class LinkRepository @Inject constructor(
 
     fun updateFavoriteLink(favorite: Boolean, uid: Long) {
         linkDao.updateFavoriteLink(favorite, uid)
+    }
+
+    fun updateLinkData(
+        uid: Long,
+        link: String,
+        linkGroupId: Long,
+        linkTitle: String,
+        linkMemo: String
+    ) {
+        linkDao.updateLinkData(uid, link, linkGroupId, linkTitle, linkMemo)
     }
 }

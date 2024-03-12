@@ -11,4 +11,22 @@ class GroupUseCase @Inject constructor(
     fun getLinkListByGroup(groupId: Long) = flow {
         emit(linkRepository.getLinkListByGroup(groupId))
     }
+
+    fun updateLinkData(
+        uid: Long,
+        link: String,
+        linkGroupId: Long,
+        linkTitle: String,
+        linkMemo: String
+    ) = flow {
+        emit(UiState.Loding)
+        runCatching {
+            linkRepository.updateLinkData(uid, link, linkGroupId, linkTitle, linkMemo)
+        }.onSuccess { result ->
+            emit(UiState.Success(result))
+        }.onFailure {
+            it.printStackTrace()
+            emit(UiState.Error(it))
+        }
+    }
 }
