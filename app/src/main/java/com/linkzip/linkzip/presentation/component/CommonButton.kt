@@ -1,11 +1,11 @@
 package com.linkzip.linkzip.presentation.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,11 +36,15 @@ fun CommonButton(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = if (isFocused) 0.dp else 19.dp)
-            .background(if(enable) buttonColor else LinkZipTheme.color.wg20)
+         //   .background(if (enable) buttonColor else LinkZipTheme.color.wg20)
             .height(55.dp),
         shape = if (isFocused) RoundedCornerShape(0.dp) else RoundedCornerShape(12.dp),
         onClick = { isEnabled = !isEnabled
             onClickEvent()},
+        colors = ButtonDefaults.buttonColors(
+            containerColor = buttonColor,
+            disabledContainerColor = LinkZipTheme.color.wg20
+        ),
         enabled = isEnabled,
     ) {
         Text(

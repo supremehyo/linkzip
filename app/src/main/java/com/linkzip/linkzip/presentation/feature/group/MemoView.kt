@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.group
 
+import android.util.Log
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,8 @@ import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 @Composable
 fun MemoView(data: Triple<GroupData?, IconData?, LinkData?>?, onBackButtonPressed: () -> Unit) {
+
+    Log.e("adad", data?.third?.linkMemo ?: "${data?.third}")
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current

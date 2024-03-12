@@ -124,14 +124,14 @@ fun MainNavigation(
                     mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
                 },
                 onClickMemoPressed = {
-                    MainPath.Memo.data =
+                    MainScreenState.MEMO.data =
                         Triple(MainPath.Group.data?.first, MainPath.Group.data?.second, it)
                     mainViewModel.updateScreenState(MainScreenState.MEMO.state)
                 })
         }
         composable(MainPath.Memo.path) {
             MemoView(
-                data = MainPath.Memo.data,
+                data =  MainScreenState.MEMO.data,
                 onBackButtonPressed = {
                     mainViewModel.updateScreenState(MainScreenState.GROUP.state)
                 })
