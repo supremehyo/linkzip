@@ -65,7 +65,6 @@ fun EditLinkMemo(data: Triple<GroupData?, IconData?, LinkData?>?, modifier: Modi
     var memoText by remember { mutableStateOf(TextFieldValue(data?.third?.linkMemo ?: "")) }
     val maxMemoLength = 100
 
-
     BasicTextField(
         modifier = Modifier
             .fillMaxWidth()

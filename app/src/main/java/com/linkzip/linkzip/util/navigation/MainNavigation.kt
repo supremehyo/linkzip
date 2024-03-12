@@ -12,7 +12,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.data.room.GroupData
@@ -129,7 +128,6 @@ fun MainNavigation(
                         Triple(MainPath.Group.data?.first, MainPath.Group.data?.second, it)
                     mainViewModel.updateScreenState(MainScreenState.MEMO.state)
                 })
-            it.updateState()
         }
         composable(MainPath.Memo.path) {
             MemoView(
