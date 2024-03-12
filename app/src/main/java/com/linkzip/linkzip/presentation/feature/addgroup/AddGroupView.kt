@@ -1,7 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
 import CommonToast
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -27,7 +26,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,6 +66,7 @@ import com.linkzip.linkzip.data.room.IconData.Companion.ICON_NO_GROUP
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_PALETTE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_RICE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_WINE
+import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.ADD
@@ -83,7 +82,7 @@ import java.util.Locale
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddGroupView(
-    groupData: Pair<GroupData, IconData>?,
+    groupData: Triple<GroupData?, IconData?, LinkData?>?,
     addGroupViewModel: AddGroupViewModel = hiltViewModel(),
     onBackButtonPressed: () -> Unit
 ) {
@@ -100,7 +99,7 @@ fun AddGroupView(
 
     LaunchedEffect(groupData) {
         if (groupData != null) {
-            addGroupViewModel.updateCurrentIcon(groupData.second)
+            addGroupViewModel.updateCurrentIcon(groupData.second!!)
         }
     }
 
@@ -109,7 +108,7 @@ fun AddGroupView(
         if (groupData == null) {
             "" to ADD_GROUP_TITLE
         } else {
-            groupData.first.groupName to EDIT_GROUP_TITLE
+            groupData.first?.groupName to EDIT_GROUP_TITLE
         }
     }
 
@@ -142,7 +141,7 @@ fun AddGroupView(
             groupData,
             Modifier.weight(1f),
             currentIconState,
-            groupName,
+            groupName.toString(),
             onBackButtonPressed
         ) { hideKeyBoard() }
     }
@@ -151,7 +150,7 @@ fun AddGroupView(
 // 그룹명 작성 TextField
 @Composable
 fun EditGroupName(
-    groupData: Pair<GroupData, IconData>?,
+    groupData: Triple<GroupData?, IconData?, LinkData?>?,
     modifier: Modifier,
     currentIconState: IconData,
     groupName: String,
@@ -226,7 +225,7 @@ fun EditGroupName(
 
 @Composable
 fun SaveButton(
-    groupData: Pair<GroupData, IconData>?,
+    groupData: Triple<GroupData?, IconData?, LinkData?>?,
     isFocused: Boolean,
     currentIconState: IconData,
     groupNameText: String,

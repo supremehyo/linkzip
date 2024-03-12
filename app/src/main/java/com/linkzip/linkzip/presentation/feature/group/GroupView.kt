@@ -1,16 +1,11 @@
 package com.linkzip.linkzip.presentation.feature.group
 
 import android.util.Log
-import android.view.GestureDetector
-import android.webkit.WebView
-import android.widget.ImageView
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,14 +22,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
@@ -55,14 +47,13 @@ import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
-import kotlinx.coroutines.delay
-import okhttp3.internal.notifyAll
 
 @Composable
 fun GroupView(
-    groupData: Pair<GroupData, IconData>?,
+    groupData: Triple<GroupData?, IconData?, LinkData?>?,
     onBackButtonPressed: () -> Unit,
     onActionButtonPressed: () -> Unit,
+    onClickMemoPressed: (LinkData) -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
     val backgroundColor = remember { groupData?.second?.iconHeaderColor }
@@ -113,7 +104,7 @@ fun GroupView(
                     Box(modifier = Modifier.clickable {
                         Log.e("adad", "click Link TODO")
                     }) {
-                        LinkInGroup(data)
+                        LinkInGroup(data, onClickMemoPressed)
                     }
                 }
             }
@@ -135,7 +126,7 @@ fun GroupView(
                     Box(modifier = Modifier.clickable {
                         Log.e("adad", "click Link TODO")
                     }) {
-                        LinkInGroup(data)
+                        LinkInGroup(data, onClickMemoPressed)
                     }
                 }
             }
@@ -160,7 +151,11 @@ fun TextWithIcon(iconFile: Int, message: String) {
 }
 
 @Composable
-fun LinkInGroup(link: LinkData, groupViewModel: GroupViewModel = hiltViewModel()) {
+fun LinkInGroup(
+    link: LinkData,
+    onClickMemoPressed: (LinkData) -> Unit,
+    groupViewModel: GroupViewModel = hiltViewModel()
+) {
 
     val favoriteMenuItems =
         mutableListOf(
@@ -207,9 +202,12 @@ fun LinkInGroup(link: LinkData, groupViewModel: GroupViewModel = hiltViewModel()
                 )
                 Box(modifier = Modifier.height(8.dp))
                 Text(
+                    modifier = Modifier.clickable {
+                        onClickMemoPressed.invoke(link)
+                    },
                     text = "메모 추가하기",
                     style = LinkZipTheme.typography.medium12.copy(color = LinkZipTheme.color.wg50),
-                    textDecoration = TextDecoration.Underline
+                    textDecoration = TextDecoration.Underline,
                 )
             }
         }

@@ -69,7 +69,7 @@ fun HomeNavigation(
                 },
                 onClickGroup = { group, icon ->
                     synchronized(this) {
-                        MainScreenState.GROUP.data = Pair(group, icon)
+                        MainScreenState.GROUP.data = Triple(group, icon, null)
                         mainViewModel.updateScreenState(MainScreenState.GROUP.state)
                     }
 
