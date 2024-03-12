@@ -1,6 +1,7 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
-import CommonToast
+import CustomSnackbar
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -94,7 +95,10 @@ fun AddGroupView(
         keyboardController?.hide()
     }
 
-    addGroupViewModel.getIconData()
+    LaunchedEffect(Unit) {
+        addGroupViewModel.getIconData()
+    }
+
     val currentIconState by addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
 
     LaunchedEffect(groupData) {
@@ -233,7 +237,7 @@ fun SaveButton(
     onBackButtonPressed: () -> Unit,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
-    var isShowToast by remember { mutableStateOf(AddGroupResultState.NONE) }
+    var isShowToast by remember { mutableStateOf(false) }
 
     Button(
         modifier = Modifier
@@ -261,7 +265,7 @@ fun SaveButton(
                             success = {
                                 hideKeyBoard.invoke()
                                 onBackButtonPressed.invoke()
-                                isShowToast = AddGroupResultState.SUCCESS
+                                isShowToast = true
                             },
                             fail = {
                                 hideKeyBoard.invoke()
@@ -278,7 +282,7 @@ fun SaveButton(
                             success = {
                                 hideKeyBoard.invoke()
                                 onBackButtonPressed.invoke()
-                                isShowToast = AddGroupResultState.SUCCESS
+                                isShowToast = true
                             },
                             fail = {
                                 hideKeyBoard.invoke()
@@ -287,7 +291,7 @@ fun SaveButton(
                     }
                 }
             }else{
-                isShowToast = AddGroupResultState.FAIL
+                isShowToast = true
             }
 
         },
@@ -302,33 +306,13 @@ fun SaveButton(
         )
     }
 
-    if (isShowToast == AddGroupResultState.SUCCESS) {
-        ShowAddGroupToast()
-    }else if(isShowToast  == AddGroupResultState.FAIL){
-        ShowAddGroupFailToast()
+    if(isShowToast) {
+        Log.e("adad , ", " ?ASDAF?")
+        CustomSnackbar("그룹 추가완료!", R.drawable.ic_check)
+        isShowToast = false
     }
 }
 
-
-@Composable
-fun ShowAddGroupToast() {
-    CommonToast(
-        message = "그룹 추가완료!",
-        icon = R.drawable.ic_check,
-        containerColor = LinkZipTheme.color.wg70,
-        messageColor = LinkZipTheme.color.white
-    )
-}
-
-@Composable
-fun ShowAddGroupFailToast() {
-    CommonToast(
-        message = "그룹 추가실패!",
-        icon = R.drawable.ic_check,
-        containerColor = LinkZipTheme.color.wg70,
-        messageColor = LinkZipTheme.color.white
-    )
-}
 
 // icon View
 @Composable
@@ -367,7 +351,7 @@ fun PlusIconAndBottomSheet(
             showBottomSheet = true
         }) {
         Icon(
-            painter = painterResource(id = R.drawable.icon_circle_plus_white),
+            painter = painterResource(id = R.drawable.icon_circle_plus_black),
             contentDescription = PLUS,
             tint = Color.Unspecified
         )
@@ -462,8 +446,4 @@ object AddGroupView {
     const val EDIT_GROUP_TITLE = "그룹 수정"
     const val ADD = "ADD"
     const val UPDATE = "UPDATE"
-}
-
-enum class AddGroupResultState{
-    SUCCESS , FAIL , NONE
 }

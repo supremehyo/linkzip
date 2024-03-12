@@ -34,9 +34,6 @@ import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 @Composable
 fun MemoView(data: Triple<GroupData?, IconData?, LinkData?>?, onBackButtonPressed: () -> Unit) {
-
-    Log.e("adad", data?.third?.linkMemo ?: "${data?.third}")
-
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -132,11 +129,11 @@ fun EditLinkMemo(
                     title = it.linkTitle,
                     memo = memoText.text,
                     success = {
-                        Log.e("adadad"," success")
+                        Log.e("adadad", " success")
                         hideKeyBoard()
                     },
                     fail = {
-                        Log.e("adadad"," fail")
+                        Log.e("adadad", " fail")
                         hideKeyBoard()
                     }
                 )
