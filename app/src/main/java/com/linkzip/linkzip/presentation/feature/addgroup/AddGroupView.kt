@@ -281,8 +281,8 @@ fun SaveButton(
                             date = timeString,
                             success = {
                                 hideKeyBoard.invoke()
-                                onBackButtonPressed.invoke()
                                 isShowToast = true
+                              //  onBackButtonPressed.invoke()
                             },
                             fail = {
                                 hideKeyBoard.invoke()
@@ -309,7 +309,7 @@ fun SaveButton(
     if(isShowToast) {
         Log.e("adad , ", " ?ASDAF?")
         CustomSnackbar("그룹 추가완료!", R.drawable.ic_check)
-        isShowToast = false
+
     }
 }
 
