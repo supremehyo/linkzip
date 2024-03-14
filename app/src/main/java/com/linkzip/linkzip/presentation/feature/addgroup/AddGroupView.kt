@@ -1,7 +1,5 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
-import CustomSnackbar
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -39,6 +37,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -69,6 +68,7 @@ import com.linkzip.linkzip.data.room.IconData.Companion.ICON_RICE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_WINE
 import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
+import com.linkzip.linkzip.presentation.component.CustomToast
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.ADD
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.ADD_GROUP_TITLE
@@ -282,7 +282,7 @@ fun SaveButton(
                             success = {
                                 hideKeyBoard.invoke()
                                 isShowToast = true
-                              //  onBackButtonPressed.invoke()
+                                onBackButtonPressed.invoke()
                             },
                             fail = {
                                 hideKeyBoard.invoke()
@@ -307,9 +307,10 @@ fun SaveButton(
     }
 
     if(isShowToast) {
-        Log.e("adad , ", " ?ASDAF?")
-        CustomSnackbar("그룹 추가완료!", R.drawable.ic_check)
-
+        val customToast = CustomToast(LocalContext.current)
+        customToast.MakeText(message = "그룹 추가완료!", icon = R.drawable.ic_check)
+        customToast.show()
+        isShowToast = false
     }
 }
 
