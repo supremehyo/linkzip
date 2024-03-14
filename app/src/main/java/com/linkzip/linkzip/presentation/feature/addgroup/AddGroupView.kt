@@ -309,7 +309,6 @@ fun SaveButton(
     if(isShowToast) {
         val customToast = CustomToast(LocalContext.current)
         customToast.MakeText(message = "그룹 추가완료!", icon = R.drawable.ic_check)
-        customToast.show()
         isShowToast = false
     }
 }

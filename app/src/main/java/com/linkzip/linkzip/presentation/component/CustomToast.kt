@@ -33,7 +33,6 @@ class CustomToast(context: Context) : Toast(context) {
         duration: Int = LENGTH_SHORT,
     ) {
         val context = LocalContext.current
-
         val views = ComposeView(context)
 
         views.setContent {
@@ -49,6 +48,7 @@ class CustomToast(context: Context) : Toast(context) {
 
         this.duration = duration
         this.view = views
+        this.show()
     }
 }
 
@@ -83,41 +83,5 @@ object CustomToastUtil {
                 )
             )
         }
-//        Box(
-//            modifier = Modifier
-//                .fillMaxSize(),
-//            contentAlignment = contentAlignment
-//        ) {
-//            Surface(
-//                modifier = Modifier
-//                    .wrapContentSize(),
-//                color = Color.Transparent
-//            ) {
-//                Row(
-//                    modifier = Modifier
-//                        .background(
-//                            color = backgroundColor,
-//                            shape = RoundedCornerShape(8.dp)
-//                        )
-//                        .wrapContentWidth()
-//                        .wrapContentHeight()
-//                        .padding(8.dp),
-//                    horizontalArrangement = Arrangement.Center,
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Image(
-//                        modifier = Modifier.padding(8.dp, 0.dp, 8.dp, 0.dp),
-//                        painter = painterResource(id = resourceIcon),
-//                        contentDescription = "",
-//                    )
-//                    Text(
-//                        text = messageTxt,
-//                        textAlign = TextAlign.Center,
-//                        fontSize = 16.sp,
-//                        style = TextStyle(color = whiteBackground),
-//                        modifier = Modifier.padding(0.dp, 0.dp, 8.dp, 0.dp)
-//                    )
-//                }
-//            }
-        }
+    }
 }
