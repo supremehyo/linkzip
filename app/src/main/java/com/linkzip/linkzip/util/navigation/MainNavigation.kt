@@ -12,27 +12,29 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
+import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView
 import com.linkzip.linkzip.presentation.feature.addlink.LinkAddView
 import com.linkzip.linkzip.presentation.feature.group.GroupView
+import com.linkzip.linkzip.presentation.feature.group.MemoView
 import com.linkzip.linkzip.presentation.feature.main.MainView
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.presentation.feature.onboarding.OnBoardingView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.extention.navigateSingleTopTo
 
-sealed class MainPath(val path: String, var data: Pair<GroupData, IconData>?) {
+sealed class MainPath(val path: String, var data: Triple<GroupData?, IconData?, LinkData?>?) {
     object None : MainPath("None", null)
     object Onboarding : MainPath("Onboarding", null)
     object Main : MainPath("Main", null)
     object GroupAdd : MainPath("GroupAdd", null)
     object LinkAdd : MainPath("LinkAdd", null)
     object Group : MainPath("Group", null)
+    object Memo : MainPath("Memo", null)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -68,6 +70,11 @@ fun MainNavigation(
             MainScreenState.GROUP.state -> {
                 MainPath.Group.data = MainScreenState.GROUP.data
                 navController.navigateSingleTopTo(MainPath.Group.path)
+            }
+
+            MainScreenState.MEMO.state -> {
+                MainPath.Memo.data = MainScreenState.GROUP.data
+                navController.navigateSingleTopTo(MainPath.Memo.path)
             }
         }
     }
@@ -111,12 +118,23 @@ fun MainNavigation(
             GroupView(
                 groupData = MainPath.Group.data,
                 onBackButtonPressed = {
-                mainViewModel.updateScreenState(MainScreenState.MAIN.state)
-            }, onActionButtonPressed = {
+                    mainViewModel.updateScreenState(MainScreenState.MAIN.state)
+                }, onActionButtonPressed = {
                     MainPath.GroupAdd.data = MainScreenState.GROUP.data
-                mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
-            })
-            it.updateState()
+                    mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
+                },
+                onClickMemoPressed = {
+                    MainScreenState.MEMO.data =
+                        Triple(MainPath.Group.data?.first, MainPath.Group.data?.second, it)
+                    mainViewModel.updateScreenState(MainScreenState.MEMO.state)
+                })
+        }
+        composable(MainPath.Memo.path) {
+            MemoView(
+                data =  MainScreenState.MEMO.data,
+                onBackButtonPressed = {
+                    mainViewModel.updateScreenState(MainScreenState.GROUP.state)
+                })
         }
     }
 }

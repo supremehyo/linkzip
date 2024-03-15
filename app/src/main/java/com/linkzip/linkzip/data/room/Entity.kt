@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.data.room
 
+import android.os.Parcelable
 import androidx.compose.ui.graphics.toArgb
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -34,20 +35,22 @@ import com.linkzip.linkzip.ui.theme.PURPLE_EFE7FF
 import com.linkzip.linkzip.ui.theme.RED_FB5B63
 import com.linkzip.linkzip.ui.theme.WG70
 import com.linkzip.linkzip.ui.theme.WHITE
+import kotlinx.parcelize.Parcelize
 
 @Entity
+@Parcelize
 data class LinkData(
     @PrimaryKey(autoGenerate = true)
     var uid : Long? =null,
     var link : String,
     var linkThumbnail: String,
-    var linkGroupId : String,
+    var linkGroupId : Long,
     var linkTitle : String,
     var linkMemo : String,
     var createDate : String,
     var updateDate : String,
     var favorite: Boolean
-)
+): Parcelable
 
 @Entity(tableName = "group")
 data class GroupData(

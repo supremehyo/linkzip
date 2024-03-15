@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     id(libs.plugins.org.jetbrains.kotlin.kapt.get().pluginId)
     alias(libs.plugins.hilt.plugin)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -71,7 +72,8 @@ dependencies {
     kapt(libs.hilt.compiler)
     kapt ("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
-    implementation ("org.jsoup:jsoup:1.16.1")
+    implementation ("org.jsoup:jsoup:1.17.2")
+    implementation(libs.coil.compose)
     testImplementation(libs.junit)
     implementation(libs.androidx.lifecycle.runtime.compose)
     androidTestImplementation(libs.androidx.test.ext.junit)

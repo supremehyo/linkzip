@@ -6,7 +6,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.linkzip.linkzip.data.model.HomeBottomDialogMenu
+import com.linkzip.linkzip.data.model.BottomDialogMenu
 import com.linkzip.linkzip.data.model.IS_FRIST
 import com.linkzip.linkzip.data.model.MainScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     private val _screenState = MutableStateFlow(MainScreenState.NONE.state)
     val screenState = _screenState.asStateFlow()
 
-    private val _menuState = MutableStateFlow<HomeBottomDialogMenu>(HomeBottomDialogMenu.None)
+    private val _menuState = MutableStateFlow<BottomDialogMenu>(BottomDialogMenu.None)
     val menuState = _menuState.asStateFlow()
 
     var versionCode = ""
@@ -31,7 +31,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun updateMenuState(state: HomeBottomDialogMenu) {
+    fun updateMenuState(state: BottomDialogMenu) {
         viewModelScope.launch {
             _menuState.emit(state)
         }

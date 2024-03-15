@@ -1,12 +1,11 @@
 package com.linkzip.linkzip.presentation.feature.group
 
 import android.util.Log
-import android.widget.ImageView
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +14,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,10 +22,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
@@ -36,33 +37,35 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.linkzip.linkzip.R
+import com.linkzip.linkzip.data.model.BottomDialogMenu
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
+import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
-import com.linkzip.linkzip.presentation.component.LinkGroupComponent
-import com.linkzip.linkzip.presentation.component.swipeLinkGroupComponent
-import com.linkzip.linkzip.presentation.feature.addgroup.IconView
-import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 
 @Composable
 fun GroupView(
-    groupData: Pair<GroupData, IconData>?,
+    groupData: Triple<GroupData?, IconData?, LinkData?>?,
     onBackButtonPressed: () -> Unit,
     onActionButtonPressed: () -> Unit,
+    onClickMemoPressed: (LinkData) -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
-    val backgroundColor = groupData?.second?.iconHeaderColor
-    val groupName = groupData?.first?.groupName
-
-    LaunchedEffect(groupData) {
-        groupViewModel.getLinkListByGroup(groupData?.first?.groupId ?: throw NullPointerException())
-    }
+    val backgroundColor = remember { groupData?.second?.iconHeaderColor }
+    val groupName = remember { groupData?.first?.groupName }
 
     val linkList by groupViewModel.linkListByGroup.collectAsStateWithLifecycle()
+    val favoriteList by groupViewModel.favoriteList.collectAsStateWithLifecycle(emptyList())
+    val unFavoriteList by groupViewModel.unFavoriteList.collectAsStateWithLifecycle(emptyList())
+
+    LaunchedEffect(linkList) {
+        groupViewModel.getLinkListByGroup(groupData?.first?.groupId ?: throw NullPointerException())
+    }
 
     Column(
         modifier = Modifier
@@ -76,24 +79,64 @@ fun GroupView(
             title = groupName ?: "error"
         )
         Spacer(modifier = Modifier.height(32.dp))
-        TextWithIcon(
-            modifier = Modifier.padding(start = 22.dp),
-            iconFile = R.drawable.icon_pin,
-            message = stringResource(R.string.favorite_link)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 22.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextWithIcon(
+                iconFile = R.drawable.icon_pin,
+                message = stringResource(R.string.favorite_link)
+            )
+            TextWithIcon(
+                iconFile = R.drawable.ic_uncheck_gray,
+                message = stringResource(R.string.select_link)
+            )
+        }
         Box(modifier = Modifier.height(8.dp))
-        LazyColumn {
-            itemsIndexed(linkList) { index, data ->
-                LinkInGroup(data)
+        if (favoriteList.isNotEmpty()) {
+            LazyColumn {
+                items(
+                    key = { data: LinkData -> data },
+                    items = favoriteList
+                ) { data ->
+                    Box(modifier = Modifier.clickable {
+                        Log.e("adad", "click Link TODO")
+                    }) {
+                        LinkInGroup(data, onClickMemoPressed)
+                    }
+                }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .height(4.dp)
+                .fillMaxWidth()
+                .background(LinkZipTheme.color.wg10)
+        )
+
+        if (unFavoriteList.isNotEmpty()) {
+            LazyColumn {
+                items(
+                    key = { data: LinkData -> data },
+                    items = unFavoriteList
+                ) { data ->
+                    Box(modifier = Modifier.clickable {
+                        Log.e("adad", "click Link TODO")
+                    }) {
+                        LinkInGroup(data, onClickMemoPressed)
+                    }
+                }
             }
         }
     }
 }
 
-
 @Composable
-fun TextWithIcon(modifier: Modifier, iconFile: Int, message: String) {
-    Row(modifier = modifier) {
+fun TextWithIcon(iconFile: Int, message: String) {
+    Row {
         Icon(
             painter = painterResource(id = iconFile),
             contentDescription = "favorite",
@@ -108,7 +151,30 @@ fun TextWithIcon(modifier: Modifier, iconFile: Int, message: String) {
 }
 
 @Composable
-fun LinkInGroup(link: LinkData) {
+fun LinkInGroup(
+    link: LinkData,
+    onClickMemoPressed: (LinkData) -> Unit,
+    groupViewModel: GroupViewModel = hiltViewModel()
+) {
+
+    val favoriteMenuItems =
+        mutableListOf(
+            BottomDialogMenu.ShareLink,
+            BottomDialogMenu.ModifyLink,
+            BottomDialogMenu.FavoriteLink,
+            BottomDialogMenu.None
+        )
+
+    val unFavoriteMenuItems =
+        mutableListOf(
+            BottomDialogMenu.ShareLink,
+            BottomDialogMenu.ModifyLink,
+            BottomDialogMenu.UnFavoriteLink,
+            BottomDialogMenu.None
+        )
+
+    var showDialog by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,15 +184,15 @@ fun LinkInGroup(link: LinkData) {
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
-        ){
-            Image(
+        ) {
+            AsyncImage(
                 modifier = Modifier
                     .width(128.dp)
                     .height(72.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.FillBounds,
-                painter = painterResource(id = R.drawable.ic_launcher_background),
-                contentDescription = null
+                model = link.linkThumbnail,
+                contentDescription = null,
             )
             Box(modifier = Modifier.width(20.dp))
             Column {
@@ -136,18 +202,64 @@ fun LinkInGroup(link: LinkData) {
                 )
                 Box(modifier = Modifier.height(8.dp))
                 Text(
+                    modifier = Modifier.clickable {
+                        onClickMemoPressed.invoke(link)
+                    },
                     text = "메모 추가하기",
                     style = LinkZipTheme.typography.medium12.copy(color = LinkZipTheme.color.wg50),
-                    textDecoration = TextDecoration.Underline
+                    textDecoration = TextDecoration.Underline,
                 )
             }
         }
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = {
+            showDialog = !showDialog
+        }) {
             Icon(
                 painter = painterResource(id = R.drawable.icon_threedots),
                 contentDescription = null
             )
         }
 
+        val menuItems = if (link.favorite) unFavoriteMenuItems else favoriteMenuItems
+
+        BottomDialogComponent(
+            onDismissRequest = { showDialog = false },
+            visible = showDialog,
+            horizontalMargin = 29.5.dp
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(29.dp)
+            ) {
+                items(menuItems.size - 1) { it ->
+                    BottomDialogMenuComponent(
+                        menuItems = menuItems[it]
+                    ) {
+                        showDialog = false
+                        when (it) {
+                            BottomDialogMenu.ShareLink -> {
+
+                            }
+
+                            BottomDialogMenu.ModifyLink -> {
+
+                            }
+
+                            BottomDialogMenu.FavoriteLink, BottomDialogMenu.UnFavoriteLink -> {
+                                groupViewModel.updateFavoriteLink(
+                                    link,
+                                    success = {
+                                        Log.e("adad", "success")
+                                    },
+                                    fail = {
+                                        Log.e("adad", "fail")
+                                    })
+                            }
+
+                            else -> {}
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -1,18 +1,16 @@
 package com.linkzip.linkzip.data.room
 
-import android.net.Uri
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 
 @Dao
 interface LinkDao {
     @Query("SELECT * FROM LinkData")
     fun getLinkDataList(): List<LinkData>
 
-    @Query("SELECT * FROM LinkData WHERE linkGroupId = :groupId")
+    @Query("SELECT * FROM LinkData WHERE linkGroupId = :groupId ORDER BY favorite")
     fun getLinkListByGroup(groupId: Long): List<LinkData>
 
     @Query("SELECT * FROM LinkData WHERE uid= :id")
@@ -31,12 +29,18 @@ interface LinkDao {
     @Query("DELETE FROM LinkData WHERE linkGroupId = :groupUid")
     fun deleteLinksByGroupId(groupUid: Long)
 
-    @Query("UPDATE LinkData SET link = :link , linkGroupId = :linkGroupId,linkTitle = :linkTitle, linkMemo = :linkMemo  WHERE uid = :uid")
+    @Query("UPDATE LinkData SET link = :link , linkGroupId = :linkGroupId, linkTitle = :linkTitle, linkMemo = :linkMemo  WHERE uid = :uid")
     fun updateLinkData(
-        uid: Int,
+        uid: Long,
         link: String,
-        linkGroupId: String,
+        linkGroupId: Long,
         linkTitle: String,
         linkMemo: String
+    )
+
+    @Query("UPDATE LinkData SET favorite = :favorite WHERE uid = :uid")
+    fun updateFavoriteLink(
+        favorite: Boolean,
+        uid: Long
     )
 }

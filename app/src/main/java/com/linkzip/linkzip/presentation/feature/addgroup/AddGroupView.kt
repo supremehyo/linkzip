@@ -1,7 +1,5 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
-import CommonToast
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -27,7 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +37,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -68,7 +66,9 @@ import com.linkzip.linkzip.data.room.IconData.Companion.ICON_NO_GROUP
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_PALETTE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_RICE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_WINE
+import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
+import com.linkzip.linkzip.presentation.component.CustomToast
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.ADD
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.ADD_GROUP_TITLE
@@ -83,7 +83,7 @@ import java.util.Locale
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddGroupView(
-    groupData: Pair<GroupData, IconData>?,
+    groupData: Triple<GroupData?, IconData?, LinkData?>?,
     addGroupViewModel: AddGroupViewModel = hiltViewModel(),
     onBackButtonPressed: () -> Unit
 ) {
@@ -95,12 +95,15 @@ fun AddGroupView(
         keyboardController?.hide()
     }
 
-    addGroupViewModel.getIconData()
+    LaunchedEffect(Unit) {
+        addGroupViewModel.getIconData()
+    }
+
     val currentIconState by addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
 
     LaunchedEffect(groupData) {
         if (groupData != null) {
-            addGroupViewModel.updateCurrentIcon(groupData.second)
+            addGroupViewModel.updateCurrentIcon(groupData.second!!)
         }
     }
 
@@ -109,7 +112,7 @@ fun AddGroupView(
         if (groupData == null) {
             "" to ADD_GROUP_TITLE
         } else {
-            groupData.first.groupName to EDIT_GROUP_TITLE
+            groupData.first?.groupName to EDIT_GROUP_TITLE
         }
     }
 
@@ -142,7 +145,7 @@ fun AddGroupView(
             groupData,
             Modifier.weight(1f),
             currentIconState,
-            groupName,
+            groupName.toString(),
             onBackButtonPressed
         ) { hideKeyBoard() }
     }
@@ -151,7 +154,7 @@ fun AddGroupView(
 // 그룹명 작성 TextField
 @Composable
 fun EditGroupName(
-    groupData: Pair<GroupData, IconData>?,
+    groupData: Triple<GroupData?, IconData?, LinkData?>?,
     modifier: Modifier,
     currentIconState: IconData,
     groupName: String,
@@ -226,7 +229,7 @@ fun EditGroupName(
 
 @Composable
 fun SaveButton(
-    groupData: Pair<GroupData, IconData>?,
+    groupData: Triple<GroupData?, IconData?, LinkData?>?,
     isFocused: Boolean,
     currentIconState: IconData,
     groupNameText: String,
@@ -234,7 +237,7 @@ fun SaveButton(
     onBackButtonPressed: () -> Unit,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
-    var isShowToast by remember { mutableStateOf(AddGroupResultState.NONE) }
+    var isShowToast by remember { mutableStateOf(false) }
 
     Button(
         modifier = Modifier
@@ -262,7 +265,7 @@ fun SaveButton(
                             success = {
                                 hideKeyBoard.invoke()
                                 onBackButtonPressed.invoke()
-                                isShowToast = AddGroupResultState.SUCCESS
+                                isShowToast = true
                             },
                             fail = {
                                 hideKeyBoard.invoke()
@@ -278,8 +281,8 @@ fun SaveButton(
                             date = timeString,
                             success = {
                                 hideKeyBoard.invoke()
+                                isShowToast = true
                                 onBackButtonPressed.invoke()
-                                isShowToast = AddGroupResultState.SUCCESS
                             },
                             fail = {
                                 hideKeyBoard.invoke()
@@ -288,7 +291,7 @@ fun SaveButton(
                     }
                 }
             }else{
-                isShowToast = AddGroupResultState.FAIL
+                isShowToast = true
             }
 
         },
@@ -303,33 +306,13 @@ fun SaveButton(
         )
     }
 
-    if (isShowToast == AddGroupResultState.SUCCESS) {
-        ShowAddGroupToast()
-    }else if(isShowToast  == AddGroupResultState.FAIL){
-        ShowAddGroupFailToast()
+    if(isShowToast) {
+        val customToast = CustomToast(LocalContext.current)
+        customToast.MakeText(message = "그룹 추가완료!", icon = R.drawable.ic_check)
+        isShowToast = false
     }
 }
 
-
-@Composable
-fun ShowAddGroupToast() {
-    CommonToast(
-        message = "그룹 추가완료!",
-        icon = R.drawable.ic_check,
-        containerColor = LinkZipTheme.color.wg70,
-        messageColor = LinkZipTheme.color.white
-    )
-}
-
-@Composable
-fun ShowAddGroupFailToast() {
-    CommonToast(
-        message = "그룹 추가실패!",
-        icon = R.drawable.ic_check,
-        containerColor = LinkZipTheme.color.wg70,
-        messageColor = LinkZipTheme.color.white
-    )
-}
 
 // icon View
 @Composable
@@ -337,7 +320,6 @@ fun IconView(
     modifier: Modifier,
     currentIconState: IconData
 ) {
-    Log.e("adad", "$currentIconState")
     Box(modifier = modifier) {
         Icon(
             painter = painterResource(
@@ -369,7 +351,7 @@ fun PlusIconAndBottomSheet(
             showBottomSheet = true
         }) {
         Icon(
-            painter = painterResource(id = R.drawable.icon_circle_plus_white),
+            painter = painterResource(id = R.drawable.icon_circle_plus_black),
             contentDescription = PLUS,
             tint = Color.Unspecified
         )
@@ -464,8 +446,4 @@ object AddGroupView {
     const val EDIT_GROUP_TITLE = "그룹 수정"
     const val ADD = "ADD"
     const val UPDATE = "UPDATE"
-}
-
-enum class AddGroupResultState{
-    SUCCESS , FAIL , NONE
 }

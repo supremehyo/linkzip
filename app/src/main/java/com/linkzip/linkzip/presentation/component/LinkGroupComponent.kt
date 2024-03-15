@@ -52,9 +52,7 @@ fun LinkGroupComponent(
 ){
     Row(
         modifier = (modifier ?: Modifier)
-            .padding(
-            vertical = 10.dp
-        )
+            .padding(vertical = 10.dp)
     ) {
         Card(
             modifier= Modifier
@@ -71,16 +69,15 @@ fun LinkGroupComponent(
         ){
             Row(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(horizontal = 18.dp),
+                    .fillMaxHeight(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
                     modifier = Modifier
-                        .width(36.dp)
-                        .height(36.dp)
-                        .padding(end = 8.dp),
+                        .width(60.dp)
+                        .height(60.dp)
+                        .padding(end = 16.dp),
                     painter = painterResource(id = linkGroupIcon),
                     contentDescription = "groupIcon")
                 Text(text = linkGroupName,
