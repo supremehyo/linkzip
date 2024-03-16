@@ -70,8 +70,7 @@ fun LinkGroupComponent(
             )
         ){
             Row(
-                modifier = Modifier
-                    .fillMaxHeight(),
+                modifier = Modifier.fillMaxHeight().padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
