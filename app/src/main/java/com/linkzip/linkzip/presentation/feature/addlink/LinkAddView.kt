@@ -81,8 +81,6 @@ fun LinkAddView(
     var iconListFlow by remember { mutableStateOf(listOf<IconData>()) }
     var saveButtonColor by remember { mutableStateOf(Color.Black) }
 
-
-    homeViewModel.getAllGroups()
     var result by remember {
         mutableStateOf(
             LinkData(
@@ -114,6 +112,7 @@ fun LinkAddView(
         )
     }
 
+
     LaunchedEffect(groupData) {
         if (groupData != null) {
             resultLinkData = groupData.third!!
@@ -125,6 +124,10 @@ fun LinkAddView(
             homeViewModel.iconListFlow.collect{ state ->
                 iconListFlow = state
             }
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            homeViewModel.getAllGroups()
         }
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -220,7 +223,7 @@ fun LinkAddView(
             }
     ) {
         HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed = {
-            onBackButtonPressed.invoke("GROUP")
+            onBackButtonPressed.invoke(if(groupData != null) "GROUP" else "MAIN")
         }, null,
             stringResource(if(groupData == null) R.string.add_link_title else R.string.edit_link_title)
         )

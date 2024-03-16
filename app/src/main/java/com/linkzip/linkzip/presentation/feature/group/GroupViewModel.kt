@@ -29,7 +29,7 @@ class GroupViewModel @Inject constructor(
 
     private val _unFavoriteList = MutableSharedFlow<MutableList<LinkData>>()
     val unFavoriteList = _unFavoriteList.asSharedFlow()
-    fun getLinkListByGroup(groupId: Long) {
+    fun getLinkListByGroup(groupId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             groupUseCase.getLinkListByGroup(groupId).collect {
                 _linkListByGroup.emit(it)

@@ -22,8 +22,13 @@ interface GroupDao {
     @Query("SELECT * FROM `group` WHERE groupId = :uid")
     fun getGroupByUid(uid: Long): GroupData
 
+    //그룹삭제
     @Query("DELETE FROM `group` WHERE groupId = :uid")
-    fun deleteGroupByUid(uid: Long)
+     fun deleteGroupByUid(uid: Long)
+
+    //삭제하면서 그룹없음으로 이동시키는 쿼리
+    @Query("UPDATE LinkData SET linkGroupId = '1' WHERE linkGroupId = :groupId")
+     fun updateLinkDataGroupId(groupId: Long)
 
     @Query("DELETE FROM `group`")
     fun clearGroups()
@@ -40,5 +45,12 @@ interface GroupDao {
         "SELECT * FROM `group` JOIN LinkData ON `group`.groupId = LinkData.linkGroupId"
     )
     fun loadGroupAndLink(): Map<GroupData, List<LinkData>>
+
+    @Transaction
+    fun deleteGroupAndUpdateLinks(groupId: Long) {
+        updateLinkDataGroupId(groupId)
+        deleteGroupByUid(groupId)
+    }
+
 
 }

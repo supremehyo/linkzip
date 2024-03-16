@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GroupUseCase @Inject constructor(
     private val linkRepository: LinkRepository
 ) {
-    fun getLinkListByGroup(groupId: Long) = flow {
+    fun getLinkListByGroup(groupId: String) = flow {
         emit(linkRepository.getLinkListByGroup(groupId))
     }
 

@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,12 +76,7 @@ fun AllView(
             }
         }
     }
-    LaunchedEffect(true) {
-        CoroutineScope(Dispatchers.IO).launch {
-            homeViewModel.getAllGroups()
-        }
-    }
-
+    homeViewModel.getAllGroups()
 
 
     Column(
@@ -123,9 +119,11 @@ fun AllView(
 fun groupIconComponent(
     list: List<GroupData>,
     iconListFlow: List<IconData>,
-    onClickGroup: (GroupData, IconData) -> Unit
+    onClickGroup: (GroupData, IconData) -> Unit,
+    homeViewModel: HomeViewModel = hiltViewModel(),
 ) {
     var noGroup = list.find { it.groupIconId == -1L }
+    var scope = rememberCoroutineScope()
     Column {
         LazyColumn(
             modifier = Modifier.heightIn(0.dp , 400.dp)
@@ -152,7 +150,13 @@ fun groupIconComponent(
                     },
                     buttonModifier = Modifier,
                     clickAction = {
-                        Log.v("클릭","딸깍")
+                        Log.e("asfdasdfasf" , "삭제")
+                        scope.launch(Dispatchers.IO) {
+                            homeViewModel.deleteGroupAndUpdateLinks(group.groupId)
+                            homeViewModel.getAllGroups()
+                        }
+                    //TODO 그룹 삭제
+
                     }
                 )
             }

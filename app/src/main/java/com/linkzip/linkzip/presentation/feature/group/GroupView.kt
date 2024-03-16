@@ -65,7 +65,7 @@ fun GroupView(
     val unFavoriteList by groupViewModel.unFavoriteList.collectAsStateWithLifecycle(emptyList())
 
     LaunchedEffect(linkList) {
-        groupViewModel.getLinkListByGroup(groupData?.first?.groupId ?: throw NullPointerException())
+        groupViewModel.getLinkListByGroup(groupData?.first?.groupId.toString() ?: throw NullPointerException())
     }
 
     Column(
