@@ -46,13 +46,14 @@ fun MyPageView(
             .padding(bottom = 20.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(LinkZipTheme.color.greenD4F0EB)
-            .height(80.dp),
+            .height(82.dp),
         ){
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 21.dp, vertical = 21.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
                     Text(
@@ -79,13 +80,14 @@ fun MyPageView(
             .padding(bottom = 40.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(LinkZipTheme.color.orangeFFEEB1)
-            .height(80.dp)
+            .height(82.dp)
         ){
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 21.dp, vertical = 21.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
                     Text(
