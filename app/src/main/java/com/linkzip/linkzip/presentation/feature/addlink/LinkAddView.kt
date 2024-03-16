@@ -102,7 +102,7 @@ fun LinkAddView(
         mutableStateOf(
             LinkData(
                 link = "",
-                linkGroupId = -1L,
+                linkGroupId = (-1L).toString(),
                 linkTitle = "",
                 linkMemo = "",
                 createDate = "",

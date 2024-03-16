@@ -67,7 +67,7 @@ class GroupViewModel @Inject constructor(
     fun updateLinkData(
         uid: Long,
         link: String,
-        groupId: Long,
+        groupId: String,
         title: String,
         memo: String,
         success: () -> Unit,

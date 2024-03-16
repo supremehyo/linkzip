@@ -44,7 +44,7 @@ data class LinkData(
     var uid : Long? =null,
     var link : String,
     var linkThumbnail: String,
-    var linkGroupId : Long,
+    var linkGroupId : String,
     var linkTitle : String,
     var linkMemo : String,
     var createDate : String,

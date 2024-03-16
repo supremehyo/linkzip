@@ -34,7 +34,7 @@ class LinkRepository @Inject constructor(
     fun updateLinkData(
         uid: Long,
         link: String,
-        linkGroupId: Long,
+        linkGroupId: String,
         linkTitle: String,
         linkMemo: String
     ) {
