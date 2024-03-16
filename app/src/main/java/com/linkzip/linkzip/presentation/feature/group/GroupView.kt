@@ -53,6 +53,7 @@ fun GroupView(
     groupData: Triple<GroupData?, IconData?, LinkData?>?,
     onBackButtonPressed: () -> Unit,
     onActionButtonPressed: () -> Unit,
+    onActionLinkEditPressed: (LinkData) -> Unit,
     onClickMemoPressed: (LinkData) -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
@@ -74,7 +75,9 @@ fun GroupView(
     ) {
         HeaderTitleView(
             backgroundColor = Color(backgroundColor ?: LinkZipTheme.color.white.toArgb()),
-            onBackButtonPressed = onBackButtonPressed,
+            onBackButtonPressed = {
+                onBackButtonPressed.invoke()
+            },
             onActionButtonPressed = onActionButtonPressed,
             title = groupName ?: "error"
         )
@@ -104,7 +107,7 @@ fun GroupView(
                     Box(modifier = Modifier.clickable {
                         Log.e("adad", "click Link TODO")
                     }) {
-                        LinkInGroup(data, onClickMemoPressed)
+                        LinkInGroup(data, onClickMemoPressed , onActionLinkEditPressed)
                     }
                 }
             }
@@ -126,7 +129,7 @@ fun GroupView(
                     Box(modifier = Modifier.clickable {
                         Log.e("adad", "click Link TODO")
                     }) {
-                        LinkInGroup(data, onClickMemoPressed)
+                        LinkInGroup(data, onClickMemoPressed , onActionLinkEditPressed)
                     }
                 }
             }
@@ -154,6 +157,7 @@ fun TextWithIcon(iconFile: Int, message: String) {
 fun LinkInGroup(
     link: LinkData,
     onClickMemoPressed: (LinkData) -> Unit,
+    onActionLinkEditPressed: (LinkData) -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
 
@@ -241,7 +245,7 @@ fun LinkInGroup(
                             }
 
                             BottomDialogMenu.ModifyLink -> {
-
+                                onActionLinkEditPressed(link)
                             }
 
                             BottomDialogMenu.FavoriteLink, BottomDialogMenu.UnFavoriteLink -> {

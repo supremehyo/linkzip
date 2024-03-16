@@ -51,7 +51,9 @@ fun MemoView(data: Triple<GroupData?, IconData?, LinkData?>?, onBackButtonPresse
         }) {
         HeaderTitleView(
             backgroundColor = LinkZipTheme.color.white,
-            onBackButtonPressed = onBackButtonPressed,
+            onBackButtonPressed = {
+                onBackButtonPressed.invoke()
+            },
             onActionButtonPressed = null,
             title = "메모"
         )
