@@ -78,7 +78,6 @@ fun LinkAddView(
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
     var isFocused by remember { mutableStateOf(false) }
-    var groupIconList by remember { mutableStateOf(listOf<IconData>()) }
     var iconListFlow by remember { mutableStateOf(listOf<IconData>()) }
     var saveButtonColor by remember { mutableStateOf(Color.Black) }
 
@@ -118,8 +117,6 @@ fun LinkAddView(
     LaunchedEffect(groupData) {
         if (groupData != null) {
             resultLinkData = groupData.third!!
-            resultLinkData.link = groupData.third!!.link
-            Log.e("Sdfsdfsfs" , "${resultLinkData}")
         }
     }
 
@@ -146,7 +143,7 @@ fun LinkAddView(
 
                             }
                             is UiState.Success -> {
-                                onBackButtonPressed.invoke("MAIN")
+                                onBackButtonPressed.invoke("GROUP")
                             }
                             else -> {
                                 Log.v("resultText3", "${state.uiState.toString()}")
@@ -223,7 +220,7 @@ fun LinkAddView(
             }
     ) {
         HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed = {
-            onBackButtonPressed.invoke("MAIN")
+            onBackButtonPressed.invoke("GROUP")
         }, null,
             stringResource(R.string.add_link_title)
         )
