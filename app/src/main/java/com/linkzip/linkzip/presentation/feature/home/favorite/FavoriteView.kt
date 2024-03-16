@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,6 +49,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -74,34 +77,30 @@ fun FavoriteView (
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        SwipeScreen(
-            buttonComposable = {
-                Image(
-                    painter = painterResource(id = R.drawable.delete),
-                    contentDescription = "delete",
-                )
-            },
-            contentComposable = {
-                LinkGroupComponent(
-                    "만나서 반가워요\n링크zip을 소개할게요!",
-                    R.drawable.guide_image,
-                    LinkZipTheme.color.orangeFFE6C1,
-                    1L,
-                ) {
-
-                }
-            },
-            buttonModifier = Modifier,
-            clickAction = {
-                Log.v("클릭","딸깍")
-            }
-        )
-
 
         if(favoriteLinkList!=null){
             FavoriteLinkList(favoriteLinkList!!)
         }else{
-            //아직 즐겨찾기로 등록한 링크가 없어요
+            Column(
+                modifier = Modifier.fillMaxSize().padding(bottom = 60.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    alignment = Alignment.Center,
+                    modifier = Modifier
+                        .width(45.dp)
+                        .height(42.dp),
+                    painter = painterResource(id = R.drawable.empty_link),
+                    contentDescription = "empty_link")
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(R.string.empty_favorite),
+                    style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg40),
+                    textAlign = TextAlign.Center
+                )
+            }
+
         }
     }
 }
@@ -162,8 +161,8 @@ fun SwipeScreen(
                 Box(modifier = buttonModifier
                     .align(Alignment.Center)
                     .clickable {
-                    clickAction()
-                }){
+                        clickAction()
+                    }){
                     buttonComposable()
                 }
             }

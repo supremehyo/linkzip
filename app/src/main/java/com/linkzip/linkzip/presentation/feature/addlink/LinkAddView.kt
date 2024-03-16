@@ -222,7 +222,7 @@ fun LinkAddView(
         HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed = {
             onBackButtonPressed.invoke("GROUP")
         }, null,
-            stringResource(R.string.add_link_title)
+            stringResource(if(groupData == null) R.string.add_link_title else R.string.edit_link_title)
         )
         Column(
             modifier = Modifier.padding(horizontal = 22.dp)
