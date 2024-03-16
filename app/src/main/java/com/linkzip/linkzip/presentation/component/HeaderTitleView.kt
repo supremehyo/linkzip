@@ -20,7 +20,7 @@ import com.linkzip.linkzip.ui.theme.LinkZipTheme
 @Composable
 fun HeaderTitleView(
     backgroundColor: Color,
-    onBackButtonPressed: () -> Unit,
+    onBackButtonPressed: (String) -> Unit,
     onActionButtonPressed: (() -> Unit)?,
     title: String
 ) {
@@ -36,7 +36,9 @@ fun HeaderTitleView(
         },
         navigationIcon = {
             IconButton(
-                onClick = onBackButtonPressed
+                onClick = {
+                    onBackButtonPressed.invoke("")
+                }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_arrow_left),

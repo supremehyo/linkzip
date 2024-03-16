@@ -64,9 +64,11 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LinkAddView(
+    groupData: Triple<GroupData?, IconData?, LinkData?>?,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    onBackButtonPressed: () -> Unit
+    onBackButtonPressed: (String) -> Unit
 ) {
+
     var menuItems by remember { mutableStateOf(listOf<GroupData>()) }
     var showDialog by remember { mutableStateOf(false) }
     var showBottomDialog by remember { mutableStateOf(false) }
@@ -104,6 +106,15 @@ fun LinkAddView(
             )
         )
     }
+
+    LaunchedEffect(groupData) {
+        if (groupData != null) {
+            resultLinkData = groupData.third!!
+            resultLinkData.link = groupData.third!!.link
+            Log.e("Sdfsdfsfs" , "${resultLinkData}")
+        }
+    }
+
     LaunchedEffect(true) {
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.iconListFlow.collect{ state ->
@@ -127,7 +138,7 @@ fun LinkAddView(
 
                             }
                             is UiState.Success -> {
-                                onBackButtonPressed.invoke()
+                                onBackButtonPressed.invoke("MAIN")
                             }
                             else -> {
                                 Log.v("resultText3", "${state.uiState.toString()}")
@@ -207,7 +218,9 @@ fun LinkAddView(
                 })
             }
     ) {
-        HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed, null,
+        HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed = {
+            onBackButtonPressed.invoke("MAIN")
+        }, null,
             stringResource(R.string.add_link_title)
         )
         Column(
