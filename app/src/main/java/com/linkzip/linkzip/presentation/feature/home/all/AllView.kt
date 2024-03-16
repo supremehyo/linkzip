@@ -167,7 +167,6 @@ fun groupIconComponent(
                 group.groupId
             ) {
                 onClickGroup.invoke(group, IconData.NO_GROUP)
-                Log.e("groupClick", "$it ${group.groupName}")
             }
         }
     }

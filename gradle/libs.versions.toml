@@ -1,6 +1,7 @@
 [versions]
 agp = "8.1.3"
 annotationsJava5 = "15.0"
+coilCompose = "2.6.0"
 coreSplashscreen = "1.0.1"
 hilt = "2.46.1"
 hiltNavigationCompose = "1.1.0"
@@ -25,6 +26,7 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 annotations-java5 = { module = "org.jetbrains:annotations-java5", version.ref = "annotationsJava5" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
@@ -54,6 +56,7 @@ androidx-constraintlayout-compose-android = { group = "androidx.constraintlayout
 [plugins]
 hilt-plugin = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize",  version.ref = "kotlinPlugin" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "org-jetbrains-kotlin-jvm" }
 org-jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "org-jetbrains-kotlin-android" }

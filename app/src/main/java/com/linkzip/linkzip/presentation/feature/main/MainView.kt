@@ -34,7 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.R
-import com.linkzip.linkzip.data.model.HomeBottomDialogMenu
+import com.linkzip.linkzip.data.model.BottomDialogMenu
 import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
@@ -59,9 +59,9 @@ fun MainView(mainViewModel: MainViewModel) {
         MainBottomPath.MyPage
     )
     val menuItems = listOf(
-        HomeBottomDialogMenu.LinkAdd,
-        HomeBottomDialogMenu.GroupAdd,
-        HomeBottomDialogMenu.None
+        BottomDialogMenu.LinkAdd,
+        BottomDialogMenu.GroupAdd,
+        BottomDialogMenu.None
     )
 
     LaunchedEffect(true){
@@ -71,15 +71,15 @@ fun MainView(mainViewModel: MainViewModel) {
             }
         }
 
-        mainViewModel.updateMenuState(HomeBottomDialogMenu.None)
+        mainViewModel.updateMenuState(BottomDialogMenu.None)
     }
 
     DisposableEffect(menuState){
         when(menuState){
-            HomeBottomDialogMenu.LinkAdd ->{
+            BottomDialogMenu.LinkAdd ->{
                 mainViewModel.updateScreenState(MainScreenState.LINKADD.state)
             }
-            HomeBottomDialogMenu.GroupAdd ->{
+            BottomDialogMenu.GroupAdd ->{
                 mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
             }
             else ->{
@@ -88,7 +88,7 @@ fun MainView(mainViewModel: MainViewModel) {
         }
 
         onDispose {
-            mainViewModel.updateMenuState(HomeBottomDialogMenu.None)
+            mainViewModel.updateMenuState(BottomDialogMenu.None)
         }
     }
 
@@ -144,8 +144,7 @@ fun MainView(mainViewModel: MainViewModel) {
                     ) {
                         items(menuItems.size-1) { it ->
                             BottomDialogMenuComponent(
-                                menuImage = R.drawable.guide_image,
-                                menuTitle = menuItems[it]
+                                menuItems = menuItems[it]
                             ) {
                                 mainViewModel.updateMenuState(it)
                                 showDialog = false

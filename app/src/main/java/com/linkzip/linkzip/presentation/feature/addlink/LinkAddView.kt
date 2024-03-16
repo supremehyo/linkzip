@@ -97,11 +97,12 @@ fun LinkAddView(
         )
     }
 
+
     var resultLinkData by remember {
         mutableStateOf(
             LinkData(
                 link = "",
-                linkGroupId = (-1L).toString(),
+                linkGroupId = -1L,
                 linkTitle = "",
                 linkMemo = "",
                 createDate = "",
@@ -293,6 +294,7 @@ fun LinkAddView(
         Box(
             modifier = Modifier.padding(bottom = 19.dp)
         ) {
+
             if(resultLinkData.link.isEmpty()){
                 CommonButton(
                     enable = false,
@@ -316,7 +318,6 @@ fun LinkAddView(
                     isFocused = isFocused
                 )
             }
-
         }
 
         DialogComponent(
@@ -402,3 +403,5 @@ fun dropDownMenu(
         )
     }
 }
+
+const val EMPTY_THUMBNAIL = "https://mblogthumb-phinf.pstatic.net/MjAyMjA1MzFfMTY4/MDAxNjUzOTI5Mjc3NzU5.4ESIx_02zDPDaboENohTwq1ejlla-rEnFjgR5Cnp6q4g.q2K3wfKEV7JpSFs0BRAAebNJNKPL7JA8xyTvAG0F0DAg.JPEG.jikim97/resized%EF%BC%BFresized%EF%BC%BFresized%EF%BC%BFIMG%EF%BC%BF0571.jpg?type=w800"

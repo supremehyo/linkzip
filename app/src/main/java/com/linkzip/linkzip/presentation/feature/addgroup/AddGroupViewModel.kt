@@ -1,7 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
 import android.util.Log
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,9 +18,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -67,11 +63,13 @@ class AddGroupViewModel @Inject constructor(
                             success.invoke()
                         }
                     }
-
-                    else -> {
+                    is UiState.Error -> {
                         withContext(Dispatchers.Main) {
                             fail.invoke()
                         }
+                    }
+                    else -> {
+
                     }
                 }
             }
@@ -93,18 +91,20 @@ class AddGroupViewModel @Inject constructor(
                 iconId = iconId,
                 date = date
             ).collect {
-                Log.v("updateGrup", "${it}")
+                Log.v("updateGroup", "${it}")
                 when (it) {
                     is UiState.Success -> {
                         withContext(Dispatchers.Main) {
                             success.invoke()
                         }
                     }
-
-                    else -> {
+                    is UiState.Error -> {
                         withContext(Dispatchers.Main) {
                             fail.invoke()
                         }
+                    }
+                    else -> {
+
                     }
                 }
             }

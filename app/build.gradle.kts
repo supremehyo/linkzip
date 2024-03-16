@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     id(libs.plugins.org.jetbrains.kotlin.kapt.get().pluginId)
     alias(libs.plugins.hilt.plugin)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -75,6 +76,8 @@ dependencies {
     implementation ("org.jsoup:jsoup:1.16.1")
     implementation ("androidx.compose.material:material:1.6.2")
     implementation("androidx.compose.foundation:foundation:1.6.0-alpha01")
+    implementation ("org.jsoup:jsoup:1.17.2")
+    implementation(libs.coil.compose)
     testImplementation(libs.junit)
     implementation(libs.androidx.lifecycle.runtime.compose)
     androidTestImplementation(libs.androidx.test.ext.junit)

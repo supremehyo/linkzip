@@ -16,12 +16,17 @@
     <string name="all">전체</string>
     <string name="add">추가</string>
     <string name="favorite_link">즐겨찾는 링크</string>
+    <string name="select_link">링크 선택</string>
     <string name="home_bottom_dialog_menu_linkadd">링크 추가하기</string>
     <string name="home_bottom_dialog_menu_groupadd">그룹 추가하기</string>
     <string name="none">""</string>
     <string name="linkzip_produce">만나서 반가워요\n링크zip을 소개할게요!</string>
     <string name="selet_group">그룹 선택</string>
 
+    <string name="link_bottom_dialog_menu_share">링크 공유하기</string>
+    <string name="link_bottom_dialog_menu_modify">링크 수정하기</string>
+    <string name="link_bottom_dialog_menu_favorite">즐겨찾는 링크 설정</string>
+    <string name="link_bottom_dialog_menu_unfavorite">즐겨찾는 링크 해제</string>
 
     <!-- 마이 페이지 관련 문구들  -->
     <string name="my_page_title">링크zip에서\n내 링크를 가장 쉽게 관리해보세요</string>
