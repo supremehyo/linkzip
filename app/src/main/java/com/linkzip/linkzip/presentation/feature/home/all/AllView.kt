@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,12 +35,10 @@ import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.presentation.component.IntroduceComponent
 import com.linkzip.linkzip.presentation.component.LinkGroupComponent
-import com.linkzip.linkzip.presentation.component.swipeLinkGroupComponent
+import com.linkzip.linkzip.presentation.component.SwipeScreen
 import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
-import com.linkzip.linkzip.presentation.feature.home.favorite.SwipeScreen
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
-import com.linkzip.linkzip.util.ShareButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -133,8 +130,9 @@ fun groupIconComponent(
         LazyColumn(
             modifier = Modifier.heightIn(0.dp , 400.dp)
         ) {
-            itemsIndexed(list.filter { it.groupIconId != -1L }) { index, group ->
+            itemsIndexed(list) { index, group ->
                 SwipeScreen(
+                    enable = group.groupName != "그룹없음",
                     buttonComposable = {
                         Image(
                             painter = painterResource(id = R.drawable.delete),
