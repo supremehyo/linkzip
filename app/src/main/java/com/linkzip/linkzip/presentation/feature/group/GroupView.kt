@@ -209,7 +209,7 @@ fun LinkInGroup(
                     modifier = Modifier.clickable {
                         onClickMemoPressed.invoke(link)
                     },
-                    text = "메모 추가하기",
+                    text = if(link.linkMemo.isNotEmpty()) "메모 확인하기" else "메모 추가하기",
                     style = LinkZipTheme.typography.medium12.copy(color = LinkZipTheme.color.wg50),
                     textDecoration = TextDecoration.Underline,
                 )

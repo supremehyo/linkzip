@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -30,7 +31,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -93,10 +93,6 @@ fun AddGroupView(
     fun hideKeyBoard() {
         focusManager.clearFocus()
         keyboardController?.hide()
-    }
-
-    LaunchedEffect(Unit) {
-        addGroupViewModel.getIconData()
     }
 
     val currentIconState by addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
@@ -346,9 +342,12 @@ fun PlusIconAndBottomSheet(
     modifier: Modifier,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
+    val allIconList by addGroupViewModel.iconListFlow.collectAsStateWithLifecycle(null)
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    val allIconList by addGroupViewModel.iconListFlow.collectAsStateWithLifecycle(null)
+    LaunchedEffect(Unit) {
+        addGroupViewModel.getIconData()
+    }
 
     IconButton(
         modifier = modifier,
@@ -372,6 +371,7 @@ fun PlusIconAndBottomSheet(
                 text = "그룹 아이콘 선택",
                 style = LinkZipTheme.typography.medium18.copy(color = LinkZipTheme.color.wg70),
             )
+            Log.e("adadad", "$allIconList")
             when (allIconList) {
                 is UiState.Success -> {
                     LazyVerticalGrid(
@@ -415,7 +415,8 @@ fun PlusIconAndBottomSheet(
                 }
 
                 else -> {
-                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
+                    Log.e("adadad", " 1212 $allIconList")
+              //      CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
                 }
             }
 
