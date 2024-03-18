@@ -1,6 +1,7 @@
 package com.linkzip.linkzip.presentation.feature.home.all
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,10 +20,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -33,7 +36,7 @@ import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.presentation.component.IntroduceComponent
 import com.linkzip.linkzip.presentation.component.LinkGroupComponent
-import com.linkzip.linkzip.presentation.component.swipeLinkGroupComponent
+import com.linkzip.linkzip.presentation.component.SwipeScreen
 import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
@@ -73,12 +76,7 @@ fun AllView(
             }
         }
     }
-    LaunchedEffect(true) {
-        CoroutineScope(Dispatchers.IO).launch {
-            homeViewModel.getAllGroups()
-        }
-    }
-
+    homeViewModel.getAllGroups()
 
 
     Column(
@@ -87,14 +85,13 @@ fun AllView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-
+        //ShareButton("dd")
         // 소개 레이아웃을 지웠는지 체크하는 변수가 필요
         if (isShowIntro) {
             IntroduceComponent { isDimmed ->
                 isShowIntro = !isDimmed
             }
         }
-
 
         if (groupListFlow?.isNotEmpty() == true && iconListFlow?.isNotEmpty() == true) {
             groupIconComponent(groupListFlow!!, iconListFlow!!, onClickGroup)
@@ -122,22 +119,46 @@ fun AllView(
 fun groupIconComponent(
     list: List<GroupData>,
     iconListFlow: List<IconData>,
-    onClickGroup: (GroupData, IconData) -> Unit
+    onClickGroup: (GroupData, IconData) -> Unit,
+    homeViewModel: HomeViewModel = hiltViewModel(),
 ) {
     var noGroup = list.find { it.groupIconId == -1L }
+    var scope = rememberCoroutineScope()
     Column {
-        LazyColumn() {
-            itemsIndexed(list.filter { it.groupIconId != -1L }) { index, group ->
-                swipeLinkGroupComponent {
-                    LinkGroupComponent(
-                        group.groupName,
-                        getDrawableIcon(iconListFlow[index].iconName),
-                        LinkZipTheme.color.white,
-                        group.groupId
-                    ) { it ->
-                        onClickGroup.invoke(group, iconListFlow[index])
+        LazyColumn(
+            modifier = Modifier.heightIn(0.dp , 400.dp)
+        ) {
+            itemsIndexed(list) { index, group ->
+                SwipeScreen(
+                    enable = group.groupName != "그룹없음",
+                    buttonComposable = {
+                        Image(
+                            painter = painterResource(id = R.drawable.delete),
+                            contentDescription = "delete",
+                        )
+                    },
+                    contentComposable = {
+                        LinkGroupComponent(
+                            group.groupName,
+                            getDrawableIcon(iconListFlow[index].iconName),
+                            LinkZipTheme.color.white,
+                            group.groupId
+                        ) { it ->
+                            onClickGroup.invoke(group, iconListFlow[index])
+                            Log.e("groupClick", "$it ${group.groupName}")
+                        }
+                    },
+                    buttonModifier = Modifier,
+                    clickAction = {
+                        Log.e("asfdasdfasf" , "삭제")
+                        scope.launch(Dispatchers.IO) {
+                            homeViewModel.deleteGroupAndUpdateLinks(group.groupId)
+                            homeViewModel.getAllGroups()
+                        }
+                    //TODO 그룹 삭제
+
                     }
-                }
+                )
             }
         }
         noGroup?.let { group ->

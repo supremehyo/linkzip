@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -80,7 +81,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddGroupView(
     groupData: Triple<GroupData?, IconData?, LinkData?>?,
@@ -126,7 +126,10 @@ fun AddGroupView(
                 })
             }
     ) {
-        HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed, null, title)
+        HeaderTitleView(LinkZipTheme.color.white,
+            onBackButtonPressed = {
+                onBackButtonPressed.invoke()
+            }, null, title)
         Spacer(modifier = Modifier.height(28.dp))
         IconView(
             modifier = Modifier
@@ -161,7 +164,7 @@ fun EditGroupName(
     onBackButtonPressed: () -> Unit,
     hideKeyBoard: () -> Unit
 ) {
-    var groupNameText by remember { mutableStateOf(TextFieldValue(groupName)) }
+    var groupNameText by remember { mutableStateOf(TextFieldValue(text = groupName , selection = TextRange(0))) }
     val maxLength = 12
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
@@ -197,10 +200,12 @@ fun EditGroupName(
             ) {
                 // TextField hint
                 if (groupNameText.text.isEmpty()) {
-                    Text(
-                        text = "면접질문, 운동, 브이로그 등",
-                        style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg40)
-                    )
+                    if(!isFocused) {
+                        Text(
+                            text = "면접질문, 운동, 브이로그 등",
+                            style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg40)
+                        )
+                    }
                 }
 
                 // TextField

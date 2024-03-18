@@ -59,7 +59,7 @@ abstract class LinkRoomDataBase : RoomDatabase() {
 
                             getDatabase(context).groupDao().insertGroup(
                                 GroupData(
-                                    groupIconId = -1L,
+                                    groupIconId = 1L,
                                     groupName = "그룹없음",
                                     createDate = timeString,
                                     updateDate = timeString

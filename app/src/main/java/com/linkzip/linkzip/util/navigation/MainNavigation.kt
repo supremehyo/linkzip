@@ -2,6 +2,7 @@ package com.linkzip.linkzip.util.navigation
 
 import android.app.Activity
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +65,7 @@ fun MainNavigation(
             }
 
             MainScreenState.LINKADD.state -> {
+                MainPath.LinkAdd.data = MainScreenState.LINKADD.data
                 navController.navigateSingleTopTo(MainPath.LinkAdd.path)
             }
 
@@ -101,6 +103,7 @@ fun MainNavigation(
 
             // 그룹 데이터 초기화
             MainPath.GroupAdd.data = null
+            MainPath.LinkAdd.data = null
 
             MainView(mainViewModel)
         }
@@ -110,8 +113,14 @@ fun MainNavigation(
             }
         }
         composable(MainPath.LinkAdd.path) {
-            LinkAddView {
-                mainViewModel.updateScreenState(MainScreenState.MAIN.state)
+            LinkAddView(
+                MainPath.LinkAdd.data
+            ) { it->
+                if(it == "MAIN"){
+                    mainViewModel.updateScreenState(MainScreenState.MAIN.state)
+                }else{
+                    mainViewModel.updateScreenState(MainScreenState.GROUP.state)
+                }
             }
         }
         composable(MainPath.Group.path) {
@@ -119,15 +128,22 @@ fun MainNavigation(
                 groupData = MainPath.Group.data,
                 onBackButtonPressed = {
                     mainViewModel.updateScreenState(MainScreenState.MAIN.state)
-                }, onActionButtonPressed = {
+                },
+                onActionButtonPressed = {
                     MainPath.GroupAdd.data = MainScreenState.GROUP.data
                     mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
                 },
                 onClickMemoPressed = {
-                    MainScreenState.MEMO.data =
-                        Triple(MainPath.Group.data?.first, MainPath.Group.data?.second, it)
+                    MainScreenState.MEMO.data = Triple(MainPath.Group.data?.first, MainPath.Group.data?.second, it)
                     mainViewModel.updateScreenState(MainScreenState.MEMO.state)
-                })
+                },
+                onActionLinkEditPressed = {
+                    Log.e("linkEditData" , "$it")
+                    MainScreenState.LINKADD.data = Triple(MainPath.LinkAdd.data?.first, MainPath.LinkAdd.data?.second, it)
+                    Log.e("linkEditData2" , "${MainPath.LinkAdd.data}")
+                    mainViewModel.updateScreenState(MainScreenState.LINKADD.state)
+                }
+            )
         }
         composable(MainPath.Memo.path) {
             MemoView(

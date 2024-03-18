@@ -11,7 +11,7 @@ class LinkRepository @Inject constructor(
         return linkDao.getLinkDataList()
     }
 
-    fun getLinkListByGroup(groupId: Long): List<LinkData> {
+    fun getLinkListByGroup(groupId: String): List<LinkData> {
         return linkDao.getLinkListByGroup(groupId)
     }
 
@@ -34,7 +34,7 @@ class LinkRepository @Inject constructor(
     fun updateLinkData(
         uid: Long,
         link: String,
-        linkGroupId: Long,
+        linkGroupId: String,
         linkTitle: String,
         linkMemo: String
     ) {
