@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.group
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -160,6 +162,7 @@ fun LinkInGroup(
     onActionLinkEditPressed: (LinkData) -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
 
     val favoriteMenuItems =
         mutableListOf(
@@ -241,7 +244,12 @@ fun LinkInGroup(
                         showDialog = false
                         when (it) {
                             BottomDialogMenu.ShareLink -> {
-
+                                val shareIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, link.link)
+                                    type = "text/plain"
+                                }
+                                context.startActivity(Intent.createChooser(shareIntent, null))
                             }
 
                             BottomDialogMenu.ModifyLink -> {
