@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.group
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.linkzip.linkzip.common.UiState
@@ -29,6 +30,36 @@ class GroupViewModel @Inject constructor(
 
     private val _unFavoriteList = MutableSharedFlow<MutableList<LinkData>>()
     val unFavoriteList = _unFavoriteList.asSharedFlow()
+
+    private val _selectLinkList = MutableStateFlow<List<LinkData>>(emptyList())
+    val selectLinkList = _selectLinkList.asStateFlow()
+
+    fun clearSelectLinkList() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _selectLinkList.emit(emptyList())
+        }
+    }
+
+    fun addSelectLinkList(link: LinkData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val tempList = _selectLinkList.value.toMutableList()
+            tempList.add(link)
+
+            _selectLinkList.emit(tempList)
+            Log.e("adad add", "${_selectLinkList.value}")
+        }
+    }
+
+    fun deleteSelectLinkList(link: LinkData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val tempList = _selectLinkList.value.toMutableList()
+            tempList.remove(link)
+
+            _selectLinkList.emit(tempList)
+            Log.e("adad delete", "${_selectLinkList.value}")
+        }
+    }
+
     fun getLinkListByGroup(groupId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             groupUseCase.getLinkListByGroup(groupId).collect {

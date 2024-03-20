@@ -61,7 +61,7 @@ fun GroupView(
     val backgroundColor = remember { groupData?.second?.iconHeaderColor }
     val groupName = remember { groupData?.first?.groupName }
 
-    var isStatusSelectLink = remember { mutableStateOf(false) }
+    var isStatusSelectLink by remember { mutableStateOf(false) }
 
     val linkList by groupViewModel.linkListByGroup.collectAsStateWithLifecycle()
     val favoriteList by groupViewModel.favoriteList.collectAsStateWithLifecycle(emptyList())
@@ -102,9 +102,12 @@ fun GroupView(
                 modifier = Modifier.clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }) {
-                    isStatusSelectLink.value = !isStatusSelectLink.value
+                    isStatusSelectLink = !isStatusSelectLink
+
+                    // 선택한 or 선택된 링크 리스트 초기화
+                    groupViewModel.clearSelectLinkList()
                 },
-                iconFile = if(isStatusSelectLink.value) R.drawable.ic_check_gray else R.drawable.ic_uncheck_gray,
+                iconFile = if(isStatusSelectLink) R.drawable.ic_check_gray else R.drawable.ic_uncheck_gray,
                 message = stringResource(R.string.select_link)
             )
         }
@@ -118,7 +121,7 @@ fun GroupView(
                     Box(modifier = Modifier.clickable {
                         Log.e("adad", "click Link TODO")
                     }) {
-                        LinkInGroup(data, onClickMemoPressed, onActionLinkEditPressed, isStatusSelectLink.value)
+                        LinkInGroup(data, onClickMemoPressed, onActionLinkEditPressed, isStatusSelectLink)
                     }
                 }
             }
@@ -140,15 +143,17 @@ fun GroupView(
                     Box(modifier = Modifier.clickable {
                         Log.e("adad", "click Link TODO")
                     }) {
-                        LinkInGroup(data, onClickMemoPressed, onActionLinkEditPressed, isStatusSelectLink.value)
+                        LinkInGroup(data, onClickMemoPressed, onActionLinkEditPressed, isStatusSelectLink)
                     }
                 }
             }
         }
 
-        if(isStatusSelectLink.value) {
+        if(isStatusSelectLink) {
             Spacer(modifier = Modifier.weight(1f))
-            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 11.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 11.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                 Box(modifier = Modifier
                     .background(
                         color = LinkZipTheme.color.wg20,
@@ -176,7 +181,9 @@ fun GroupView(
 fun TextWithIcon(modifier: Modifier, iconFile: Int, message: String) {
     Row(modifier = modifier) {
         Icon(
-            modifier = Modifier.width(16.dp).height(16.dp),
+            modifier = Modifier
+                .width(16.dp)
+                .height(16.dp),
             painter = painterResource(id = iconFile),
             contentDescription = "favorite",
             tint = Color.Unspecified
@@ -197,6 +204,7 @@ fun LinkInGroup(
     isStatusSelectLink: Boolean,
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
+    var isSelected by remember { mutableStateOf(false) }
 
     val favoriteMenuItems =
         mutableListOf(
@@ -254,11 +262,18 @@ fun LinkInGroup(
         }
         if(isStatusSelectLink) {
             IconButton(onClick = {
-
+                isSelected = !isSelected
+                if(isSelected) {
+                    groupViewModel.addSelectLinkList(link)
+                } else {
+                    groupViewModel.deleteSelectLinkList(link)
+                }
             }) {
                 Icon(
-                    modifier = Modifier.width(24.dp).height(24.dp),
-                    painter = painterResource(id = R.drawable.ic_uncheck_gray),
+                    modifier = Modifier
+                        .width(24.dp)
+                        .height(24.dp),
+                    painter = painterResource(id = if(isSelected) R.drawable.ic_check_gray else R.drawable.ic_uncheck_gray),
                     tint = Color.Unspecified,
                     contentDescription = null
                 )
@@ -268,7 +283,9 @@ fun LinkInGroup(
                 showDialog = !showDialog
             }) {
                 Icon(
-                    modifier = Modifier.width(24.dp).height(24.dp),
+                    modifier = Modifier
+                        .width(24.dp)
+                        .height(24.dp),
                     painter = painterResource(id = R.drawable.icon_threedots),
                     tint = Color.Unspecified,
                     contentDescription = null
