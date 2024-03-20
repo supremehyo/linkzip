@@ -3,6 +3,7 @@ package com.linkzip.linkzip.presentation.feature.group
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,12 +61,16 @@ fun GroupView(
     val backgroundColor = remember { groupData?.second?.iconHeaderColor }
     val groupName = remember { groupData?.first?.groupName }
 
+    var isStatusSelectLink = remember { mutableStateOf(false) }
+
     val linkList by groupViewModel.linkListByGroup.collectAsStateWithLifecycle()
     val favoriteList by groupViewModel.favoriteList.collectAsStateWithLifecycle(emptyList())
     val unFavoriteList by groupViewModel.unFavoriteList.collectAsStateWithLifecycle(emptyList())
 
     LaunchedEffect(linkList) {
-        groupViewModel.getLinkListByGroup(groupData?.first?.groupId.toString() ?: throw NullPointerException())
+        groupViewModel.getLinkListByGroup(
+            groupData?.first?.groupId.toString() ?: throw NullPointerException()
+        )
     }
 
     Column(
@@ -89,11 +94,17 @@ fun GroupView(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TextWithIcon(
+                modifier = Modifier,
                 iconFile = R.drawable.icon_pin,
                 message = stringResource(R.string.favorite_link)
             )
             TextWithIcon(
-                iconFile = R.drawable.ic_uncheck_gray,
+                modifier = Modifier.clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }) {
+                    isStatusSelectLink.value = !isStatusSelectLink.value
+                },
+                iconFile = if(isStatusSelectLink.value) R.drawable.ic_check_gray else R.drawable.ic_uncheck_gray,
                 message = stringResource(R.string.select_link)
             )
         }
@@ -107,7 +118,7 @@ fun GroupView(
                     Box(modifier = Modifier.clickable {
                         Log.e("adad", "click Link TODO")
                     }) {
-                        LinkInGroup(data, onClickMemoPressed , onActionLinkEditPressed)
+                        LinkInGroup(data, onClickMemoPressed, onActionLinkEditPressed, isStatusSelectLink.value)
                     }
                 }
             }
@@ -129,8 +140,32 @@ fun GroupView(
                     Box(modifier = Modifier.clickable {
                         Log.e("adad", "click Link TODO")
                     }) {
-                        LinkInGroup(data, onClickMemoPressed , onActionLinkEditPressed)
+                        LinkInGroup(data, onClickMemoPressed, onActionLinkEditPressed, isStatusSelectLink.value)
                     }
+                }
+            }
+        }
+
+        if(isStatusSelectLink.value) {
+            Spacer(modifier = Modifier.weight(1f))
+            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 11.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                Box(modifier = Modifier
+                    .background(
+                        color = LinkZipTheme.color.wg20,
+                        shape = RoundedCornerShape(size = 12.dp)
+                    )
+                    .padding(horizontal = 44.dp, vertical = 18.dp)
+                ) {
+                    Text(text = "그룹 이동", style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg70))
+                }
+                Box(modifier = Modifier
+                    .background(
+                        color = LinkZipTheme.color.red,
+                        shape = RoundedCornerShape(size = 12.dp)
+                    )
+                    .padding(horizontal = 44.dp, vertical = 18.dp)
+                ) {
+                    Text(text = "선택 삭제", style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.white))
                 }
             }
         }
@@ -138,9 +173,10 @@ fun GroupView(
 }
 
 @Composable
-fun TextWithIcon(iconFile: Int, message: String) {
-    Row {
+fun TextWithIcon(modifier: Modifier, iconFile: Int, message: String) {
+    Row(modifier = modifier) {
         Icon(
+            modifier = Modifier.width(16.dp).height(16.dp),
             painter = painterResource(id = iconFile),
             contentDescription = "favorite",
             tint = Color.Unspecified
@@ -158,6 +194,7 @@ fun LinkInGroup(
     link: LinkData,
     onClickMemoPressed: (LinkData) -> Unit,
     onActionLinkEditPressed: (LinkData) -> Unit,
+    isStatusSelectLink: Boolean,
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
 
@@ -209,20 +246,36 @@ fun LinkInGroup(
                     modifier = Modifier.clickable {
                         onClickMemoPressed.invoke(link)
                     },
-                    text = if(link.linkMemo.isNotEmpty()) "메모 확인하기" else "메모 추가하기",
+                    text = if (link.linkMemo.isNotEmpty()) "메모 확인하기" else "메모 추가하기",
                     style = LinkZipTheme.typography.medium12.copy(color = LinkZipTheme.color.wg50),
                     textDecoration = TextDecoration.Underline,
                 )
             }
         }
-        IconButton(onClick = {
-            showDialog = !showDialog
-        }) {
-            Icon(
-                painter = painterResource(id = R.drawable.icon_threedots),
-                contentDescription = null
-            )
+        if(isStatusSelectLink) {
+            IconButton(onClick = {
+
+            }) {
+                Icon(
+                    modifier = Modifier.width(24.dp).height(24.dp),
+                    painter = painterResource(id = R.drawable.ic_uncheck_gray),
+                    tint = Color.Unspecified,
+                    contentDescription = null
+                )
+            }
+        } else {
+            IconButton(onClick = {
+                showDialog = !showDialog
+            }) {
+                Icon(
+                    modifier = Modifier.width(24.dp).height(24.dp),
+                    painter = painterResource(id = R.drawable.icon_threedots),
+                    tint = Color.Unspecified,
+                    contentDescription = null
+                )
+            }
         }
+
 
         val menuItems = if (link.favorite) unFavoriteMenuItems else favoriteMenuItems
 

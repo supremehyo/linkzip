@@ -1,6 +1,7 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -90,6 +91,7 @@ fun AddGroupView(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
+    Toast.makeText(LocalContext.current, "기본 Toast", Toast.LENGTH_LONG).show()
     fun hideKeyBoard() {
         focusManager.clearFocus()
         keyboardController?.hide()
