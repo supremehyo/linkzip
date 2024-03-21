@@ -20,15 +20,9 @@ class FavoriteUseCase @Inject constructor(
         }
     }
 
+
     fun getFavoriteLinkList() = flow {
-        emit(UiState.Loding)
-        runCatching {
-            linkRepository.getFavoriteLinkList()
-        }.onSuccess { result ->
-            emit(UiState.Success(result))
-        }.onFailure {
-            emit(UiState.Error(it))
-        }
+        emit(linkRepository.getFavoriteLinkList())
     }
 
     fun insertLink(group : LinkData) = flow {

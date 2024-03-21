@@ -1,6 +1,7 @@
 package com.linkzip.linkzip.presentation.feature.home.favorite
 
 import android.util.Log
+import android.util.Pair
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -51,13 +52,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.common.UiState
+import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
+import com.linkzip.linkzip.presentation.component.DropDownMenuComponent
 import com.linkzip.linkzip.presentation.component.LinkGroupComponent
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
@@ -69,8 +73,11 @@ import kotlin.math.roundToInt
 fun FavoriteView (
     homeViewModel: HomeViewModel =  hiltViewModel()
 ){
-    val favoriteLinkList by homeViewModel.favoriteListFlow.collectAsStateWithLifecycle(null)
-    homeViewModel.getFavoriteLink()
+    val favoriteLinkList by homeViewModel.favoriteListFlow.collectAsStateWithLifecycle()
+
+    LaunchedEffect(true){
+        homeViewModel.getFavoriteLink()
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -82,7 +89,9 @@ fun FavoriteView (
             FavoriteLinkList(favoriteLinkList!!)
         }else{
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 60.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 60.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -111,21 +120,38 @@ enum class DragValue { Start, Center, End }
 
 @Composable
 fun FavoriteLinkList(
-    list : UiState<List<LinkData>>
+    list : List<LinkData>
 ){
-    when(list){
-        is UiState.Success ->{
-            LazyColumn(){
-                items(list.data){ group ->
-                   
+    var maps = HashMap<String , LinkData>()
+    var pairs = mutableListOf<Pair<String , LinkData>>()
+    
+    list.forEach {
+
+    }
+    if(list.isNotEmpty()){
+        LazyColumn{
+            items(list){ group ->
+                Column {
+                    Text(text = "")
                 }
             }
         }
-        is UiState.Loding -> {
+    }
+}
 
-        }
-        is UiState.Error -> {
-            
-        }
+@Composable
+fun FavoriteLinkComponent(){
+    Column {
+        Text(text = "그룹이름")
+
+    }
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DropDownMenuPreview() {
+    LinkZipTheme {
+        FavoriteLinkComponent()
     }
 }
