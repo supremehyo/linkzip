@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -46,8 +47,11 @@ import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
+import com.linkzip.linkzip.presentation.component.CustomToast
+import com.linkzip.linkzip.presentation.component.DialogComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.ToastType
 
 @Composable
 fun GroupView(
@@ -62,6 +66,8 @@ fun GroupView(
     val groupName = remember { groupData?.first?.groupName }
 
     var isStatusSelectLink by remember { mutableStateOf(false) }
+    var isDeleteSelectLink by remember { mutableStateOf(false) }
+    var isShowToastDeleteLink by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
 
     val linkList by groupViewModel.linkListByGroup.collectAsStateWithLifecycle()
     val favoriteList by groupViewModel.favoriteList.collectAsStateWithLifecycle(emptyList())
@@ -81,7 +87,12 @@ fun GroupView(
         HeaderTitleView(
             backgroundColor = Color(backgroundColor ?: LinkZipTheme.color.white.toArgb()),
             onBackButtonPressed = {
-                onBackButtonPressed.invoke()
+                // 링크 선택이 눌려있다면, 링크선택 취소
+                if (isStatusSelectLink) {
+                    isStatusSelectLink = !isStatusSelectLink
+                } else {
+                    onBackButtonPressed.invoke()
+                }
             },
             onActionButtonPressed = onActionButtonPressed,
             title = groupName ?: "error"
@@ -107,7 +118,7 @@ fun GroupView(
                     // 선택한 or 선택된 링크 리스트 초기화
                     groupViewModel.clearSelectLinkList()
                 },
-                iconFile = if(isStatusSelectLink) R.drawable.ic_check_gray else R.drawable.ic_uncheck_gray,
+                iconFile = if (isStatusSelectLink) R.drawable.ic_check_gray else R.drawable.ic_uncheck_gray,
                 message = stringResource(R.string.select_link)
             )
         }
@@ -121,7 +132,12 @@ fun GroupView(
                     Box(modifier = Modifier.clickable {
                         Log.e("adad", "click Link TODO")
                     }) {
-                        LinkInGroup(data, onClickMemoPressed, onActionLinkEditPressed, isStatusSelectLink)
+                        LinkInGroup(
+                            data,
+                            onClickMemoPressed,
+                            onActionLinkEditPressed,
+                            isStatusSelectLink
+                        )
                     }
                 }
             }
@@ -143,25 +159,36 @@ fun GroupView(
                     Box(modifier = Modifier.clickable {
                         Log.e("adad", "click Link TODO")
                     }) {
-                        LinkInGroup(data, onClickMemoPressed, onActionLinkEditPressed, isStatusSelectLink)
+                        LinkInGroup(
+                            data,
+                            onClickMemoPressed,
+                            onActionLinkEditPressed,
+                            isStatusSelectLink
+                        )
                     }
                 }
             }
         }
 
-        if(isStatusSelectLink) {
+        if (isStatusSelectLink) {
             Spacer(modifier = Modifier.weight(1f))
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 11.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-                Box(modifier = Modifier
-                    .background(
-                        color = LinkZipTheme.color.wg20,
-                        shape = RoundedCornerShape(size = 12.dp)
-                    )
-                    .padding(horizontal = 44.dp, vertical = 18.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 11.dp), horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = LinkZipTheme.color.wg20,
+                            shape = RoundedCornerShape(size = 12.dp)
+                        )
+                        .padding(horizontal = 44.dp, vertical = 18.dp)
                 ) {
-                    Text(text = "그룹 이동", style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg70))
+                    Text(
+                        text = "그룹 이동",
+                        style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg70)
+                    )
                 }
                 Box(modifier = Modifier
                     .background(
@@ -169,11 +196,48 @@ fun GroupView(
                         shape = RoundedCornerShape(size = 12.dp)
                     )
                     .padding(horizontal = 44.dp, vertical = 18.dp)
+                    .clickable {
+                        isDeleteSelectLink = true
+                    }
                 ) {
-                    Text(text = "선택 삭제", style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.white))
+                    Text(
+                        text = "선택 삭제",
+                        style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.white)
+                    )
                 }
             }
         }
+    }
+    DialogComponent(
+        onDismissRequest = { isDeleteSelectLink = false },
+        visible = isDeleteSelectLink,
+        cancelButtonText = "취소",
+        successButtonText = "삭제",
+        content = "선택한 링크를 삭제할까요?",
+        onClickEvent = {
+            isDeleteSelectLink = false
+            groupViewModel.deleteSelectListInDB(
+                groupId = groupData?.first?.groupId.toString(),
+                success = {
+                    isShowToastDeleteLink = Pair(ToastType.SUCCESS, true)
+                },
+                fail = {
+                    isShowToastDeleteLink = Pair(ToastType.FAIL, true)
+                }
+            )
+        }
+    )
+
+    if (isShowToastDeleteLink.second) {
+        val msg = if (isShowToastDeleteLink.first == ToastType.SUCCESS) {
+            "링크 삭제완료!"
+        } else {
+            "잠시 후 다시 시도해주세요"
+        }
+
+        val customToast = CustomToast(LocalContext.current)
+        customToast.MakeText(message = msg, icon = R.drawable.ic_check)
+        isShowToastDeleteLink = Pair(ToastType.SUCCESS, false)
     }
 }
 
@@ -205,6 +269,7 @@ fun LinkInGroup(
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
     var isSelected by remember { mutableStateOf(false) }
+    var isShowToastFavorite by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
 
     val favoriteMenuItems =
         mutableListOf(
@@ -260,20 +325,20 @@ fun LinkInGroup(
                 )
             }
         }
-        if(isStatusSelectLink) {
+        if (isStatusSelectLink) {
             IconButton(onClick = {
                 isSelected = !isSelected
-                if(isSelected) {
-                    groupViewModel.addSelectLinkList(link)
+                if (isSelected) {
+                    groupViewModel.addDataInSelectList(link)
                 } else {
-                    groupViewModel.deleteSelectLinkList(link)
+                    groupViewModel.deleteDataInSelectList(link)
                 }
             }) {
                 Icon(
                     modifier = Modifier
                         .width(24.dp)
                         .height(24.dp),
-                    painter = painterResource(id = if(isSelected) R.drawable.ic_check_gray else R.drawable.ic_uncheck_gray),
+                    painter = painterResource(id = if (isSelected) R.drawable.ic_check_gray else R.drawable.ic_uncheck_gray),
                     tint = Color.Unspecified,
                     contentDescription = null
                 )
@@ -322,10 +387,10 @@ fun LinkInGroup(
                                 groupViewModel.updateFavoriteLink(
                                     link,
                                     success = {
-                                        Log.e("adad", "success")
+                                        isShowToastFavorite = Pair(ToastType.SUCCESS, true)
                                     },
                                     fail = {
-                                        Log.e("adad", "fail")
+                                        isShowToastFavorite = Pair(ToastType.FAIL, true)
                                     })
                             }
 
@@ -335,5 +400,17 @@ fun LinkInGroup(
                 }
             }
         }
+    }
+
+    if (isShowToastFavorite.second) {
+        val msg = if (isShowToastFavorite.first == ToastType.SUCCESS) {
+            if(link.favorite) "즐겨찾기 설정완료!" else "즐겨찾기 해제완료!"
+        } else {
+           "잠시 후 다시 시도해주세요"
+        }
+
+        val customToast = CustomToast(LocalContext.current)
+        customToast.MakeText(message = msg, icon = R.drawable.ic_check)
+        isShowToastFavorite = Pair(ToastType.SUCCESS, false)
     }
 }
