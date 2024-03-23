@@ -46,13 +46,6 @@ class AddGroupUseCase @Inject constructor(
     }
 
     fun deleteGroupAndUpdateLinks(groupId : Long)= flow {
-        emit(UiState.Loding)
-        runCatching {
-            groupRepository.deleteGroupAndUpdateLinks(groupId)
-        }.onSuccess { result ->
-            emit(UiState.Success(result))
-        }.onFailure {
-            emit(UiState.Error(it))
-        }
+        emit(groupRepository.deleteGroupAndUpdateLinks(groupId))
     }
 }

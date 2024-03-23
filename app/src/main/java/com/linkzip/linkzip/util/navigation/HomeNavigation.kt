@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.util.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -72,12 +73,23 @@ fun HomeNavigation(
                         MainScreenState.GROUP.data = Triple(group, icon, null)
                         mainViewModel.updateScreenState(MainScreenState.GROUP.state)
                     }
-
                 }
             )
         }
         composable(HomePath.Favorite.path) {
-            FavoriteView()
+            FavoriteView(
+                onActionLinkEditPressed = {groupData,iconData,linkData->
+                    MainScreenState.LINKADD.data = Triple(groupData, iconData, linkData)
+                    MainScreenState.LINKADD.from = "FAVORITE"
+                    MainPath.LinkAdd.data = MainScreenState.LINKADD.data
+                    mainViewModel.updateScreenState(MainScreenState.LINKADD.state)
+                },
+                onClickMemoPressed = {groupData,iconData,linkData->
+                    MainScreenState.MEMO.data = Triple(groupData, iconData, linkData)
+                    MainScreenState.MEMO.from = "FAVORITE"
+                    mainViewModel.updateScreenState(MainScreenState.MEMO.state)
+                }
+            )
         }
     }
 }

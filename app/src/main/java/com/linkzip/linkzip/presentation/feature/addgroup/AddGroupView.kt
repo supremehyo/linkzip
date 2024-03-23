@@ -81,6 +81,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddGroupView(
     groupData: Triple<GroupData?, IconData?, LinkData?>?,

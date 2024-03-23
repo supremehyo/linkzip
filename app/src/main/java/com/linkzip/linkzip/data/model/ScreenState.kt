@@ -12,12 +12,12 @@ enum class HomeScreenState {
     ALL, FAVORITE, POPUP
 }
 
-sealed class MainScreenState(val state: String, var data: Triple<GroupData?, IconData?, LinkData?>?) {
-    object NONE : MainScreenState("NONE", null)
-    object ONBOARDING : MainScreenState("ONBOARDING", null)
-    object MAIN : MainScreenState("MAIN", null)
-    object GROUPADD : MainScreenState("GROUPADD", null)
-    object LINKADD : MainScreenState("LINKADD", null)
-    object GROUP : MainScreenState("GROUP", null)
-    object MEMO : MainScreenState("MEMO", null)
+sealed class MainScreenState(val state: String, var data: Triple<GroupData?, IconData?, LinkData?>?, var from : String? =null) {
+    object NONE : MainScreenState("NONE", null, null)
+    object ONBOARDING : MainScreenState("ONBOARDING", null, null)
+    object MAIN : MainScreenState("MAIN", null, null)
+    object GROUPADD : MainScreenState("GROUPADD", null, null)
+    object LINKADD : MainScreenState("LINKADD", null, null)
+    object GROUP : MainScreenState("GROUP", null, null)
+    object MEMO : MainScreenState("MEMO", null, null)
 }
