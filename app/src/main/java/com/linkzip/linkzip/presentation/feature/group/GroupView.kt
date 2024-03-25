@@ -72,8 +72,9 @@ fun GroupView(
     val linkList by groupViewModel.linkListByGroup.collectAsStateWithLifecycle()
     val favoriteList by groupViewModel.favoriteList.collectAsStateWithLifecycle(emptyList())
     val unFavoriteList by groupViewModel.unFavoriteList.collectAsStateWithLifecycle(emptyList())
+    val selectLinkList by groupViewModel.selectLinkList.collectAsStateWithLifecycle()
 
-    LaunchedEffect(linkList) {
+    LaunchedEffect(linkList, selectLinkList) {
         groupViewModel.getLinkListByGroup(
             groupData?.first?.groupId.toString() ?: throw NullPointerException()
         )
@@ -235,6 +236,7 @@ fun GroupView(
             "잠시 후 다시 시도해주세요"
         }
 
+        isStatusSelectLink = false
         val customToast = CustomToast(LocalContext.current)
         customToast.MakeText(message = msg, icon = R.drawable.ic_check)
         isShowToastDeleteLink = Pair(ToastType.SUCCESS, false)
