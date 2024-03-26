@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -40,7 +39,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.room.GroupData
@@ -57,6 +55,7 @@ import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.DisposableEffectWithLifeCycle
 import com.linkzip.linkzip.util.LinkScrapData
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -80,6 +79,10 @@ fun LinkAddView(
     var isFocused by remember { mutableStateOf(false) }
     var iconListFlow by remember { mutableStateOf(listOf<IconData>()) }
     var saveButtonColor by remember { mutableStateOf(Color.Black) }
+
+    val coroutineExceptionHandler = CoroutineExceptionHandler{_, throwable ->
+        throwable.printStackTrace()
+    }
 
     var result by remember {
         mutableStateOf(
@@ -120,24 +123,24 @@ fun LinkAddView(
     }
 
     LaunchedEffect(true) {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO + coroutineExceptionHandler).launch {
             homeViewModel.iconListFlow.collect{ state ->
                 iconListFlow = state
             }
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO + coroutineExceptionHandler).launch {
             homeViewModel.getAllGroups()
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO + coroutineExceptionHandler).launch {
             homeViewModel.allGroupListFlow.collect { state ->
                 menuItems = state
                 homeViewModel.getIconListById(menuItems.map { it.groupIconId })
             }
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO + coroutineExceptionHandler).launch {
             homeViewModel.linkEventFlow.collect { state ->
                 when (state) {
                     is HomeViewModel.LinkEvent.InsertLinkUiEvent -> {
@@ -149,7 +152,7 @@ fun LinkAddView(
                                 onBackButtonPressed.invoke("GROUP")
                             }
                             else -> {
-                                Log.v("resultText3", "${state.uiState.toString()}")
+                                Log.v("resultText3", "${state.uiState}")
                             }
                         }
                     }
@@ -189,7 +192,7 @@ fun LinkAddView(
                     if (clipData != null && clipData.itemCount > 0) {
                         val text = clipData.getItemAt(0).text.toString()
                         // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
-                        CoroutineScope(Dispatchers.IO).launch {
+                        CoroutineScope(Dispatchers.IO + coroutineExceptionHandler).launch {
                             result = LinkScrapData(text)!!
                             Log.e("sdfsdfsff","$result")
                             showDialog = !showDialog
@@ -201,7 +204,7 @@ fun LinkAddView(
                 if (clipData != null && clipData.itemCount > 0) {
                     val text = clipData.getItemAt(0).text.toString()
                     // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
-                    CoroutineScope(Dispatchers.IO).launch {
+                    CoroutineScope(Dispatchers.IO + coroutineExceptionHandler).launch {
                         result = LinkScrapData(text)!!
                         Log.e("sdfsdfsff","$result")
                         showDialog = !showDialog
@@ -245,7 +248,7 @@ fun LinkAddView(
                 initialText = resultLinkData.link,
                 resultText = {
                     resultLinkData.link = it.second
-                    Log.v("resultText", "${it.second}")
+                    Log.v("resultText", it.second)
                 },
                 isFocus = {
                     isFocused = it
@@ -276,7 +279,7 @@ fun LinkAddView(
                 fieldType = FieldSize.NORMAL,
                 resultText = {
                     resultLinkData.linkTitle = it.second
-                    Log.v("resultText", "${it.second}")
+                    Log.v("resultText", it.second)
                 },
                 isFocus = {
                     isFocused = it
@@ -296,7 +299,7 @@ fun LinkAddView(
                 hintText = "링크를 통해 발견한 인사이트가 있나요?",
                 resultText = {
                     resultLinkData.linkMemo = it.second
-                    Log.v("resultText", "${it.second}")
+                    Log.v("resultText", it.second)
                 },
                 isFocus = {
                     isFocused = it
@@ -341,12 +344,10 @@ fun LinkAddView(
             content = "복사한 링크를 붙여넣을까요?",
             onClickEvent = {
                 showDialog = false
-                if (result != null) {
-                    resultLinkData = result
-                }
+                resultLinkData = result
             }
         )
-        menuItems?.let {
+        menuItems.let {
             BottomDialogComponent(
                 onDismissRequest = { showBottomDialog = false },
                 visible = showBottomDialog,
@@ -368,15 +369,15 @@ fun LinkAddView(
                     ) {
                         itemsIndexed(it) { index, data ->
                             //그룹 없음
-                                BottomDialogLinkAddGroupMenuComponent(
-                                    groupData = data,
-                                    iconData = iconListFlow[index]
-                                ) {
-                                    showBottomDialog = false
-                                    groupTitle = data.groupName
-                                    resultLinkData.linkGroupId = data.groupId.toString()
-                                    saveButtonColor = Color(iconListFlow[index].iconButtonColor)
-                                }
+                            BottomDialogLinkAddGroupMenuComponent(
+                                groupData = data,
+                                iconData = iconListFlow[index]
+                            ) {
+                                showBottomDialog = false
+                                groupTitle = data.groupName
+                                resultLinkData.linkGroupId = data.groupId.toString()
+                                saveButtonColor = Color(iconListFlow[index].iconButtonColor)
+                            }
                         }
                     }
                 }

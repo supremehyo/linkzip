@@ -29,4 +29,16 @@ class GroupUseCase @Inject constructor(
             emit(UiState.Error(it))
         }
     }
+
+    fun deleteLinkList(uid: Long) = flow {
+        emit(UiState.Loding)
+        runCatching {
+            linkRepository.deleteLink(uid)
+        }.onSuccess { result ->
+            emit(UiState.Success(result))
+        }.onFailure {
+            it.printStackTrace()
+            emit(UiState.Error(it))
+        }
+    }
 }
