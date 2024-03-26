@@ -271,6 +271,7 @@ fun LinkInGroup(
     isStatusSelectLink: Boolean,
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     var isSelected by remember { mutableStateOf(false) }
     var isShowToastFavorite by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
 
@@ -363,7 +364,6 @@ fun LinkInGroup(
 
 
         val menuItems = if (link.favorite) unFavoriteMenuItems else favoriteMenuItems
-
         BottomDialogComponent(
             onDismissRequest = { showDialog = false },
             visible = showDialog,
