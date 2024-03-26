@@ -47,39 +47,32 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+
 @Composable
-fun MainView(
-    mainViewModel: MainViewModel
-) {
+fun MainView(mainViewModel: MainViewModel) {
     val navController = rememberNavController()
-    val homeViewModel: HomeViewModel = hiltViewModel()
-    var showDialog by remember { mutableStateOf(false) }
     val menuState by mainViewModel.menuState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
     val items = listOf(
         MainBottomPath.Home,
         MainBottomPath.MyPage
-    )
-    val menuItems = listOf(
-        BottomDialogMenu.LinkAdd,
-        BottomDialogMenu.GroupAdd,
-        BottomDialogMenu.None
     )
 
     LaunchedEffect(true){
         mainViewModel.updateMenuState(BottomDialogMenu.None)
     }
 
-    DisposableEffect(menuState){
-        when(menuState){
-            BottomDialogMenu.LinkAdd ->{
+    DisposableEffect(menuState) {
+        when (menuState) {
+            BottomDialogMenu.LinkAdd -> {
                 mainViewModel.updateScreenState(MainScreenState.LINKADD.state)
             }
-            BottomDialogMenu.GroupAdd ->{
+
+            BottomDialogMenu.GroupAdd -> {
                 mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
             }
-            else ->{
-                
+
+            else -> {
+
             }
         }
 
@@ -91,65 +84,57 @@ fun MainView(
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
-            Box {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    FloatingActionButton(
-                        modifier = Modifier
-                            .size(70.dp)
-                            .offset(y = 60.dp),
-                        containerColor = LinkZipTheme.color.black,
-                        shape = CircleShape,
-                        onClick = {
-                            showDialog = !showDialog
-                        }
-                    ) {
-                        Icon(
-                            tint = LinkZipTheme.color.white,
-                            imageVector = Icons.Rounded.Add,
-                            contentDescription = "link_Add",
-                            modifier = Modifier.size(50.dp)
-                        )
-                    }
-                    Text(
-                        text = stringResource(R.string.add),
-                        style = LinkZipTheme.typography.semiBold10.copy(
-                            color = LinkZipTheme.color.black
-                        ),
-                        modifier = Modifier.offset(y = 70.dp)
-                    )
-                }
-            }
+            CustomFloatingActionButton(mainViewModel)
         },
-        bottomBar = { MainBottomNavigation(items, navController, mainViewModel) }
+        bottomBar = { MainBottomNavigation(items,navController, mainViewModel) }
     ) {
-        MainBottomNavigationGraph(navController, mainViewModel)
-        Column {
-            Spacer(modifier = Modifier.weight(1f))
-            Box(
-                modifier= Modifier.padding(it)
-            ) {
-                BottomDialogComponent(
-                    onDismissRequest = { showDialog = false },
-                    visible = showDialog,
-                    horizontalMargin = 20.dp
-                ) {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(29.dp)
-                    ) {
-                        items(menuItems.size-1) { it ->
-                            BottomDialogMenuComponent(
-                                menuItems = menuItems[it]
-                            ) {
-                                mainViewModel.updateMenuState(it)
-                                showDialog = false
-                            }
-                        }
+        Box(
+            modifier = Modifier.padding(it)
+        ){
+            MainBottomNavigationGraph(navController, mainViewModel)
+        }
+    }
+}
+
+@Composable
+fun CustomFloatingActionButton(mainViewModel: MainViewModel) {
+    var showDialog by remember { mutableStateOf(false) }
+    val menuItems = listOf(
+        BottomDialogMenu.LinkAdd,
+        BottomDialogMenu.GroupAdd,
+        BottomDialogMenu.None
+    )
+
+    FloatingActionButton(
+        modifier = Modifier
+            .size(70.dp)
+            .offset(y = 60.dp),
+        containerColor = LinkZipTheme.color.black,
+        shape = CircleShape,
+        onClick = { showDialog = !showDialog }
+    ) {
+        Icon(
+            tint = LinkZipTheme.color.white,
+            imageVector = Icons.Rounded.Add,
+            contentDescription = "link_Add",
+            modifier = Modifier.size(50.dp)
+        )
+    }
+
+    if (showDialog) {
+        BottomDialogComponent(
+            onDismissRequest = { showDialog = false },
+            visible = showDialog,
+            horizontalMargin = 20.dp
+        ) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(29.dp)) {
+                items(menuItems.size - 1) { index ->
+                    BottomDialogMenuComponent(menuItems = menuItems[index]) {
+                        mainViewModel.updateMenuState(menuItems[index])
+                        showDialog = false
                     }
                 }
             }
         }
-
     }
 }
