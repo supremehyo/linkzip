@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -46,7 +47,6 @@ class GroupViewModel @Inject constructor(
             tempList.add(link)
 
             _selectLinkList.emit(tempList)
-            Log.e("adad add", "${_selectLinkList.value}")
         }
     }
 
@@ -56,7 +56,22 @@ class GroupViewModel @Inject constructor(
             tempList.remove(link)
 
             _selectLinkList.emit(tempList)
-            Log.e("adad delete", "${_selectLinkList.value}")
+        }
+    }
+
+    fun updateGroupId(oldGroupId : String, newGroupId : String,success: () -> Unit, fail: () -> Unit){
+        viewModelScope.launch(Dispatchers.IO) {
+            groupUseCase.updateGroupId(oldGroupId, newGroupId).collect{
+                when (it) {
+                    is UiState.Success -> {
+                            success.invoke()
+                    }
+                    is UiState.Error -> {
+                            fail.invoke()
+                    }
+                    else -> {}
+                }
+            }
         }
     }
 

@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,10 +49,12 @@ import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
+import com.linkzip.linkzip.presentation.component.BottomDialogLinkAddGroupMenuComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
 import com.linkzip.linkzip.presentation.component.CustomToast
 import com.linkzip.linkzip.presentation.component.DialogComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
+import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.ToastType
 
@@ -61,14 +65,23 @@ fun GroupView(
     onActionButtonPressed: () -> Unit,
     onActionLinkEditPressed: (LinkData) -> Unit,
     onClickMemoPressed: (LinkData) -> Unit,
-    groupViewModel: GroupViewModel = hiltViewModel()
+    groupViewModel: GroupViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val backgroundColor = remember { groupData?.second?.iconHeaderColor }
     val groupName = remember { groupData?.first?.groupName }
 
+    var menuItems by remember { mutableStateOf(listOf<GroupData>()) }
+    var showBottomDialog by remember { mutableStateOf(false) }
+    var iconListFlow by remember { mutableStateOf(listOf<IconData>()) }
+
     var isStatusSelectLink by remember { mutableStateOf(false) }
     var isDeleteSelectLink by remember { mutableStateOf(false) }
     var isShowToastDeleteLink by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
+
+    //공유가 안된다
+    val iconList by homeViewModel.iconListFlow.collectAsStateWithLifecycle()
+    val groupList by homeViewModel.allGroupListFlow.collectAsStateWithLifecycle()
 
     val linkList by groupViewModel.linkListByGroup.collectAsStateWithLifecycle()
     val favoriteList by groupViewModel.favoriteList.collectAsStateWithLifecycle(emptyList())
@@ -186,6 +199,11 @@ fun GroupView(
                             shape = RoundedCornerShape(size = 12.dp)
                         )
                         .padding(horizontal = 44.dp, vertical = 18.dp)
+                        .clickable {
+                            if(isStatusSelectLink){
+                                showBottomDialog = true
+                            }
+                        }
                 ) {
                     Text(
                         text = "그룹 이동",
@@ -230,6 +248,25 @@ fun GroupView(
         }
     )
 
+    moveLinkGroupBottomSheet(showBottomDialog, groupList, iconList,
+        completeCallBack = {
+            showBottomDialog = false
+            groupViewModel.updateGroupId(
+                newGroupId = it,
+                oldGroupId = groupData?.first?.groupId.toString(),
+                success = {
+
+                },
+                fail = {
+
+                }
+            )
+        },
+        cancelCallBack = {
+            showBottomDialog = false
+        }
+    )
+
     if (isShowToastDeleteLink.second) {
         val msg = if (isShowToastDeleteLink.first == ToastType.SUCCESS) {
             "링크 삭제완료!"
@@ -241,6 +278,52 @@ fun GroupView(
         val customToast = CustomToast(LocalContext.current)
         customToast.MakeText(message = msg, icon = R.drawable.ic_check)
         isShowToastDeleteLink = Pair(ToastType.SUCCESS, false)
+    }
+}
+
+@Composable
+fun moveLinkGroupBottomSheet(
+    isShow: Boolean,
+    groupList: List<GroupData>,
+    iconList: List<IconData>,
+    cancelCallBack: () -> Unit,
+    completeCallBack: (String) -> Unit
+) {
+    val menuItems by remember { mutableStateOf(groupList) }
+    val iconListFlow by remember { mutableStateOf(iconList) }
+
+    menuItems.let {
+        BottomDialogComponent(
+            onDismissRequest = { cancelCallBack() },
+            visible = isShow,
+            horizontalMargin = 20.dp
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Top
+            ) {
+                Text(
+                    text = stringResource(R.string.selet_group),
+                    style = LinkZipTheme.typography.medium18,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(bottom = 32.dp)
+                )
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(29.dp),
+                    modifier = Modifier.heightIn(min = 0.dp, max = 600.dp)
+                ) {
+                    itemsIndexed(it) { index, data ->
+                        //그룹 없음
+                        BottomDialogLinkAddGroupMenuComponent(
+                            groupData = data,
+                            iconData = iconListFlow[index]
+                        ) {
+                            completeCallBack.invoke(data.groupId.toString())
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -412,9 +495,9 @@ fun LinkInGroup(
 
     if (isShowToastFavorite.second) {
         val msg = if (isShowToastFavorite.first == ToastType.SUCCESS) {
-            if(link.favorite) "즐겨찾기 설정완료!" else "즐겨찾기 해제완료!"
+            if (link.favorite) "즐겨찾기 설정완료!" else "즐겨찾기 해제완료!"
         } else {
-           "잠시 후 다시 시도해주세요"
+            "잠시 후 다시 시도해주세요"
         }
 
         val customToast = CustomToast(LocalContext.current)

@@ -30,6 +30,20 @@ class GroupUseCase @Inject constructor(
         }
     }
 
+    fun updateGroupId(
+        oldGroupId : String,
+        newGroupId : String
+    ) = flow {
+        emit(UiState.Loding)
+        runCatching {
+            linkRepository.updateLinkGroupId(oldGroupId, newGroupId)
+        }.onSuccess { result ->
+            emit(UiState.Success(result))
+        }.onFailure {
+            it.printStackTrace()
+            emit(UiState.Error(it))
+        }
+    }
     fun deleteLinkList(uid: Long) = flow {
         emit(UiState.Loding)
         runCatching {
