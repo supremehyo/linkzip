@@ -55,6 +55,7 @@ import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.DisposableEffectWithLifeCycle
 import com.linkzip.linkzip.util.LinkScrapData
+import com.linkzip.linkzip.util.composableActivityViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,7 +66,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun LinkAddView(
     groupData: Triple<GroupData?, IconData?, LinkData?>?,
-    homeViewModel: HomeViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = composableActivityViewModel(),
     onBackButtonPressed: (String) -> Unit
 ) {
 
