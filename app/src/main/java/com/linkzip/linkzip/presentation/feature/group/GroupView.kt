@@ -2,7 +2,6 @@ package com.linkzip.linkzip.presentation.feature.group
 
 import android.content.Intent
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -42,10 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.model.BottomDialogMenu
@@ -390,6 +386,7 @@ fun LinkInGroup(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
+            Modifier.width(320.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
