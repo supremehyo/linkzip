@@ -28,7 +28,7 @@ class GroupRepository @Inject constructor(
         groupDao.updateGroupById(uid, name, iconId, date)
     }
 
-    fun deleteGroupAndUpdateLinks(groupId : Long){
-        groupDao.deleteGroupAndUpdateLinks(groupId)
+    fun deleteGroupAndUpdateLinks(groupId : Long) : List<GroupData>{
+        return groupDao.deleteGroupAndUpdateLinks(groupId)
     }
 }

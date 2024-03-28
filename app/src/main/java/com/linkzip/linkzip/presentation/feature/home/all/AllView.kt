@@ -46,8 +46,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AllView(
+    dimmedBoolean : (Boolean)->Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    dimmedBoolean: (Boolean) -> Unit,
     onClickAddGroup: () -> Unit,
     onClickGroup: (GroupData, IconData)-> Unit
 ) {
@@ -55,13 +55,6 @@ fun AllView(
     var dimmedBackground by remember { mutableStateOf(false) }
     val iconListFlow by homeViewModel.iconListFlow.collectAsStateWithLifecycle(null)
     val groupListFlow by homeViewModel.allGroupListFlow.collectAsStateWithLifecycle(null)
-
-    var randomColors = listOf(
-        LinkZipTheme.color.orangeFFE6C1,
-        LinkZipTheme.color.greenBDF3C2,
-        LinkZipTheme.color.pinkFFE8F7,
-        LinkZipTheme.color.blueC0F0FF
-    )
 
     LaunchedEffect(dimmedBackground) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -76,7 +69,10 @@ fun AllView(
             }
         }
     }
-    homeViewModel.getAllGroups()
+
+    LaunchedEffect(key1 = true){
+        homeViewModel.getAllGroups()
+    }
 
 
     Column(
@@ -122,13 +118,12 @@ fun groupIconComponent(
     onClickGroup: (GroupData, IconData) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
 ) {
-    var noGroup = list.find { it.groupIconId == -1L }
-    var scope = rememberCoroutineScope()
+    var noGroup = list.find { it.groupIconId == 1L }
     Column {
         LazyColumn(
             modifier = Modifier.heightIn(0.dp , 400.dp)
         ) {
-            itemsIndexed(list) { index, group ->
+            itemsIndexed(list.filter { it.groupIconId != 1L  }) { index, group ->
                 SwipeScreen(
                     enable = group.groupName != "그룹없음",
                     buttonComposable = {
@@ -145,18 +140,11 @@ fun groupIconComponent(
                             group.groupId
                         ) { it ->
                             onClickGroup.invoke(group, iconListFlow[index])
-                            Log.e("groupClick", "$it ${group.groupName}")
                         }
                     },
                     buttonModifier = Modifier,
                     clickAction = {
-                        Log.e("asfdasdfasf" , "삭제")
-                        scope.launch(Dispatchers.IO) {
-                            homeViewModel.deleteGroupAndUpdateLinks(group.groupId)
-                            homeViewModel.getAllGroups()
-                        }
-                    //TODO 그룹 삭제
-
+                        homeViewModel.deleteGroupAndUpdateLinks(group.groupId)
                     }
                 )
             }

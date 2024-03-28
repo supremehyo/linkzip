@@ -48,7 +48,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainView(mainViewModel: MainViewModel) {
+fun MainView(
+    mainViewModel: MainViewModel
+) {
     val navController = rememberNavController()
     val homeViewModel: HomeViewModel = hiltViewModel()
     var showDialog by remember { mutableStateOf(false) }
@@ -65,12 +67,6 @@ fun MainView(mainViewModel: MainViewModel) {
     )
 
     LaunchedEffect(true){
-        CoroutineScope(Dispatchers.IO).launch {
-            homeViewModel.backDim.collect { it->
-                println("ddd")
-            }
-        }
-
         mainViewModel.updateMenuState(BottomDialogMenu.None)
     }
 
@@ -156,8 +152,4 @@ fun MainView(mainViewModel: MainViewModel) {
         }
 
     }
-}
-
-fun customToast(context : Context, message : String){
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }

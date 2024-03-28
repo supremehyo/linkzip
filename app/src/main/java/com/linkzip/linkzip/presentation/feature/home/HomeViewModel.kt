@@ -13,11 +13,13 @@ import com.linkzip.linkzip.usecase.AllViewUseCase
 import com.linkzip.linkzip.usecase.FavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,8 +36,8 @@ class HomeViewModel @Inject constructor(
     private val _allGroupListFlow = MutableStateFlow<List<GroupData>>(emptyList())
     val allGroupListFlow = _allGroupListFlow.asStateFlow()
 
-    private val _favoriteListFlow = MutableSharedFlow<UiState<List<LinkData>>>()
-    val favoriteListFlow = _favoriteListFlow.asSharedFlow()
+    private val _favoriteListFlow = MutableStateFlow<List<LinkData>>(emptyList())
+    val favoriteListFlow = _favoriteListFlow.asStateFlow()
 
     private val _pasteClipBoardEvent = MutableSharedFlow<Boolean>()
     val pasteClipBoardEvent = _pasteClipBoardEvent.asSharedFlow()
@@ -88,7 +90,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getFavoriteLink(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             favoriteUseCase.getFavoriteLinkList().collect{
                 _favoriteListFlow.emit(it)
             }
@@ -117,10 +119,10 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    suspend fun deleteGroupAndUpdateLinks(groupId : Long){
+    fun deleteGroupAndUpdateLinks(groupId : Long){
         viewModelScope.launch(Dispatchers.IO) {
-            addGroupUseCase.deleteGroupAndUpdateLinks(groupId).collect{uiState->
-                Log.e("test","${uiState}")
+            addGroupUseCase.deleteGroupAndUpdateLinks(groupId).collect{it->
+                _allGroupListFlow.emit(it)
             }
         }
     }

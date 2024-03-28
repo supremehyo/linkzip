@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.group
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -270,6 +271,7 @@ fun LinkInGroup(
     isStatusSelectLink: Boolean,
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     var isSelected by remember { mutableStateOf(false) }
     var isShowToastFavorite by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
 
@@ -362,7 +364,6 @@ fun LinkInGroup(
 
 
         val menuItems = if (link.favorite) unFavoriteMenuItems else favoriteMenuItems
-
         BottomDialogComponent(
             onDismissRequest = { showDialog = false },
             visible = showDialog,
@@ -378,7 +379,12 @@ fun LinkInGroup(
                         showDialog = false
                         when (it) {
                             BottomDialogMenu.ShareLink -> {
-
+                                val shareIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, link.link)
+                                    type = "text/plain"
+                                }
+                                context.startActivity(Intent.createChooser(shareIntent, null))
                             }
 
                             BottomDialogMenu.ModifyLink -> {

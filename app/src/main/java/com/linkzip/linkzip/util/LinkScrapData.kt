@@ -18,7 +18,7 @@ suspend fun LinkScrapData(url : String) : LinkData? {
     if(isUrl(url)){
         var resultLinkData = LinkData(
             link = url,
-            linkGroupId = (-1L).toString(),//분류되지 않음 이라는 그룹이 자동으로 생성되어야 할듯함.
+            linkGroupId = (1L).toString(),//분류되지 않음 이라는 그룹이 자동으로 생성되어야 할듯함.
             linkTitle = "",
             linkMemo = "",
             createDate = "",

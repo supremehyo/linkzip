@@ -100,11 +100,10 @@ fun MainNavigation(
             val view = LocalView.current
             val window = (view.context as Activity).window
             window.statusBarColor = LinkZipTheme.color.white.toArgb()
-
             // 그룹 데이터 초기화
-            MainPath.GroupAdd.data = null
-            MainPath.LinkAdd.data = null
-
+            //여기서 하니까 즐겨찾기 링크 탭에서 수정하기로 갈때마다 초기화 해버려서 문제가 있었음
+            //MainPath.GroupAdd.data = null
+            //MainPath.LinkAdd.data = null
             MainView(mainViewModel)
         }
         composable(MainPath.GroupAdd.path) {
@@ -116,10 +115,17 @@ fun MainNavigation(
             LinkAddView(
                 MainPath.LinkAdd.data
             ) { it->
-                if(it == "MAIN"){
+                if(MainScreenState.LINKADD.from == "FAVORITE"){
                     mainViewModel.updateScreenState(MainScreenState.MAIN.state)
+                    MainScreenState.LINKADD.from = ""
+                    MainScreenState.LINKADD.data = null
                 }else{
-                    mainViewModel.updateScreenState(MainScreenState.GROUP.state)
+                    if(it == "MAIN"){
+                        mainViewModel.updateScreenState(MainScreenState.MAIN.state)
+                    }else{
+                        mainViewModel.updateScreenState(MainScreenState.GROUP.state)
+                    }
+                    MainScreenState.LINKADD.data = null
                 }
             }
         }
@@ -138,9 +144,7 @@ fun MainNavigation(
                     mainViewModel.updateScreenState(MainScreenState.MEMO.state)
                 },
                 onActionLinkEditPressed = {
-                    Log.e("linkEditData" , "$it")
                     MainScreenState.LINKADD.data = Triple(MainPath.LinkAdd.data?.first, MainPath.LinkAdd.data?.second, it)
-                    Log.e("linkEditData2" , "${MainPath.LinkAdd.data}")
                     mainViewModel.updateScreenState(MainScreenState.LINKADD.state)
                 }
             )
@@ -149,7 +153,11 @@ fun MainNavigation(
             MemoView(
                 data =  MainScreenState.MEMO.data,
                 onBackButtonPressed = {
-                    mainViewModel.updateScreenState(MainScreenState.GROUP.state)
+                    if(MainScreenState.MEMO.from == "FAVORITE"){
+                        mainViewModel.updateScreenState(MainScreenState.MAIN.state)
+                    }else{
+                        mainViewModel.updateScreenState(MainScreenState.GROUP.state)
+                    }
                 })
         }
     }

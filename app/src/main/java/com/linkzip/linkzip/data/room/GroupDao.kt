@@ -47,9 +47,10 @@ interface GroupDao {
     fun loadGroupAndLink(): Map<GroupData, List<LinkData>>
 
     @Transaction
-    fun deleteGroupAndUpdateLinks(groupId: Long) {
+    fun deleteGroupAndUpdateLinks(groupId: Long) : List<GroupData> {
         updateLinkDataGroupId(groupId)
         deleteGroupByUid(groupId)
+        return getGroups()
     }
 
 
