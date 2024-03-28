@@ -1,7 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -32,7 +31,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -79,6 +77,7 @@ import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.EDIT_GROUP
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.PLUS
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.UPDATE
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.ToastType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -92,7 +91,6 @@ fun AddGroupView(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    //Toast.makeText(LocalContext.current, "기본 Toast", Toast.LENGTH_LONG).show()
     fun hideKeyBoard() {
         focusManager.clearFocus()
         keyboardController?.hide()
@@ -241,7 +239,7 @@ fun SaveButton(
     onBackButtonPressed: () -> Unit,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
-    var isShowToast by remember { mutableStateOf(false) }
+    var isShowToast by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
 
     Button(
         modifier = Modifier
@@ -269,9 +267,10 @@ fun SaveButton(
                             success = {
                                 hideKeyBoard.invoke()
                                 onBackButtonPressed.invoke()
-                                isShowToast = true
+                                isShowToast = Pair(ToastType.SUCCESS, true)
                             },
                             fail = {
+                                isShowToast = Pair(ToastType.FAIL, true)
                                 hideKeyBoard.invoke()
                             }
                         )
@@ -285,17 +284,18 @@ fun SaveButton(
                             date = timeString,
                             success = {
                                 hideKeyBoard.invoke()
-                                isShowToast = true
+                                isShowToast = Pair(ToastType.SUCCESS, true)
                                 onBackButtonPressed.invoke()
                             },
                             fail = {
+                                isShowToast = Pair(ToastType.FAIL, true)
                                 hideKeyBoard.invoke()
                             }
                         )
                     }
                 }
-            }else{
-                isShowToast = true
+            } else{
+                isShowToast = Pair(ToastType.FAIL, true)
             }
 
         },
@@ -310,10 +310,20 @@ fun SaveButton(
         )
     }
 
-    if(isShowToast) {
+    if(isShowToast.second) {
+        val msg = if (isShowToast.first == ToastType.SUCCESS) {
+            "그룹 추가완료!"
+        } else {
+            if(groupNameText.isEmpty()) {
+                "올바른 값을 입력해주세요."
+            } else {
+                "잠시 후 다시 시도해주세요."
+            }
+        }
+
         val customToast = CustomToast(LocalContext.current)
-        customToast.MakeText(message = "그룹 추가완료!", icon = R.drawable.ic_check)
-        isShowToast = false
+        customToast.MakeText(message = msg, icon = R.drawable.ic_check)
+        isShowToast = Pair(ToastType.SUCCESS, false)
     }
 }
 
@@ -419,7 +429,7 @@ fun PlusIconAndBottomSheet(
 
                 else -> {
                     Log.e("adadad", " 1212 $allIconList")
-              //      CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
+                    //      CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
                 }
             }
 
