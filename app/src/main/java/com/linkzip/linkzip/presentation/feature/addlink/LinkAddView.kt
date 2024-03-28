@@ -213,11 +213,15 @@ fun LinkAddView(
                 val clipData = clipboardManager.primaryClip
                 if (clipData != null && clipData.itemCount > 0) {
                     val text = clipData.getItemAt(0).text.toString()
-                    // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
-                    CoroutineScope(Dispatchers.IO + coroutineExceptionHandler).launch {
-                        result = LinkScrapData(text)!!
-                        Log.e("sdfsdfsff","$result")
-                        showDialog = !showDialog
+                    if(text !=null){
+                        // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
+                        CoroutineScope(Dispatchers.IO).launch {
+                            var linkScrap = LinkScrapData(text)
+                            if(linkScrap != null){
+                                result = linkScrap
+                                showDialog = !showDialog
+                            }
+                        }
                     }
                 }
             }
