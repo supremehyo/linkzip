@@ -92,7 +92,7 @@ fun AddGroupView(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    Toast.makeText(LocalContext.current, "기본 Toast", Toast.LENGTH_LONG).show()
+    //Toast.makeText(LocalContext.current, "기본 Toast", Toast.LENGTH_LONG).show()
     fun hideKeyBoard() {
         focusManager.clearFocus()
         keyboardController?.hide()

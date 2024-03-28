@@ -155,7 +155,6 @@ fun swipeLinkGroupComponent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IntroduceComponent(
     onClickGroup : (Boolean)->Unit
