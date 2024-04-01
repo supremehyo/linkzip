@@ -202,7 +202,7 @@ fun GroupView(
                         )
                         .padding(horizontal = 44.dp, vertical = 18.dp)
                         .clickable {
-                            if(isStatusSelectLink){
+                            if (isStatusSelectLink) {
                                 showBottomDialog = true
                             }
                         }
@@ -250,7 +250,7 @@ fun GroupView(
         }
     )
 
-    moveLinkGroupBottomSheet(showBottomDialog, groupList, iconList,
+    MoveLinkGroupBottomSheet(showBottomDialog, groupList, iconList,
         completeCallBack = {
             showBottomDialog = false
             groupViewModel.updateGroupId(
@@ -284,7 +284,7 @@ fun GroupView(
 }
 
 @Composable
-fun moveLinkGroupBottomSheet(
+fun MoveLinkGroupBottomSheet(
     isShow: Boolean,
     groupList: List<GroupData>,
     iconList: List<IconData>,
@@ -304,7 +304,7 @@ fun moveLinkGroupBottomSheet(
                 verticalArrangement = Arrangement.Top
             ) {
                 Text(
-                    text = stringResource(R.string.selet_group),
+                    text = "이동할 그룹 선택",
                     style = LinkZipTheme.typography.medium18,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
@@ -315,7 +315,6 @@ fun moveLinkGroupBottomSheet(
                     modifier = Modifier.heightIn(min = 0.dp, max = 600.dp)
                 ) {
                     itemsIndexed(it) { index, data ->
-                        //그룹 없음
                         BottomDialogLinkAddGroupMenuComponent(
                             groupData = data,
                             iconData = iconListFlow[index]
