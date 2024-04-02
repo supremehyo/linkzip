@@ -236,7 +236,13 @@ fun GroupView(
         }
     }
 
-    // 링크 선택 -> 링크 삭제 눌렀을 때 뜨는 확인 다이얼로그
+    if(isDeleteSelectLink && selectLinkList.isEmpty()) {
+        val customToast = CustomToast(LocalContext.current)
+        customToast.MakeText(message = "링크를 선택해주세요", icon = R.drawable.ic_check)
+        isDeleteSelectLink = false
+    }
+
+    // 링크 선택 -> 링크 삭제 눌렀을 때 뜨는 확인 다이얼로그제
     DialogComponent(
         onDismissRequest = { isDeleteSelectLink = false },
         visible = isDeleteSelectLink,

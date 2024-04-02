@@ -69,7 +69,6 @@ fun LinkAddView(
     baseViewModel: BaseViewModel = composableActivityViewModel(),
     onBackButtonPressed: (String) -> Unit
 ) {
-
     var menuItems by remember { mutableStateOf(listOf<GroupData>()) }
     var showDialog by remember { mutableStateOf(false) }
     var showBottomDialog by remember { mutableStateOf(false) }

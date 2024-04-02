@@ -3,6 +3,7 @@ package com.linkzip.linkzip.presentation.feature.home.favorite
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
@@ -67,7 +68,7 @@ fun FavoriteView(
     homeViewModel: HomeViewModel = hiltViewModel(),
     baseViewModel: BaseViewModel = composableActivityViewModel()
 ) {
-    var pairs by remember { mutableStateOf(mutableListOf<Triple<GroupData, LinkData?,IconData>>()) }
+    var pairs by remember { mutableStateOf(mutableListOf<Triple<GroupData, LinkData?, IconData>>()) }
     val favoriteLinkList by homeViewModel.favoriteListFlow.collectAsStateWithLifecycle()
     val allGroupList by baseViewModel.allGroupListFlow.collectAsStateWithLifecycle()
     val iconListFlow by baseViewModel.iconListByGroup.collectAsStateWithLifecycle()
@@ -84,10 +85,11 @@ fun FavoriteView(
         homeViewModel.getFavoriteLink()
     }
 
-    LaunchedEffect(iconListFlow , favoriteLinkList) {
+    LaunchedEffect(iconListFlow, favoriteLinkList) {
         iconListFlow.let { iconList ->
             val tempPairs = mutableListOf<Triple<GroupData, LinkData?, IconData>>()
-            val groupMap = allGroupList?.associateBy { it.groupId } as? HashMap<Long, GroupData> ?: hashMapOf()
+            val groupMap =
+                allGroupList?.associateBy { it.groupId } as? HashMap<Long, GroupData> ?: hashMapOf()
 
             withContext(Dispatchers.IO) {
                 favoriteLinkList.forEach { linkData ->
@@ -113,7 +115,7 @@ fun FavoriteView(
     ) {
 
         if (favoriteLinkList != null) {
-            FavoriteLinkList(pairs!!,onActionLinkEditPressed,onClickMemoPressed)
+            FavoriteLinkList(pairs!!, onActionLinkEditPressed, onClickMemoPressed)
         } else {
             Column(
                 modifier = Modifier
@@ -148,11 +150,12 @@ enum class DragValue { Start, Center, End }
 
 @Composable
 fun FavoriteLinkList(
-    pairs: List<Triple<GroupData, LinkData?,IconData>>,
+    pairs: List<Triple<GroupData, LinkData?, IconData>>,
     onActionLinkEditPressed: (GroupData, IconData, LinkData) -> Unit,
     onClickMemoPressed: (GroupData, IconData, LinkData) -> Unit
 ) {
-    val groupedPairs: Map<String, List<Triple<GroupData, LinkData?,IconData>>> = pairs.groupBy { it.first.groupName }
+    val groupedPairs: Map<String, List<Triple<GroupData, LinkData?, IconData>>> =
+        pairs.groupBy { it.first.groupName }
 
     LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
         groupedPairs.forEach { (groupName, links) ->
@@ -160,9 +163,20 @@ fun FavoriteLinkList(
                 BasicText(text = groupName, style = LinkZipTheme.typography.bold18)
                 Spacer(modifier = Modifier.height(12.dp))
             }
-            items(links) { pair ->
+            itemsIndexed(links) { index, pair ->
                 Column {
-                    FavoriteLinkComponent(pair,onClickMemoPressed,onActionLinkEditPressed)
+                    FavoriteLinkComponent(pair, onClickMemoPressed, onActionLinkEditPressed)
+                }
+
+                // 마지막 인덱스 구분선
+                if (index == links.size - 1) {
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 16.dp)
+                            .height(4.dp)
+                            .fillMaxWidth()
+                            .background(LinkZipTheme.color.wg10)
+                    )
                 }
             }
         }
@@ -171,13 +185,14 @@ fun FavoriteLinkList(
 
 @Composable
 fun FavoriteLinkComponent(
-    data: Triple<GroupData, LinkData?,IconData>,
+    data: Triple<GroupData, LinkData?, IconData>,
     onClickMemoPressed: (GroupData, IconData, LinkData) -> Unit,
-    onActionLinkEditPressed: (GroupData, IconData, LinkData) -> Unit) {
+    onActionLinkEditPressed: (GroupData, IconData, LinkData) -> Unit
+) {
     Column {
         LinkInFavorite(
             pair = data,
-            onClickMemoPressed =onClickMemoPressed,
+            onClickMemoPressed = onClickMemoPressed,
             onActionLinkEditPressed = onActionLinkEditPressed
         )
     }
@@ -186,7 +201,7 @@ fun FavoriteLinkComponent(
 
 @Composable
 fun LinkInFavorite(
-    pair: Triple<GroupData, LinkData?,IconData>,
+    pair: Triple<GroupData, LinkData?, IconData>,
     onClickMemoPressed: (GroupData, IconData, LinkData) -> Unit,
     onActionLinkEditPressed: (GroupData, IconData, LinkData) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
@@ -243,9 +258,9 @@ fun LinkInFavorite(
                 Box(modifier = Modifier.height(8.dp))
                 Text(
                     modifier = Modifier.clickable {
-                        onClickMemoPressed.invoke(pair.first, pair.third ,pair.second!!)
+                        onClickMemoPressed.invoke(pair.first, pair.third, pair.second!!)
                     },
-                    text = "메모 추가하기",
+                    text = if (pair.second?.linkMemo?.isNotEmpty() == true) "메모 확인하기" else "메모 추가하기",
                     style = LinkZipTheme.typography.medium12.copy(color = LinkZipTheme.color.wg50),
                     textDecoration = TextDecoration.Underline,
                 )
@@ -286,10 +301,10 @@ fun LinkInFavorite(
                             }
 
                             BottomDialogMenu.ModifyLink -> {
-                                onActionLinkEditPressed(pair.first, pair.third ,pair.second!!)
+                                onActionLinkEditPressed(pair.first, pair.third, pair.second!!)
                             }
 
-                            BottomDialogMenu.FavoriteLink , BottomDialogMenu.UnFavoriteLink-> {
+                            BottomDialogMenu.FavoriteLink, BottomDialogMenu.UnFavoriteLink -> {
                                 groupViewModel.updateFavoriteLink(
                                     pair.second!!,
                                     success = {
