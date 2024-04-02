@@ -12,9 +12,7 @@ import com.linkzip.linkzip.ui.theme.WHITE
 import com.linkzip.linkzip.usecase.AddGroupUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,10 +22,7 @@ import javax.inject.Inject
 class AddGroupViewModel @Inject constructor(
     private val addGroupUseCase: AddGroupUseCase
 ) : ViewModel() {
-    val _iconListFlow = MutableSharedFlow<UiState<List<IconData>>>()
-    val iconListFlow = _iconListFlow.asSharedFlow()
-
-    val _currentAddGroupIcon = MutableStateFlow(
+    private val _currentAddGroupIcon = MutableStateFlow(
         IconData(
             iconId = 0,
             iconButtonColor = WG70.toArgb(),
@@ -36,15 +31,6 @@ class AddGroupViewModel @Inject constructor(
         )
     )
     val currentAddGroupIcon = _currentAddGroupIcon.asStateFlow()
-
-    fun getIconData() {
-        viewModelScope.launch(Dispatchers.IO) {
-            addGroupUseCase.getIconData().collect {
-                Log.v("getIconData", "${it}")
-                _iconListFlow.emit(it)
-            }
-        }
-    }
 
     fun updateCurrentIcon(select: IconData) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -91,7 +77,6 @@ class AddGroupViewModel @Inject constructor(
                 iconId = iconId,
                 date = date
             ).collect {
-                Log.v("updateGroup", "${it}")
                 when (it) {
                     is UiState.Success -> {
                         withContext(Dispatchers.Main) {

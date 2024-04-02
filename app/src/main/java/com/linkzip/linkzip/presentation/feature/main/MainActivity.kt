@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         viewModel.getAppVersion(applicationContext)
         setContent {
-            val homeViewModel: HomeViewModel = hiltViewModel()
             LinkZipTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(

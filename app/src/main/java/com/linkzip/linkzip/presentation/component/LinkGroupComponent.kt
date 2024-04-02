@@ -1,7 +1,6 @@
 package com.linkzip.linkzip.presentation.component
 
 import android.util.Log
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,6 +45,7 @@ fun LinkGroupComponent(
     linkGroupIcon : Int,
     linkGroupColor : Color,
     linkGroupId : Long,
+    count: Int,
     modifier: Modifier? =null,
     clickAction : (Long) -> Unit
 ){
@@ -75,19 +74,16 @@ fun LinkGroupComponent(
                 Image(
                     modifier = Modifier
                         .width(60.dp)
-                        .height(60.dp)
-                        .padding(end = 16.dp),
+                        .height(60.dp),
                     painter = painterResource(id = linkGroupIcon),
                     contentDescription = "groupIcon")
-                Text(text = linkGroupName,
-                    style = LinkZipTheme.typography.semiBold16, color = LinkZipTheme.color.black)
+                Text(
+                    modifier = Modifier.padding(start = 16.dp),
+                    text = linkGroupName,
+                    style = LinkZipTheme.typography.medium18, color = LinkZipTheme.color.wg50)
                 Spacer(modifier = Modifier.weight(1f))
-                Image(
-                    modifier = Modifier
-                        .width(24.dp)
-                        .height(24.dp),
-                    painter = painterResource(id = R.drawable.icon_arrow_right),
-                    contentDescription = "rightArrow")
+                Text(text = count.toString(),
+                    style = LinkZipTheme.typography.medium12, color = LinkZipTheme.color.wg50)
             }
         }
     }
@@ -155,10 +151,9 @@ fun swipeLinkGroupComponent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IntroduceComponent(
-    onClickGroup : (Boolean)->Unit
+    onClickIntro : (Boolean)->Unit
 ) {
     SwipeScreen(
         buttonComposable = {
@@ -168,14 +163,45 @@ fun IntroduceComponent(
             )
         },
         contentComposable = {
-            LinkGroupComponent(
-                "만나서 반가워요\n링크zip을 소개할게요!",
-                R.drawable.guide_image,
-                LinkZipTheme.color.orangeFFE6C1,
-                1L,
-            ) {
-                onClickGroup.invoke(true)
-            }
+                Card(
+                    modifier= Modifier
+                        .clickable {
+                            onClickIntro.invoke(true)
+                        }
+                        .padding(vertical = 10.dp)
+                        .fillMaxWidth(1f)
+                        .height(80.dp)
+                        .background(Color.Transparent),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = LinkZipTheme.color.orangeFFE6C1
+                    )
+                ){
+                    Row(
+                        modifier = Modifier.fillMaxHeight().padding(horizontal = 18.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .width(36.dp)
+                                .height(36.dp),
+                            painter = painterResource(id = R.drawable.guide_image),
+                            contentDescription = "introduceImage")
+                        Text(
+                            modifier = Modifier.padding(start = 8.dp),
+                            text = "만나서 반가워요\n링크zip을 소개할게요!",
+                            style = LinkZipTheme.typography.semiBold16, color = LinkZipTheme.color.wg70)
+                        Spacer(modifier = Modifier.weight(1f))
+                        Image(
+                            modifier = Modifier
+                                .width(24.dp)
+                                .height(24.dp),
+                            painter = painterResource(id = R.drawable.icon_arrow_right),
+                            contentDescription = "rightArrow")
+                    }
+                }
+
         },
         buttonModifier = Modifier,
         clickAction = {

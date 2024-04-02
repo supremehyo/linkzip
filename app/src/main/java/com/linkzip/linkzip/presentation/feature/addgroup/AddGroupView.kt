@@ -1,7 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -21,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -32,7 +30,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -50,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
-import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_AIRPLANE
@@ -70,6 +66,7 @@ import com.linkzip.linkzip.data.room.IconData.Companion.ICON_PALETTE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_RICE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_WINE
 import com.linkzip.linkzip.data.room.LinkData
+import com.linkzip.linkzip.presentation.BaseViewModel
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.CustomToast
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
@@ -79,6 +76,8 @@ import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.EDIT_GROUP
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.PLUS
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.UPDATE
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.ToastType
+import com.linkzip.linkzip.util.composableActivityViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -92,7 +91,6 @@ fun AddGroupView(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    Toast.makeText(LocalContext.current, "기본 Toast", Toast.LENGTH_LONG).show()
     fun hideKeyBoard() {
         focusManager.clearFocus()
         keyboardController?.hide()
@@ -241,7 +239,7 @@ fun SaveButton(
     onBackButtonPressed: () -> Unit,
     addGroupViewModel: AddGroupViewModel = hiltViewModel()
 ) {
-    var isShowToast by remember { mutableStateOf(false) }
+    var isShowToast by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
 
     Button(
         modifier = Modifier
@@ -269,9 +267,10 @@ fun SaveButton(
                             success = {
                                 hideKeyBoard.invoke()
                                 onBackButtonPressed.invoke()
-                                isShowToast = true
+                                isShowToast = Pair(ToastType.SUCCESS, true)
                             },
                             fail = {
+                                isShowToast = Pair(ToastType.FAIL, true)
                                 hideKeyBoard.invoke()
                             }
                         )
@@ -285,17 +284,18 @@ fun SaveButton(
                             date = timeString,
                             success = {
                                 hideKeyBoard.invoke()
-                                isShowToast = true
+                                isShowToast = Pair(ToastType.SUCCESS, true)
                                 onBackButtonPressed.invoke()
                             },
                             fail = {
+                                isShowToast = Pair(ToastType.FAIL, true)
                                 hideKeyBoard.invoke()
                             }
                         )
                     }
                 }
-            }else{
-                isShowToast = true
+            } else{
+                isShowToast = Pair(ToastType.FAIL, true)
             }
 
         },
@@ -310,10 +310,20 @@ fun SaveButton(
         )
     }
 
-    if(isShowToast) {
+    if(isShowToast.second) {
+        val msg = if (isShowToast.first == ToastType.SUCCESS) {
+            "그룹 추가완료!"
+        } else {
+            if(groupNameText.isEmpty()) {
+                "올바른 값을 입력해주세요."
+            } else {
+                "잠시 후 다시 시도해주세요."
+            }
+        }
+
         val customToast = CustomToast(LocalContext.current)
-        customToast.MakeText(message = "그룹 추가완료!", icon = R.drawable.ic_check)
-        isShowToast = false
+        customToast.MakeText(message = msg, icon = R.drawable.ic_check)
+        isShowToast = Pair(ToastType.SUCCESS, false)
     }
 }
 
@@ -343,13 +353,14 @@ fun IconView(
 @Composable
 fun PlusIconAndBottomSheet(
     modifier: Modifier,
-    addGroupViewModel: AddGroupViewModel = hiltViewModel()
+    addGroupViewModel: AddGroupViewModel = hiltViewModel(),
+    baseViewModel: BaseViewModel = composableActivityViewModel()
 ) {
-    val allIconList by addGroupViewModel.iconListFlow.collectAsStateWithLifecycle(null)
+    val allIconList by baseViewModel.iconListFlow.collectAsStateWithLifecycle()
     var showBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        addGroupViewModel.getIconData()
+        baseViewModel.getIconData()
     }
 
     IconButton(
@@ -375,33 +386,31 @@ fun PlusIconAndBottomSheet(
                 style = LinkZipTheme.typography.medium18.copy(color = LinkZipTheme.color.wg70),
             )
             Log.e("adadad", "$allIconList")
-            when (allIconList) {
-                is UiState.Success -> {
+//            when (allIconList) {
+//                is UiState.Success -> {
                     LazyVerticalGrid(
                         modifier = Modifier.padding(top = 56.dp),
                         columns = GridCells.Fixed(4),
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        val smartCastIconList =
-                            (allIconList as UiState.Success<List<IconData>>).data
-                        items(smartCastIconList.size) { item ->
+                        items(allIconList.size) { item ->
 
                             IconButton(
                                 modifier = Modifier
                                     .width(60.dp)
                                     .height(60.dp),
                                 onClick = {
-                                    addGroupViewModel.updateCurrentIcon(smartCastIconList[item])
+                                    addGroupViewModel.updateCurrentIcon(allIconList[item])
                                     showBottomSheet = false
                                 }) {
                                 Icon(
                                     painter = painterResource(
                                         id = getDrawableIcon(
-                                            smartCastIconList[item].iconName
+                                            allIconList[item].iconName
                                         )
                                     ),
-                                    contentDescription = smartCastIconList[item].iconName,
+                                    contentDescription = allIconList[item].iconName,
                                     tint = Color.Unspecified
                                 )
                             }
@@ -409,21 +418,20 @@ fun PlusIconAndBottomSheet(
                     }
                 }
 
-                is UiState.Loding -> {
-                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
-                }
+//                is UiState.Loding -> {
+//                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
+//                }
+//
+//                is UiState.Error -> {
+//                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
+//                }
+//
+//                else -> {
+//                    Log.e("adadad", " 1212 $allIconList")
+//                    //      CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
+//                }
+//            }
 
-                is UiState.Error -> {
-                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
-                }
-
-                else -> {
-                    Log.e("adadad", " 1212 $allIconList")
-              //      CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
-                }
-            }
-
-        }
     }
 }
 

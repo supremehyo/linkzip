@@ -8,21 +8,10 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AddGroupUseCase @Inject constructor(
-    private val iconRepository: IconRepository,
-    private val groupRepository: GroupRepository
+    private val groupRepository: GroupRepository,
+    private val iconRepository: IconRepository
 ) {
-    fun getIconData() = flow {
-        emit(UiState.Loding)
-        runCatching {
-            iconRepository.getIconData()
-        }.onSuccess { result ->
-            emit(UiState.Success(result))
-        }.onFailure {
-            emit(UiState.Error(it))
-        }
-    }
-
-
+    // 그룹 추가하기
     fun insertGroup(group: GroupData) = flow {
         emit(UiState.Loding)
         runCatching {
@@ -34,6 +23,7 @@ class AddGroupUseCase @Inject constructor(
         }
     }
 
+    // 그룹 수정하기
     fun updateGroup(uid: Long, name: String, iconId: Long, date: String) = flow {
         emit(UiState.Loding)
         runCatching {
@@ -45,7 +35,13 @@ class AddGroupUseCase @Inject constructor(
         }
     }
 
-    fun deleteGroupAndUpdateLinks(groupId : Long)= flow {
+    // 그룹 삭제하기
+    fun deleteGroupAndUpdateLinks(groupId: Long) = flow {
         emit(groupRepository.deleteGroupAndUpdateLinks(groupId))
+    }
+
+    // 전체 아이콘 불러오기
+    fun getIconData() = flow {
+        emit(iconRepository.getIconData())
     }
 }

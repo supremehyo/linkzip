@@ -8,6 +8,7 @@ import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.snapTo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.linkzip.linkzip.presentation.feature.home.favorite.DragValue
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -43,6 +46,7 @@ fun SwipeScreen(
     enable : Boolean = true,
     clickAction : () -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
     val anchors = remember {
         DraggableAnchors {
@@ -84,6 +88,9 @@ fun SwipeScreen(
                 Box(modifier = buttonModifier
                     .align(Alignment.Center)
                     .clickable {
+                        coroutineScope.launch {
+                            state.snapTo(DragValue.Start)
+                        }
                         clickAction()
                     }){
                     buttonComposable()

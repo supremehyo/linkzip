@@ -2,7 +2,6 @@ package com.linkzip.linkzip.presentation.feature.home.favorite
 
 import android.content.Intent
 import android.util.Log
-import android.util.Pair
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,13 +17,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,16 +48,15 @@ import com.linkzip.linkzip.data.model.BottomDialogMenu
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
+import com.linkzip.linkzip.presentation.BaseViewModel
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
 import com.linkzip.linkzip.presentation.feature.group.GroupViewModel
-import com.linkzip.linkzip.presentation.feature.group.LinkInGroup
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.composableActivityViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.internal.synchronized
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -69,22 +64,18 @@ import kotlinx.coroutines.withContext
 fun FavoriteView(
     onClickMemoPressed: (GroupData, IconData, LinkData) -> Unit,
     onActionLinkEditPressed: (GroupData, IconData, LinkData) -> Unit,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    baseViewModel: BaseViewModel = composableActivityViewModel()
 ) {
     var pairs by remember { mutableStateOf(mutableListOf<Triple<GroupData, LinkData?,IconData>>()) }
     val favoriteLinkList by homeViewModel.favoriteListFlow.collectAsStateWithLifecycle()
-    val allGroupList by homeViewModel.allGroupListFlow.collectAsStateWithLifecycle()
-    val iconListFlow by homeViewModel.iconListFlow.collectAsStateWithLifecycle()
-
-
-    LaunchedEffect(true) {
-        homeViewModel.getAllGroups()
-    }
+    val allGroupList by baseViewModel.allGroupListFlow.collectAsStateWithLifecycle()
+    val iconListFlow by baseViewModel.iconListByGroup.collectAsStateWithLifecycle()
 
     LaunchedEffect(allGroupList) {
         CoroutineScope(Dispatchers.IO).launch {
-            allGroupList?.let { list ->
-                homeViewModel.getIconListById(list.map { it.groupIconId })
+            allGroupList.let { list ->
+                baseViewModel.getIconListById(list.map { it.groupIconId })
             }
         }
     }
@@ -94,12 +85,12 @@ fun FavoriteView(
     }
 
     LaunchedEffect(iconListFlow , favoriteLinkList) {
-        iconListFlow?.let { iconList ->
+        iconListFlow.let { iconList ->
             val tempPairs = mutableListOf<Triple<GroupData, LinkData?, IconData>>()
             val groupMap = allGroupList?.associateBy { it.groupId } as? HashMap<Long, GroupData> ?: hashMapOf()
 
             withContext(Dispatchers.IO) {
-                favoriteLinkList?.forEach { linkData ->
+                favoriteLinkList.forEach { linkData ->
                     groupMap[linkData.linkGroupId.toLong()]?.let { groupData ->
                         iconList.find { it.iconId == groupData.groupIconId }?.let { icon ->
                             tempPairs.add(Triple(groupData, linkData, icon))
@@ -185,7 +176,7 @@ fun FavoriteLinkComponent(
     onActionLinkEditPressed: (GroupData, IconData, LinkData) -> Unit) {
     Column {
         LinkInFavorite(
-            pair = data!!,
+            pair = data,
             onClickMemoPressed =onClickMemoPressed,
             onActionLinkEditPressed = onActionLinkEditPressed
         )
@@ -199,7 +190,8 @@ fun LinkInFavorite(
     onClickMemoPressed: (GroupData, IconData, LinkData) -> Unit,
     onActionLinkEditPressed: (GroupData, IconData, LinkData) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    groupViewModel: GroupViewModel = hiltViewModel()
+    groupViewModel: GroupViewModel = hiltViewModel(),
+    baseViewModel: BaseViewModel = composableActivityViewModel()
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -301,12 +293,11 @@ fun LinkInFavorite(
                                 groupViewModel.updateFavoriteLink(
                                     pair.second!!,
                                     success = {
-                                        Log.e("adad", "sssss")
-                                        homeViewModel.getAllGroups()
+                                        baseViewModel.getAllGroups()
                                         homeViewModel.getFavoriteLink() // 즐겨찾기 목록을 갱신
                                     },
                                     fail = {
-                                        Log.e("adad", "fail")
+
                                     })
                             }
 

@@ -1,6 +1,5 @@
 package com.linkzip.linkzip.presentation.feature.home.all
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,7 +19,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,12 +32,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
+import com.linkzip.linkzip.presentation.BaseViewModel
 import com.linkzip.linkzip.presentation.component.IntroduceComponent
 import com.linkzip.linkzip.presentation.component.LinkGroupComponent
 import com.linkzip.linkzip.presentation.component.SwipeScreen
 import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.composableActivityViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,13 +48,14 @@ import kotlinx.coroutines.launch
 fun AllView(
     dimmedBoolean : (Boolean)->Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
+    baseViewModel: BaseViewModel = composableActivityViewModel(),
     onClickAddGroup: () -> Unit,
     onClickGroup: (GroupData, IconData)-> Unit
 ) {
     var isShowIntro by remember { mutableStateOf(true) }
-    var dimmedBackground by remember { mutableStateOf(false) }
-    val iconListFlow by homeViewModel.iconListFlow.collectAsStateWithLifecycle(null)
-    val groupListFlow by homeViewModel.allGroupListFlow.collectAsStateWithLifecycle(null)
+    val dimmedBackground by remember { mutableStateOf(false) }
+    val iconListFlow by baseViewModel.iconListByGroup.collectAsStateWithLifecycle(null)
+    val groupListFlow by baseViewModel.allGroupListFlow.collectAsStateWithLifecycle(null)
 
     LaunchedEffect(dimmedBackground) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -65,13 +66,13 @@ fun AllView(
     LaunchedEffect(groupListFlow) {
         CoroutineScope(Dispatchers.IO).launch {
             groupListFlow?.let { list ->
-                homeViewModel.getIconListById(list.map { it.groupIconId })
+                baseViewModel.getIconListById(list.map { it.groupIconId })
             }
         }
     }
 
-    LaunchedEffect(key1 = true){
-        homeViewModel.getAllGroups()
+    LaunchedEffect(key1 = groupListFlow){
+        baseViewModel.getAllGroups()
     }
 
 
@@ -81,7 +82,6 @@ fun AllView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        //ShareButton("dd")
         // 소개 레이아웃을 지웠는지 체크하는 변수가 필요
         if (isShowIntro) {
             IntroduceComponent { isDimmed ->
@@ -90,8 +90,9 @@ fun AllView(
         }
 
         if (groupListFlow?.isNotEmpty() == true && iconListFlow?.isNotEmpty() == true) {
-            groupIconComponent(groupListFlow!!, iconListFlow!!, onClickGroup)
+            GroupIconComponent(groupListFlow!!, iconListFlow!!, onClickGroup)
         }
+
         Box(
             modifier = Modifier
                 .clickable { onClickAddGroup.invoke() }
@@ -112,13 +113,18 @@ fun AllView(
 
 
 @Composable
-fun groupIconComponent(
+fun GroupIconComponent(
     list: List<GroupData>,
     iconListFlow: List<IconData>,
     onClickGroup: (GroupData, IconData) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
+    baseViewModel: BaseViewModel = composableActivityViewModel()
 ) {
-    var noGroup = list.find { it.groupIconId == 1L }
+    val noGroup = list.find { it.groupIconId == 1L }
+    homeViewModel.getCountLinkInGroup(list)
+
+    val countList by homeViewModel.countGroupLink.collectAsStateWithLifecycle(initialValue = emptyList())
+
     Column {
         LazyColumn(
             modifier = Modifier.heightIn(0.dp , 400.dp)
@@ -137,14 +143,17 @@ fun groupIconComponent(
                             group.groupName,
                             getDrawableIcon(iconListFlow[index].iconName),
                             LinkZipTheme.color.white,
-                            group.groupId
+                            group.groupId,
+                            countList.find { it.first == group.groupId }?.second ?: 0
                         ) { it ->
                             onClickGroup.invoke(group, iconListFlow[index])
                         }
                     },
                     buttonModifier = Modifier,
                     clickAction = {
-                        homeViewModel.deleteGroupAndUpdateLinks(group.groupId)
+                        homeViewModel.deleteGroupAndUpdateLinks(group.groupId) {
+                            baseViewModel.updateAllGroupList(it)
+                        }
                     }
                 )
             }
@@ -154,7 +163,8 @@ fun groupIconComponent(
                 group.groupName,
                 getDrawableIcon(IconData.ICON_NO_GROUP),
                 LinkZipTheme.color.white,
-                group.groupId
+                group.groupId,
+                countList.find { it.first == group.groupId }?.second ?: 0
             ) {
                 onClickGroup.invoke(group, IconData.NO_GROUP)
             }

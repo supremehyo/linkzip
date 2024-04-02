@@ -27,6 +27,10 @@ class LinkRepository @Inject constructor(
         linkDao.deleteLinkByUid(uid)
     }
 
+    fun updateLinkGroupId(uid: Long, newGroupId: String){
+        linkDao.updateLinkGroupId(uid, newGroupId)
+    }
+
     fun updateFavoriteLink(favorite: Boolean, uid: Long) {
         linkDao.updateFavoriteLink(favorite, uid)
     }

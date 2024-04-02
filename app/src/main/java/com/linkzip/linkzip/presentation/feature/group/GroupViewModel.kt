@@ -1,12 +1,11 @@
 package com.linkzip.linkzip.presentation.feature.group
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.room.LinkData
-import com.linkzip.linkzip.usecase.FavoriteUseCase
 import com.linkzip.linkzip.usecase.GroupUseCase
+import com.linkzip.linkzip.usecase.LinkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GroupViewModel @Inject constructor(
     private val groupUseCase: GroupUseCase,
-    private val favoriteUseCase: FavoriteUseCase
+    private val linkUseCase: LinkUseCase
 ) : ViewModel() {
     private val _linkListByGroup = MutableStateFlow<List<LinkData>>(emptyList())
     val linkListByGroup = _linkListByGroup.asStateFlow()
@@ -46,7 +45,6 @@ class GroupViewModel @Inject constructor(
             tempList.add(link)
 
             _selectLinkList.emit(tempList)
-            Log.e("adad add", "${_selectLinkList.value}")
         }
     }
 
@@ -56,14 +54,29 @@ class GroupViewModel @Inject constructor(
             tempList.remove(link)
 
             _selectLinkList.emit(tempList)
-            Log.e("adad delete", "${_selectLinkList.value}")
+        }
+    }
+
+    fun updateGroupId(uid: Long, newGroupId : String,success: () -> Unit, fail: () -> Unit){
+        viewModelScope.launch(Dispatchers.IO) {
+            groupUseCase.updateGroupId(uid, newGroupId).collect{
+                when (it) {
+                    is UiState.Success -> {
+                            success.invoke()
+                    }
+                    is UiState.Error -> {
+                            fail.invoke()
+                    }
+                    else -> {}
+                }
+            }
         }
     }
 
     fun deleteSelectListInDB(groupId: String, success: () -> Unit, fail: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             _selectLinkList.value.forEach {
-                groupUseCase.deleteLinkList(it.uid ?: throw NullPointerException()).collect {
+                linkUseCase.deleteLinkList(it.uid ?: throw NullPointerException()).collect {
                     when (it) {
                         is UiState.Success -> {
                             withContext(Dispatchers.Main) {
@@ -96,7 +109,7 @@ class GroupViewModel @Inject constructor(
 
     fun updateFavoriteLink(link: LinkData, success: () -> Unit, fail: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            favoriteUseCase.updateFavoriteLink(
+            linkUseCase.updateFavoriteLink(
                 !link.favorite,
                 link.uid ?: throw NullPointerException()
             ).collect {
@@ -130,7 +143,7 @@ class GroupViewModel @Inject constructor(
         fail: () -> Unit
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            groupUseCase.updateLinkData(
+            linkUseCase.updateLinkData(
                 uid = uid,
                 link = link,
                 linkGroupId = groupId,

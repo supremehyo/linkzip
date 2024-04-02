@@ -1,7 +1,5 @@
 package com.linkzip.linkzip.usecase
 
-import com.linkzip.linkzip.common.UiState
-import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.repository.GroupRepository
 import com.linkzip.linkzip.repository.IconRepository
@@ -10,41 +8,25 @@ import javax.inject.Inject
 
 
 class AllViewUseCase @Inject constructor(
-    private val iconRepository: IconRepository,
-    private val groupRepository: GroupRepository
-) {
+    private val groupRepository: GroupRepository,
+    private val iconRepository: IconRepository) {
+    // 전체 그룹 불러오기
     fun getAllGroups() = flow {
         emit(groupRepository.getAllGroups())
     }
 
-    fun deleteGroup(group: GroupData) = flow {
-        emit(UiState.Loding)
-        runCatching {
-            groupRepository.deleteGroup(group)
-        }.onSuccess { result ->
-            emit(UiState.Success(result))
-        }.onFailure {
-            emit(UiState.Error(it))
-        }
-    }
-
-    fun getGroupByUid(uid: Long) = flow {
-        emit(UiState.Loding)
-        runCatching {
-            groupRepository.getGroupByUid(uid)
-        }.onSuccess { result ->
-            emit(UiState.Success(result))
-        }.onFailure {
-            emit(UiState.Error(it))
-        }
-    }
-
+    // 그룹에 해당하는 아이콘 불러오기
     fun getIconListById(iconIdList: List<Long>) = flow {
-        var iconList = mutableListOf<IconData>()
+        val iconList = mutableListOf<IconData>()
         iconIdList.forEach { iconId ->
             iconList.add(iconRepository.getIconDataById(iconId))
         }
         emit(iconList)
+    }
+
+    // 그룹 안에 있는 링크의 수 가져오기
+    fun getCountLinkInGroup(groupId: Long) = flow {
+        emit(groupRepository.countLinkInGroup(groupId))
     }
 }
 
