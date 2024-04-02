@@ -37,10 +37,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun linkAdd(){
-
-    }
-
     fun checkFirstStart(data : SharedPreferences) : Boolean{
         val editor = data.edit()
         if(!data.getBoolean(IS_FRIST,false)){

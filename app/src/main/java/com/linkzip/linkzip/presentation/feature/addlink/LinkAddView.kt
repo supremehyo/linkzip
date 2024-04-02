@@ -29,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -38,12 +37,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
+import com.linkzip.linkzip.presentation.BaseViewModel
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogLinkAddGroupMenuComponent
 import com.linkzip.linkzip.presentation.component.CommonButton
@@ -62,11 +61,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LinkAddView(
     groupData: Triple<GroupData?, IconData?, LinkData?>?,
     homeViewModel: HomeViewModel = composableActivityViewModel(),
+    baseViewModel: BaseViewModel = composableActivityViewModel(),
     onBackButtonPressed: (String) -> Unit
 ) {
 
@@ -81,7 +80,7 @@ fun LinkAddView(
     var iconListFlow by remember { mutableStateOf(listOf<IconData>()) }
     var saveButtonColor by remember { mutableStateOf(Color.Black) }
 
-    val coroutineExceptionHandler = CoroutineExceptionHandler{_, throwable ->
+    val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
     }
 
@@ -119,26 +118,22 @@ fun LinkAddView(
 
     LaunchedEffect(groupData) {
         if (groupData != null) {
-            Log.e("sdfsdfsf" ,"$groupData")
+            Log.e("sdfsdfsf", "$groupData")
             resultLinkData = groupData.third!!
         }
     }
 
     LaunchedEffect(true) {
         CoroutineScope(Dispatchers.IO + coroutineExceptionHandler).launch {
-            homeViewModel.iconListFlow.collect{ state ->
+            baseViewModel.iconListByGroup.collect { state ->
                 iconListFlow = state
             }
         }
 
         CoroutineScope(Dispatchers.IO + coroutineExceptionHandler).launch {
-            homeViewModel.getAllGroups()
-        }
-
-        CoroutineScope(Dispatchers.IO + coroutineExceptionHandler).launch {
-            homeViewModel.allGroupListFlow.collect { state ->
+            baseViewModel.allGroupListFlow.collect { state ->
                 menuItems = state
-                homeViewModel.getIconListById(menuItems.map { it.groupIconId })
+                baseViewModel.getIconListById(menuItems.map { it.groupIconId })
             }
         }
 
@@ -150,13 +145,15 @@ fun LinkAddView(
                             is UiState.Loding -> {
 
                             }
+
                             is UiState.Success -> {
-                                if(groupData!=null){
+                                if (groupData != null) {
                                     onBackButtonPressed.invoke("GROUP")
-                                }else{
+                                } else {
                                     onBackButtonPressed.invoke("MAIN")
                                 }
                             }
+
                             else -> {
                                 Log.v("resultText3", "${state.uiState}")
                             }
@@ -197,11 +194,11 @@ fun LinkAddView(
                     val clipData = clipboardManager.primaryClip
                     if (clipData != null && clipData.itemCount > 0) {
                         val text = clipData.getItemAt(0).text.toString()
-                        if(text !=null){
+                        if (text != null) {
                             // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
                             CoroutineScope(Dispatchers.IO).launch {
                                 var linkScrap = LinkScrapData(text)
-                                if(linkScrap != null){
+                                if (linkScrap != null) {
                                     result = linkScrap
                                     showDialog = !showDialog
                                 }
@@ -213,11 +210,11 @@ fun LinkAddView(
                 val clipData = clipboardManager.primaryClip
                 if (clipData != null && clipData.itemCount > 0) {
                     val text = clipData.getItemAt(0).text.toString()
-                    if(text !=null){
+                    if (text != null) {
                         // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
                         CoroutineScope(Dispatchers.IO).launch {
                             var linkScrap = LinkScrapData(text)
-                            if(linkScrap != null){
+                            if (linkScrap != null) {
                                 result = linkScrap
                                 showDialog = !showDialog
                             }
@@ -239,10 +236,11 @@ fun LinkAddView(
                 })
             }
     ) {
-        HeaderTitleView(LinkZipTheme.color.white, onBackButtonPressed = {
-            onBackButtonPressed.invoke(if(groupData != null) "GROUP" else "MAIN")
-        }, null,
-            stringResource(if(groupData == null) R.string.add_link_title else R.string.edit_link_title)
+        HeaderTitleView(
+            LinkZipTheme.color.white, onBackButtonPressed = {
+                onBackButtonPressed.invoke(if (groupData != null) "GROUP" else "MAIN")
+            }, null,
+            stringResource(if (groupData == null) R.string.add_link_title else R.string.edit_link_title)
         )
         Column(
             modifier = Modifier.padding(horizontal = 22.dp)
@@ -325,23 +323,23 @@ fun LinkAddView(
             modifier = Modifier.padding(bottom = 19.dp)
         ) {
 
-            if(resultLinkData.link.isEmpty()){
+            if (resultLinkData.link.isEmpty()) {
                 CommonButton(
                     enable = false,
                     keyBoardUpOption = true,
                     buttonName = "저장하기",
-                    buttonColor =  LinkZipTheme.color.wg20,
+                    buttonColor = LinkZipTheme.color.wg20,
                     onClickEvent = {
                         homeViewModel.insertLink(resultLinkData)
                     },
                     isFocused = isFocused
                 )
-            }else{
+            } else {
                 CommonButton(
                     enable = true,
                     keyBoardUpOption = true,
                     buttonName = "저장하기",
-                    buttonColor =  saveButtonColor ,
+                    buttonColor = saveButtonColor,
                     onClickEvent = {
                         homeViewModel.insertLink(resultLinkData)
                     },
@@ -401,7 +399,6 @@ fun LinkAddView(
 }
 
 
-
 @Composable
 fun dropDownMenu(
     groupTitle: String,
@@ -425,11 +422,12 @@ fun dropDownMenu(
             },
     ) {
         Text(
-            text = if(groupTitle.isEmpty()) "그룹을 선택해주세요." else "$groupTitle",
-            color = if(groupTitle.isEmpty()) LinkZipTheme.color.wg40 else LinkZipTheme.color.black,
+            text = if (groupTitle.isEmpty()) "그룹을 선택해주세요." else "$groupTitle",
+            color = if (groupTitle.isEmpty()) LinkZipTheme.color.wg40 else LinkZipTheme.color.black,
             style = LinkZipTheme.typography.medium16
         )
     }
 }
 
-const val EMPTY_THUMBNAIL = "https://mblogthumb-phinf.pstatic.net/MjAyMjA1MzFfMTY4/MDAxNjUzOTI5Mjc3NzU5.4ESIx_02zDPDaboENohTwq1ejlla-rEnFjgR5Cnp6q4g.q2K3wfKEV7JpSFs0BRAAebNJNKPL7JA8xyTvAG0F0DAg.JPEG.jikim97/resized%EF%BC%BFresized%EF%BC%BFresized%EF%BC%BFIMG%EF%BC%BF0571.jpg?type=w800"
+const val EMPTY_THUMBNAIL =
+    "https://mblogthumb-phinf.pstatic.net/MjAyMjA1MzFfMTY4/MDAxNjUzOTI5Mjc3NzU5.4ESIx_02zDPDaboENohTwq1ejlla-rEnFjgR5Cnp6q4g.q2K3wfKEV7JpSFs0BRAAebNJNKPL7JA8xyTvAG0F0DAg.JPEG.jikim97/resized%EF%BC%BFresized%EF%BC%BFresized%EF%BC%BFIMG%EF%BC%BF0571.jpg?type=w800"

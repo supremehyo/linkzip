@@ -48,13 +48,13 @@ import com.linkzip.linkzip.data.model.BottomDialogMenu
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.LinkData
+import com.linkzip.linkzip.presentation.BaseViewModel
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogLinkAddGroupMenuComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
 import com.linkzip.linkzip.presentation.component.CustomToast
 import com.linkzip.linkzip.presentation.component.DialogComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
-import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.ToastType
 import com.linkzip.linkzip.util.composableActivityViewModel
@@ -68,27 +68,32 @@ fun GroupView(
     onActionLinkEditPressed: (LinkData) -> Unit,
     onClickMemoPressed: (LinkData) -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = composableActivityViewModel()
+    baseViewModel: BaseViewModel = composableActivityViewModel()
 ) {
     val backgroundColor = remember { groupData?.second?.iconHeaderColor }
     val groupName = remember { groupData?.first?.groupName }
 
-    var menuItems by remember { mutableStateOf(listOf<GroupData>()) }
-    var showBottomDialog by remember { mutableStateOf(false) }
-    var iconListFlow by remember { mutableStateOf(listOf<IconData>()) }
-
+    // 링크 선택 ON/OFF 여부
     var isStatusSelectLink by remember { mutableStateOf(false) }
+
+    // 링크 삭제 다이얼로그 visible 여부
     var isDeleteSelectLink by remember { mutableStateOf(false) }
+
+    // 링크 삭제 success/fail 에 따라 토스트 표기
     var isShowToastDeleteLink by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
 
-    //공유가 안된다
-    val iconList by homeViewModel.iconListFlow.collectAsStateWithLifecycle()
-    val groupList by homeViewModel.allGroupListFlow.collectAsStateWithLifecycle()
+    // 그룹 이동 선택 시 보여지는 아이콘 + 그룹 리스트
+    val iconList by baseViewModel.iconListByGroup.collectAsStateWithLifecycle()
+    val groupList by baseViewModel.allGroupListFlow.collectAsStateWithLifecycle()
 
     val linkList by groupViewModel.linkListByGroup.collectAsStateWithLifecycle()
     val favoriteList by groupViewModel.favoriteList.collectAsStateWithLifecycle(emptyList())
     val unFavoriteList by groupViewModel.unFavoriteList.collectAsStateWithLifecycle(emptyList())
+
+    // 선택한 링크들
     val selectLinkList by groupViewModel.selectLinkList.collectAsStateWithLifecycle()
+
+    var showBottomDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(linkList, selectLinkList) {
         groupViewModel.getLinkListByGroup(
@@ -230,6 +235,8 @@ fun GroupView(
             }
         }
     }
+
+    // 링크 선택 -> 링크 삭제 눌렀을 때 뜨는 확인 다이얼로그
     DialogComponent(
         onDismissRequest = { isDeleteSelectLink = false },
         visible = isDeleteSelectLink,
@@ -250,17 +257,19 @@ fun GroupView(
         }
     )
 
-    MoveLinkGroupBottomSheet(showBottomDialog, groupList, iconList,
-        completeCallBack = {
+    // 링크 선택 -> 그룹 이동 눌렀을 때 뜨는 바텀 시트
+    MoveLinkGroupBottomSheet(showBottomDialog, selectLinkList, groupList, iconList,
+        completeCallBack = { uid, updateGroupId ->
             showBottomDialog = false
             groupViewModel.updateGroupId(
-                newGroupId = it,
-                oldGroupId = groupData?.first?.groupId.toString(),
+                newGroupId = updateGroupId,
+                uid = uid,
                 success = {
-
+                    groupViewModel.clearSelectLinkList()
+                    isStatusSelectLink = false
                 },
                 fail = {
-
+                    isStatusSelectLink = false
                 }
             )
         },
@@ -269,6 +278,7 @@ fun GroupView(
         }
     )
 
+    // 링크 삭제 완료되었을 때 뜨는 토스트 메시지
     if (isShowToastDeleteLink.second) {
         val msg = if (isShowToastDeleteLink.first == ToastType.SUCCESS) {
             "링크 삭제완료!"
@@ -283,43 +293,55 @@ fun GroupView(
     }
 }
 
+// 링크 선택 -> 그룹 이동 선택했을 때 뜨는 바텀 시트
 @Composable
 fun MoveLinkGroupBottomSheet(
     isShow: Boolean,
+    link: List<LinkData>,
     groupList: List<GroupData>,
     iconList: List<IconData>,
     cancelCallBack: () -> Unit,
-    completeCallBack: (String) -> Unit
+    completeCallBack: (Long, String) -> Unit
 ) {
-    val menuItems by remember { mutableStateOf(groupList) }
-    val iconListFlow by remember { mutableStateOf(iconList) }
+    // 선택한 링크가 없을 경우
+    if(link.isEmpty() && isShow) {
+        val customToast = CustomToast(LocalContext.current)
+        customToast.MakeText(message = "링크를 선택해주세요", icon = R.drawable.ic_check)
+        cancelCallBack.invoke()
+    } else {
 
-    menuItems.let {
-        BottomDialogComponent(
-            onDismissRequest = { cancelCallBack() },
-            visible = isShow,
-            horizontalMargin = 20.dp
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Top
+        groupList.let {
+            BottomDialogComponent(
+                onDismissRequest = { cancelCallBack() },
+                visible = isShow,
+                horizontalMargin = 20.dp
             ) {
-                Text(
-                    text = "이동할 그룹 선택",
-                    style = LinkZipTheme.typography.medium18,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(bottom = 32.dp)
-                )
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(29.dp),
-                    modifier = Modifier.heightIn(min = 0.dp, max = 600.dp)
+                Column(
+                    verticalArrangement = Arrangement.Top
                 ) {
-                    itemsIndexed(it) { index, data ->
-                        BottomDialogLinkAddGroupMenuComponent(
-                            groupData = data,
-                            iconData = iconListFlow[index]
-                        ) {
-                            completeCallBack.invoke(data.groupId.toString())
+                    Text(
+                        text = "이동할 그룹 선택",
+                        style = LinkZipTheme.typography.medium18,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(bottom = 32.dp)
+                    )
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(29.dp),
+                        modifier = Modifier.heightIn(min = 0.dp, max = 600.dp)
+                    ) {
+                        itemsIndexed(it) { index, data ->
+                            BottomDialogLinkAddGroupMenuComponent(
+                                groupData = data,
+                                iconData = iconList[index]
+                            ) {
+                                link.forEach {
+                                    completeCallBack.invoke(
+                                        it.uid ?: throw NullPointerException(),
+                                        data.groupId.toString()
+                                    )
+                                }
+                            }
                         }
                     }
                 }

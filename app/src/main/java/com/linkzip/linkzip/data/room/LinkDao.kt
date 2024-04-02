@@ -29,8 +29,8 @@ interface LinkDao {
     @Query("DELETE FROM LinkData WHERE linkGroupId = :groupUid")
     fun deleteLinksByGroupId(groupUid: Long)
 
-    @Query("UPDATE LinkData SET linkGroupId = :newGroupId WHERE linkGroupId = :oldGroupId")
-    fun updateLinkGroupId(oldGroupId: String, newGroupId: String)
+    @Query("UPDATE LinkData SET linkGroupId = :newGroupId WHERE uid = :uid")
+    fun updateLinkGroupId(uid: Long, newGroupId: String)
 
     @Query("UPDATE LinkData SET link = :link , linkGroupId = :linkGroupId, linkTitle = :linkTitle, linkMemo = :linkMemo  WHERE uid = :uid")
     fun updateLinkData(

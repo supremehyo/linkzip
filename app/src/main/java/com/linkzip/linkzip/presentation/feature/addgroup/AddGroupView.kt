@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -48,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
-import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_AIRPLANE
@@ -68,6 +66,7 @@ import com.linkzip.linkzip.data.room.IconData.Companion.ICON_PALETTE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_RICE
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_WINE
 import com.linkzip.linkzip.data.room.LinkData
+import com.linkzip.linkzip.presentation.BaseViewModel
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.CustomToast
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
@@ -78,6 +77,7 @@ import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.PLUS
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.UPDATE
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.ToastType
+import com.linkzip.linkzip.util.composableActivityViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -353,13 +353,14 @@ fun IconView(
 @Composable
 fun PlusIconAndBottomSheet(
     modifier: Modifier,
-    addGroupViewModel: AddGroupViewModel = hiltViewModel()
+    addGroupViewModel: AddGroupViewModel = hiltViewModel(),
+    baseViewModel: BaseViewModel = composableActivityViewModel()
 ) {
-    val allIconList by addGroupViewModel.iconListFlow.collectAsStateWithLifecycle(null)
+    val allIconList by baseViewModel.iconListFlow.collectAsStateWithLifecycle()
     var showBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        addGroupViewModel.getIconData()
+        baseViewModel.getIconData()
     }
 
     IconButton(
@@ -385,33 +386,31 @@ fun PlusIconAndBottomSheet(
                 style = LinkZipTheme.typography.medium18.copy(color = LinkZipTheme.color.wg70),
             )
             Log.e("adadad", "$allIconList")
-            when (allIconList) {
-                is UiState.Success -> {
+//            when (allIconList) {
+//                is UiState.Success -> {
                     LazyVerticalGrid(
                         modifier = Modifier.padding(top = 56.dp),
                         columns = GridCells.Fixed(4),
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        val smartCastIconList =
-                            (allIconList as UiState.Success<List<IconData>>).data
-                        items(smartCastIconList.size) { item ->
+                        items(allIconList.size) { item ->
 
                             IconButton(
                                 modifier = Modifier
                                     .width(60.dp)
                                     .height(60.dp),
                                 onClick = {
-                                    addGroupViewModel.updateCurrentIcon(smartCastIconList[item])
+                                    addGroupViewModel.updateCurrentIcon(allIconList[item])
                                     showBottomSheet = false
                                 }) {
                                 Icon(
                                     painter = painterResource(
                                         id = getDrawableIcon(
-                                            smartCastIconList[item].iconName
+                                            allIconList[item].iconName
                                         )
                                     ),
-                                    contentDescription = smartCastIconList[item].iconName,
+                                    contentDescription = allIconList[item].iconName,
                                     tint = Color.Unspecified
                                 )
                             }
@@ -419,21 +418,20 @@ fun PlusIconAndBottomSheet(
                     }
                 }
 
-                is UiState.Loding -> {
-                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
-                }
+//                is UiState.Loding -> {
+//                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
+//                }
+//
+//                is UiState.Error -> {
+//                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
+//                }
+//
+//                else -> {
+//                    Log.e("adadad", " 1212 $allIconList")
+//                    //      CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
+//                }
+//            }
 
-                is UiState.Error -> {
-                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
-                }
-
-                else -> {
-                    Log.e("adadad", " 1212 $allIconList")
-                    //      CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
-                }
-            }
-
-        }
     }
 }
 
