@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.room.GroupData
@@ -64,7 +65,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun LinkAddView(
     groupData: Triple<GroupData?, IconData?, LinkData?>?,
-    homeViewModel: HomeViewModel = composableActivityViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
     baseViewModel: BaseViewModel = composableActivityViewModel(),
     onBackButtonPressed: (String) -> Unit
 ) {
