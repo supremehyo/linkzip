@@ -3,6 +3,7 @@ package com.linkzip.linkzip.presentation.feature.home.favorite
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
@@ -162,9 +163,20 @@ fun FavoriteLinkList(
                 BasicText(text = groupName, style = LinkZipTheme.typography.bold18)
                 Spacer(modifier = Modifier.height(12.dp))
             }
-            items(links) { pair ->
+            itemsIndexed(links) { index, pair ->
                 Column {
                     FavoriteLinkComponent(pair, onClickMemoPressed, onActionLinkEditPressed)
+                }
+
+                // 마지막 인덱스 구분선
+                if (index == links.size - 1) {
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 16.dp)
+                            .height(4.dp)
+                            .fillMaxWidth()
+                            .background(LinkZipTheme.color.wg10)
+                    )
                 }
             }
         }
