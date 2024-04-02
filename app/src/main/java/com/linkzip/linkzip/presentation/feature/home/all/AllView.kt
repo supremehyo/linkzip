@@ -1,11 +1,8 @@
 package com.linkzip.linkzip.presentation.feature.home.all
 
-import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapTo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +19,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +37,6 @@ import com.linkzip.linkzip.presentation.component.LinkGroupComponent
 import com.linkzip.linkzip.presentation.component.SwipeScreen
 import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
-import com.linkzip.linkzip.presentation.feature.home.favorite.DragValue
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -122,6 +117,10 @@ fun groupIconComponent(
     homeViewModel: HomeViewModel = hiltViewModel(),
 ) {
     var noGroup = list.find { it.groupIconId == 1L }
+    homeViewModel.getCountLinkInGroup(list)
+
+    val countList by homeViewModel.countGroupLink.collectAsStateWithLifecycle(initialValue = emptyList())
+
     Column {
         LazyColumn(
             modifier = Modifier.heightIn(0.dp , 400.dp)
@@ -140,7 +139,8 @@ fun groupIconComponent(
                             group.groupName,
                             getDrawableIcon(iconListFlow[index].iconName),
                             LinkZipTheme.color.white,
-                            group.groupId
+                            group.groupId,
+                            countList.find { it.first == group.groupId }?.second ?: 0
                         ) { it ->
                             onClickGroup.invoke(group, iconListFlow[index])
                         }
@@ -157,7 +157,8 @@ fun groupIconComponent(
                 group.groupName,
                 getDrawableIcon(IconData.ICON_NO_GROUP),
                 LinkZipTheme.color.white,
-                group.groupId
+                group.groupId,
+                countList.find { it.first == group.groupId }?.second ?: 0
             ) {
                 onClickGroup.invoke(group, IconData.NO_GROUP)
             }

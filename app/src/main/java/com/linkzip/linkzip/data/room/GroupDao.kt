@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GroupDao {
@@ -50,8 +49,10 @@ interface GroupDao {
     fun deleteGroupAndUpdateLinks(groupId: Long) : List<GroupData> {
         updateLinkDataGroupId(groupId)
         deleteGroupByUid(groupId)
+        countLinkInGroup(groupId)
         return getGroups()
     }
 
-
+    @Query("SELECT count(*) FROM `LinkData` WHERE linkGroupId = :groupId")
+    fun countLinkInGroup(groupId: Long): Int
 }

@@ -2,7 +2,6 @@ package com.linkzip.linkzip.repository
 
 import com.linkzip.linkzip.data.room.GroupDao
 import com.linkzip.linkzip.data.room.GroupData
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GroupRepository @Inject constructor(
@@ -28,7 +27,11 @@ class GroupRepository @Inject constructor(
         groupDao.updateGroupById(uid, name, iconId, date)
     }
 
-    fun deleteGroupAndUpdateLinks(groupId : Long) : List<GroupData>{
+    fun deleteGroupAndUpdateLinks(groupId : Long) : List<GroupData> {
         return groupDao.deleteGroupAndUpdateLinks(groupId)
+    }
+
+    fun countLinkInGroup(groupId : Long) : Int {
+        return groupDao.countLinkInGroup(groupId)
     }
 }

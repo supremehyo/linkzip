@@ -46,5 +46,9 @@ class AllViewUseCase @Inject constructor(
         }
         emit(iconList)
     }
+
+    fun getCountLinkInGroup(groupId: Long) = flow {
+        emit(groupRepository.countLinkInGroup(groupId))
+    }
 }
 

@@ -45,6 +45,7 @@ fun LinkGroupComponent(
     linkGroupIcon : Int,
     linkGroupColor : Color,
     linkGroupId : Long,
+    count: Int,
     modifier: Modifier? =null,
     clickAction : (Long) -> Unit
 ){
@@ -81,7 +82,7 @@ fun LinkGroupComponent(
                     text = linkGroupName,
                     style = LinkZipTheme.typography.medium18, color = LinkZipTheme.color.wg50)
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = "0",
+                Text(text = count.toString(),
                     style = LinkZipTheme.typography.medium12, color = LinkZipTheme.color.wg50)
             }
         }

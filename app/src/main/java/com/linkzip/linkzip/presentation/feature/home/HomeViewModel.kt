@@ -13,13 +13,10 @@ import com.linkzip.linkzip.usecase.AllViewUseCase
 import com.linkzip.linkzip.usecase.FavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -51,6 +48,9 @@ class HomeViewModel @Inject constructor(
     //link event
     private val _linkEventFlow = MutableSharedFlow<LinkEvent>()
     val linkEventFlow = _linkEventFlow.asSharedFlow()
+
+    private val _countGroupLink = MutableSharedFlow<List<Pair<Long, Int>>>()
+    val countGroupLink = _countGroupLink.asSharedFlow()
 
     fun getIconListById(iconIdList : List<Long>) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -105,23 +105,19 @@ class HomeViewModel @Inject constructor(
 
     fun deleteGroup(group : GroupData){
         viewModelScope.launch {
-            allViewUseCase.getAllGroups().collect{ uiState->
 
-            }
         }
     }
 
     fun getGroupByUid(uid : Long){
         viewModelScope.launch {
-            allViewUseCase.getAllGroups().collect{ uiState->
 
-            }
         }
     }
 
     fun deleteGroupAndUpdateLinks(groupId : Long){
         viewModelScope.launch(Dispatchers.IO) {
-            addGroupUseCase.deleteGroupAndUpdateLinks(groupId).collect{it->
+            addGroupUseCase.deleteGroupAndUpdateLinks(groupId).collect{ it->
                 _allGroupListFlow.emit(it)
             }
         }
@@ -144,7 +140,17 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
+    fun getCountLinkInGroup(groupData: List<GroupData>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val list = mutableListOf<Pair<Long, Int>>()
+            groupData.forEach { group ->
+                allViewUseCase.getCountLinkInGroup(group.groupId).collect {
+                    list.add(Pair(group.groupId, it))
+                }
+            }
+            _countGroupLink.emit(list)
+        }
+    }
 
     sealed class LinkEvent {
         data class GetLinksUiEvent(val uiState: UiState<List<LinkData>>) : LinkEvent()
