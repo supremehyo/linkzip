@@ -118,7 +118,6 @@ fun LinkAddView(
 
     LaunchedEffect(groupData) {
         if (groupData != null) {
-            Log.e("sdfsdfsf", "$groupData")
             resultLinkData = groupData.third!!
         }
     }
@@ -196,7 +195,7 @@ fun LinkAddView(
                         val text = clipData.getItemAt(0).text.toString()
                         if (text != null) {
                             // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
-                            CoroutineScope(Dispatchers.IO).launch {
+                            CoroutineScope(Dispatchers.IO+ coroutineExceptionHandler).launch {
                                 var linkScrap = LinkScrapData(text)
                                 if (linkScrap != null) {
                                     result = linkScrap
@@ -212,7 +211,7 @@ fun LinkAddView(
                     val text = clipData.getItemAt(0).text.toString()
                     if (text != null) {
                         // 클립보드에 저장된 첫 번째 텍스트 데이터 가져오기
-                        CoroutineScope(Dispatchers.IO).launch {
+                        CoroutineScope(Dispatchers.IO+ coroutineExceptionHandler).launch {
                             var linkScrap = LinkScrapData(text)
                             if (linkScrap != null) {
                                 result = linkScrap
