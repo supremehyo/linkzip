@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.presentation.feature.onboarding.OnBoardingView
+import com.linkzip.linkzip.presentation.feature.webview.WebViewScreen
+
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.ui.theme.LinkZipTypography
 
@@ -35,6 +37,7 @@ import com.linkzip.linkzip.ui.theme.LinkZipTypography
 fun MyPageView(
     appVersion : String
 ){
+
     Column(
         modifier = Modifier.padding(horizontal = 22.dp)
     ) {

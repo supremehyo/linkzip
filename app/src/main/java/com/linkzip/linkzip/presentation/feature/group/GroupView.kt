@@ -67,6 +67,7 @@ fun GroupView(
     onActionButtonPressed: () -> Unit,
     onActionLinkEditPressed: (LinkData) -> Unit,
     onClickMemoPressed: (LinkData) -> Unit,
+    onActionLinkPressed : (LinkData) -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel(),
     baseViewModel: BaseViewModel = composableActivityViewModel()
 ) {
@@ -158,6 +159,7 @@ fun GroupView(
                             data,
                             onClickMemoPressed,
                             onActionLinkEditPressed,
+                            onActionLinkPressed,
                             isStatusSelectLink
                         )
                     }
@@ -185,6 +187,7 @@ fun GroupView(
                             data,
                             onClickMemoPressed,
                             onActionLinkEditPressed,
+                            onActionLinkPressed,
                             isStatusSelectLink
                         )
                     }
@@ -380,6 +383,7 @@ fun LinkInGroup(
     link: LinkData,
     onClickMemoPressed: (LinkData) -> Unit,
     onActionLinkEditPressed: (LinkData) -> Unit,
+    onActionLinkPressed: (LinkData)->Unit,
     isStatusSelectLink: Boolean,
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
@@ -412,34 +416,40 @@ fun LinkInGroup(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            Modifier.width(320.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            AsyncImage(
-                modifier = Modifier
-                    .width(128.dp)
-                    .height(72.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.FillBounds,
-                model = link.linkThumbnail,
-                contentDescription = null,
-            )
-            Box(modifier = Modifier.width(20.dp))
-            Column {
-                Text(
-                    text = link.linkTitle,
-                    style = LinkZipTheme.typography.bold14.copy(color = LinkZipTheme.color.wg70)
+        Box(
+            modifier = Modifier.clickable {
+                onActionLinkPressed(link)
+            }
+        ){
+            Row(
+                Modifier.width(320.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    modifier = Modifier
+                        .width(128.dp)
+                        .height(72.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.FillBounds,
+                    model = link.linkThumbnail,
+                    contentDescription = null,
                 )
-                Box(modifier = Modifier.height(8.dp))
-                Text(
-                    modifier = Modifier.clickable {
-                        onClickMemoPressed.invoke(link)
-                    },
-                    text = if (link.linkMemo.isNotEmpty()) "메모 확인하기" else "메모 추가하기",
-                    style = LinkZipTheme.typography.medium12.copy(color = LinkZipTheme.color.wg50),
-                    textDecoration = TextDecoration.Underline,
-                )
+                Box(modifier = Modifier.width(20.dp))
+                Column {
+                    Text(
+                        text = link.linkTitle,
+                        style = LinkZipTheme.typography.bold14.copy(color = LinkZipTheme.color.wg70)
+                    )
+                    Box(modifier = Modifier.height(8.dp))
+                    Text(
+                        modifier = Modifier.clickable {
+                            onClickMemoPressed.invoke(link)
+                        },
+                        text = if (link.linkMemo.isNotEmpty()) "메모 확인하기" else "메모 추가하기",
+                        style = LinkZipTheme.typography.medium12.copy(color = LinkZipTheme.color.wg50),
+                        textDecoration = TextDecoration.Underline,
+                    )
+                }
             }
         }
         if (isStatusSelectLink) {

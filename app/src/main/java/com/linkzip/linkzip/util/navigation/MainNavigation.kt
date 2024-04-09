@@ -25,6 +25,7 @@ import com.linkzip.linkzip.presentation.feature.group.MemoView
 import com.linkzip.linkzip.presentation.feature.main.MainView
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.presentation.feature.onboarding.OnBoardingView
+import com.linkzip.linkzip.presentation.feature.webview.WebViewScreen
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.extention.navigateSingleTopTo
 
@@ -36,6 +37,7 @@ sealed class MainPath(val path: String, var data: Triple<GroupData?, IconData?, 
     object LinkAdd : MainPath("LinkAdd", null)
     object Group : MainPath("Group", null)
     object Memo : MainPath("Memo", null)
+    object WebView : MainPath("WebView", null)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -77,6 +79,9 @@ fun MainNavigation(
             MainScreenState.MEMO.state -> {
                 MainPath.Memo.data = MainScreenState.GROUP.data
                 navController.navigateSingleTopTo(MainPath.Memo.path)
+            }
+            MainScreenState.WEBVIEW.state->{
+                navController.navigateSingleTopTo(MainPath.WebView.path)
             }
         }
     }
@@ -143,6 +148,10 @@ fun MainNavigation(
                     MainScreenState.MEMO.data = Triple(MainPath.Group.data?.first, MainPath.Group.data?.second, it)
                     mainViewModel.updateScreenState(MainScreenState.MEMO.state)
                 },
+                onActionLinkPressed = { link ->
+                    MainScreenState.WEBVIEW.linkData = link
+                    mainViewModel.updateScreenState(MainScreenState.WEBVIEW.state)
+                },
                 onActionLinkEditPressed = {
                     MainScreenState.LINKADD.data = Triple(MainPath.LinkAdd.data?.first, MainPath.LinkAdd.data?.second, it)
                     mainViewModel.updateScreenState(MainScreenState.LINKADD.state)
@@ -159,6 +168,9 @@ fun MainNavigation(
                         mainViewModel.updateScreenState(MainScreenState.GROUP.state)
                     }
                 })
+        }
+        composable(MainPath.WebView.path){
+            WebViewScreen(linkUrl = MainScreenState.WEBVIEW.linkData?.link)
         }
     }
 }

@@ -76,37 +76,25 @@ fun AllView(
     }
 
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        // 소개 레이아웃을 지웠는지 체크하는 변수가 필요
-        if (isShowIntro) {
-            IntroduceComponent { isDimmed ->
-                isShowIntro = !isDimmed
+        // 소개 레이아웃을 조건부로 표시
+        item {
+            if (isShowIntro) {
+                IntroduceComponent { isDimmed ->
+                    isShowIntro = !isDimmed
+                }
             }
         }
 
-        if (groupListFlow?.isNotEmpty() == true && iconListFlow?.isNotEmpty() == true) {
-            GroupIconComponent(groupListFlow!!, iconListFlow!!, onClickGroup)
-        }
-
-        Box(
-            modifier = Modifier
-                .clickable { onClickAddGroup.invoke() }
-                .fillMaxWidth(1f)
-                .align(Alignment.CenterHorizontally)
-                .height(80.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(LinkZipTheme.color.wg10),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = AnnotatedString(stringResource(R.string.add_group)),
-                style = LinkZipTheme.typography.normal16.copy(color = LinkZipTheme.color.wg50)
-            )
+        // 그룹 아이콘 컴포넌트를 조건부로 표시
+        item {
+            if (groupListFlow?.isNotEmpty() == true && iconListFlow?.isNotEmpty() == true) {
+                GroupIconComponent(groupListFlow!!, iconListFlow!!, onClickGroup , onClickAddGroup)
+            }
         }
     }
 }
@@ -117,6 +105,7 @@ fun GroupIconComponent(
     list: List<GroupData>,
     iconListFlow: List<IconData>,
     onClickGroup: (GroupData, IconData) -> Unit,
+    onClickAddGroup: () -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
     baseViewModel: BaseViewModel = composableActivityViewModel()
 ) {
@@ -127,9 +116,9 @@ fun GroupIconComponent(
 
     Column {
         LazyColumn(
-            modifier = Modifier.heightIn(0.dp , 400.dp)
+            modifier = Modifier.heightIn(0.dp , 550.dp)
         ) {
-            itemsIndexed(list.filter { it.groupIconId != 1L  }) { index, group ->
+            itemsIndexed(list) { index, group ->
                 SwipeScreen(
                     enable = group.groupName != "그룹없음",
                     buttonComposable = {
@@ -157,16 +146,21 @@ fun GroupIconComponent(
                     }
                 )
             }
-        }
-        noGroup?.let { group ->
-            LinkGroupComponent(
-                group.groupName,
-                getDrawableIcon(IconData.ICON_NO_GROUP),
-                LinkZipTheme.color.white,
-                group.groupId,
-                countList.find { it.first == group.groupId }?.second ?: 0
-            ) {
-                onClickGroup.invoke(group, IconData.NO_GROUP)
+            item {
+                Box(
+                    modifier = Modifier
+                        .clickable { onClickAddGroup.invoke() }
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(LinkZipTheme.color.wg10),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = AnnotatedString(stringResource(R.string.add_group)),
+                        style = LinkZipTheme.typography.normal16.copy(color = LinkZipTheme.color.wg50)
+                    )
+                }
             }
         }
     }
