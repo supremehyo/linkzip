@@ -1,6 +1,5 @@
 package com.linkzip.linkzip.presentation.feature.addgroup
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -36,7 +35,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -47,6 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
+import com.linkzip.linkzip.data.ToastKind
+import com.linkzip.linkzip.data.ToastType
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.data.room.IconData.Companion.ICON_AIRPLANE
@@ -68,7 +68,6 @@ import com.linkzip.linkzip.data.room.IconData.Companion.ICON_WINE
 import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.presentation.BaseViewModel
 import com.linkzip.linkzip.presentation.component.BottomDialogComponent
-import com.linkzip.linkzip.presentation.component.CustomToast
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.ADD
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.ADD_GROUP_TITLE
@@ -128,10 +127,12 @@ fun AddGroupView(
                 })
             }
     ) {
-        HeaderTitleView(LinkZipTheme.color.white,
+        HeaderTitleView(
+            LinkZipTheme.color.white,
             onBackButtonPressed = {
                 onBackButtonPressed.invoke()
-            }, null, title)
+            }, null, title
+        )
         Spacer(modifier = Modifier.height(28.dp))
         IconView(
             modifier = Modifier
@@ -166,7 +167,14 @@ fun EditGroupName(
     onBackButtonPressed: () -> Unit,
     hideKeyBoard: () -> Unit
 ) {
-    var groupNameText by remember { mutableStateOf(TextFieldValue(text = groupName , selection = TextRange(0))) }
+    var groupNameText by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = groupName,
+                selection = TextRange(0)
+            )
+        )
+    }
     val maxLength = 12
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
@@ -202,7 +210,7 @@ fun EditGroupName(
             ) {
                 // TextField hint
                 if (groupNameText.text.isEmpty()) {
-                    if(!isFocused) {
+                    if (!isFocused) {
                         Text(
                             text = "면접질문, 운동, 브이로그 등",
                             style = LinkZipTheme.typography.medium16.copy(color = LinkZipTheme.color.wg40)
@@ -242,10 +250,9 @@ fun SaveButton(
     groupNameText: String,
     hideKeyBoard: () -> Unit,
     onBackButtonPressed: () -> Unit,
-    addGroupViewModel: AddGroupViewModel = hiltViewModel()
+    addGroupViewModel: AddGroupViewModel = hiltViewModel(),
+    baseViewModel: BaseViewModel = composableActivityViewModel()
 ) {
-    var isShowToast by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
-
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -259,7 +266,7 @@ fun SaveButton(
             val currentTime = Date()
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             val timeString = formatter.format(currentTime)
-            if(groupNameText.isNotEmpty()){
+            if (groupNameText.isNotEmpty()) {
                 when (isAddOrUpdate) {
                     ADD -> {
                         addGroupViewModel.insertGroup(
@@ -272,10 +279,21 @@ fun SaveButton(
                             success = {
                                 hideKeyBoard.invoke()
                                 onBackButtonPressed.invoke()
-                                isShowToast = Pair(ToastType.SUCCESS, true)
+                                baseViewModel.getIconListById(baseViewModel.iconListFlow.value.map { it.iconId })
+                                baseViewModel.setToastMessage(
+                                    ToastKind.AddGroup(
+                                        ToastType.SUCCESS,
+                                        true
+                                    )
+                                )
                             },
                             fail = {
-                                isShowToast = Pair(ToastType.FAIL, true)
+                                baseViewModel.setToastMessage(
+                                    ToastKind.AddGroup(
+                                        ToastType.WAIT,
+                                        true
+                                    )
+                                )
                                 hideKeyBoard.invoke()
                             }
                         )
@@ -289,18 +307,29 @@ fun SaveButton(
                             date = timeString,
                             success = {
                                 hideKeyBoard.invoke()
-                                isShowToast = Pair(ToastType.SUCCESS, true)
+                                baseViewModel.setToastMessage(
+                                    ToastKind.UpdateGroup(
+                                        ToastType.SUCCESS,
+                                        true
+                                    )
+                                )
+                                baseViewModel.getIconListById(baseViewModel.iconListFlow.value.map { it.iconId })
                                 onBackButtonPressed.invoke()
                             },
                             fail = {
-                                isShowToast = Pair(ToastType.FAIL, true)
+                                baseViewModel.setToastMessage(
+                                    ToastKind.AddGroup(
+                                        ToastType.WAIT,
+                                        true
+                                    )
+                                )
                                 hideKeyBoard.invoke()
                             }
                         )
                     }
                 }
-            } else{
-                isShowToast = Pair(ToastType.FAIL, true)
+            } else {
+                baseViewModel.setToastMessage(ToastKind.AddGroup(ToastType.WRONG_VALUE, true))
             }
 
         },
@@ -313,22 +342,6 @@ fun SaveButton(
             style = LinkZipTheme.typography.medium16
                 .copy(color = LinkZipTheme.color.white)
         )
-    }
-
-    if(isShowToast.second) {
-        val msg = if (isShowToast.first == ToastType.SUCCESS) {
-            "그룹 추가완료!"
-        } else {
-            if(groupNameText.isEmpty()) {
-                "올바른 값을 입력해주세요."
-            } else {
-                "잠시 후 다시 시도해주세요."
-            }
-        }
-
-        val customToast = CustomToast(LocalContext.current)
-        customToast.MakeText(message = msg, icon = R.drawable.ic_check)
-        isShowToast = Pair(ToastType.SUCCESS, false)
     }
 }
 
@@ -390,53 +403,35 @@ fun PlusIconAndBottomSheet(
                 text = "그룹 아이콘 선택",
                 style = LinkZipTheme.typography.medium18.copy(color = LinkZipTheme.color.wg70),
             )
-            Log.e("adadad", "$allIconList")
-//            when (allIconList) {
-//                is UiState.Success -> {
-                    LazyVerticalGrid(
-                        modifier = Modifier.padding(top = 56.dp),
-                        columns = GridCells.Fixed(4),
-                        verticalArrangement = Arrangement.spacedBy(20.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(allIconList.size) { item ->
+            LazyVerticalGrid(
+                modifier = Modifier.padding(top = 56.dp),
+                columns = GridCells.Fixed(4),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items(allIconList.size) { item ->
 
-                            IconButton(
-                                modifier = Modifier
-                                    .width(60.dp)
-                                    .height(60.dp),
-                                onClick = {
-                                    addGroupViewModel.updateCurrentIcon(allIconList[item])
-                                    showBottomSheet = false
-                                }) {
-                                Icon(
-                                    painter = painterResource(
-                                        id = getDrawableIcon(
-                                            allIconList[item].iconName
-                                        )
-                                    ),
-                                    contentDescription = allIconList[item].iconName,
-                                    tint = Color.Unspecified
+                    IconButton(
+                        modifier = Modifier
+                            .width(60.dp)
+                            .height(60.dp),
+                        onClick = {
+                            addGroupViewModel.updateCurrentIcon(allIconList[item])
+                            showBottomSheet = false
+                        }) {
+                        Icon(
+                            painter = painterResource(
+                                id = getDrawableIcon(
+                                    allIconList[item].iconName
                                 )
-                            }
-                        }
+                            ),
+                            contentDescription = allIconList[item].iconName,
+                            tint = Color.Unspecified
+                        )
                     }
                 }
-
-//                is UiState.Loding -> {
-//                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
-//                }
-//
-//                is UiState.Error -> {
-//                    CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
-//                }
-//
-//                else -> {
-//                    Log.e("adadad", " 1212 $allIconList")
-//                    //      CircularProgressIndicator(modifier = Modifier.padding(top = 56.dp))
-//                }
-//            }
-
+            }
+        }
     }
 }
 

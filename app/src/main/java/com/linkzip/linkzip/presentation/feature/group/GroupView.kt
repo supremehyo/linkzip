@@ -45,6 +45,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.linkzip.linkzip.R
+import com.linkzip.linkzip.data.ToastKind
+import com.linkzip.linkzip.data.ToastType
 import com.linkzip.linkzip.data.model.BottomDialogMenu
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
@@ -74,7 +76,7 @@ fun GroupView(
     onActionLinkPressed : (LinkData) -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel(),
     baseViewModel: BaseViewModel = composableActivityViewModel()
-)  {
+) {
     val backgroundColor = remember { groupData?.second?.iconHeaderColor }
     val groupName = remember { groupData?.first?.groupName }
 
@@ -87,9 +89,6 @@ fun GroupView(
 
     // 링크 삭제 다이얼로그 visible 여부
     var isDeleteSelectLink by remember { mutableStateOf(false) }
-
-    // 링크 삭제 success/fail 에 따라 토스트 표기
-    var isShowToastDeleteLink by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
 
     // 그룹 이동 선택 시 보여지는 아이콘 + 그룹 리스트
     val iconList by baseViewModel.iconListByGroup.collectAsStateWithLifecycle()
@@ -248,8 +247,7 @@ fun GroupView(
     }
 
     if(isDeleteSelectLink && selectLinkList.isEmpty()) {
-        val customToast = CustomToast(LocalContext.current)
-        customToast.MakeText(message = "링크를 선택해주세요", icon = R.drawable.ic_check)
+        baseViewModel.setToastMessage(ToastKind.None(ToastType.SELECT_LINK, true))
         isDeleteSelectLink = false
     }
 
@@ -265,10 +263,12 @@ fun GroupView(
             groupViewModel.deleteSelectListInDB(
                 groupId = groupData?.first?.groupId.toString(),
                 success = {
-                    isShowToastDeleteLink = Pair(ToastType.SUCCESS, true)
+                    baseViewModel.setToastMessage(ToastKind.DeleteLink(ToastType.SUCCESS, true))
+                    isStatusSelectLink = false
                 },
                 fail = {
-                    isShowToastDeleteLink = Pair(ToastType.FAIL, true)
+                    baseViewModel.setToastMessage(ToastKind.DeleteLink(ToastType.WAIT, true))
+                    isStatusSelectLink = false
                 }
             )
         }
@@ -294,20 +294,6 @@ fun GroupView(
             showBottomDialog = false
         }
     )
-
-    // 링크 삭제 완료되었을 때 뜨는 토스트 메시지
-    if (isShowToastDeleteLink.second) {
-        val msg = if (isShowToastDeleteLink.first == ToastType.SUCCESS) {
-            "링크 삭제완료!"
-        } else {
-            "잠시 후 다시 시도해주세요"
-        }
-
-        isStatusSelectLink = false
-        val customToast = CustomToast(LocalContext.current)
-        customToast.MakeText(message = msg, icon = R.drawable.ic_check)
-        isShowToastDeleteLink = Pair(ToastType.SUCCESS, false)
-    }
 }
 
 // 링크 선택 -> 그룹 이동 선택했을 때 뜨는 바텀 시트
@@ -393,11 +379,11 @@ fun LinkInGroup(
     onActionLinkEditPressed: (LinkData) -> Unit,
     onActionLinkPressed: (LinkData)->Unit,
     isStatusSelectLink: Boolean,
-    groupViewModel: GroupViewModel = hiltViewModel()
+    groupViewModel: GroupViewModel = hiltViewModel(),
+    baseViewModel: BaseViewModel = composableActivityViewModel()
 ) {
     val context = LocalContext.current
     var isSelected by remember { mutableStateOf(false) }
-    var isShowToastFavorite by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
 
     val favoriteMenuItems =
         mutableListOf(
@@ -526,10 +512,14 @@ fun LinkInGroup(
                                 groupViewModel.updateFavoriteLink(
                                     link,
                                     success = {
-                                        isShowToastFavorite = Pair(ToastType.SUCCESS, true)
+                                        if (link.favorite) {
+                                            baseViewModel.setToastMessage(ToastKind.FavoriteLink(ToastType.SUCCESS, true))
+                                        } else {
+                                            baseViewModel.setToastMessage(ToastKind.UnFavoriteLink(ToastType.SUCCESS, true))
+                                        }
                                     },
                                     fail = {
-                                        isShowToastFavorite = Pair(ToastType.FAIL, true)
+                                        baseViewModel.setToastMessage(ToastKind.None(ToastType.WAIT, true))
                                     })
                             }
 
@@ -539,17 +529,5 @@ fun LinkInGroup(
                 }
             }
         }
-    }
-
-    if (isShowToastFavorite.second) {
-        val msg = if (isShowToastFavorite.first == ToastType.SUCCESS) {
-            if (link.favorite) "즐겨찾기 설정완료!" else "즐겨찾기 해제완료!"
-        } else {
-            "잠시 후 다시 시도해주세요"
-        }
-
-        val customToast = CustomToast(LocalContext.current)
-        customToast.MakeText(message = msg, icon = R.drawable.ic_check)
-        isShowToastFavorite = Pair(ToastType.SUCCESS, false)
     }
 }
