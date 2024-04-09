@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
+import com.linkzip.linkzip.data.ToastKind
+import com.linkzip.linkzip.data.ToastType
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.presentation.BaseViewModel
@@ -57,13 +59,13 @@ fun AllView(
     val iconListFlow by baseViewModel.iconListByGroup.collectAsStateWithLifecycle(null)
     val groupListFlow by baseViewModel.allGroupListFlow.collectAsStateWithLifecycle(null)
 
-    LaunchedEffect(dimmedBackground) {
+    LaunchedEffect(key1 = dimmedBackground) {
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.setBackgroundDim(dimmedBackground)
         }
     }
 
-    LaunchedEffect(groupListFlow) {
+    LaunchedEffect(key1 = groupListFlow) {
         CoroutineScope(Dispatchers.IO).launch {
             groupListFlow?.let { list ->
                 baseViewModel.getIconListById(list.map { it.groupIconId })
@@ -141,6 +143,7 @@ fun GroupIconComponent(
                     buttonModifier = Modifier,
                     clickAction = {
                         homeViewModel.deleteGroupAndUpdateLinks(group.groupId) {
+                            baseViewModel.setToastMessage(ToastKind.DeleteGroup(ToastType.SUCCESS, true))
                             baseViewModel.updateAllGroupList(it)
                         }
                     }
