@@ -76,6 +76,7 @@ import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.EDIT_GROUP
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.PLUS
 import com.linkzip.linkzip.presentation.feature.addgroup.AddGroupView.UPDATE
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.HandleBackButtonAction
 import com.linkzip.linkzip.util.ToastType
 import com.linkzip.linkzip.util.composableActivityViewModel
 import java.text.SimpleDateFormat
@@ -97,6 +98,10 @@ fun AddGroupView(
     }
 
     val currentIconState by addGroupViewModel.currentAddGroupIcon.collectAsStateWithLifecycle()
+
+    HandleBackButtonAction{
+        onBackButtonPressed()
+    }
 
     LaunchedEffect(groupData) {
         if (groupData != null) {

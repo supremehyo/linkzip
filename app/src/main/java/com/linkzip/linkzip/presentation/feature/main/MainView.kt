@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +41,8 @@ import com.linkzip.linkzip.presentation.component.BottomDialogComponent
 import com.linkzip.linkzip.presentation.component.BottomDialogMenuComponent
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.BackHandler
+import com.linkzip.linkzip.util.navigation.HomePath
 import com.linkzip.linkzip.util.navigation.MainBottomNavigation
 import com.linkzip.linkzip.util.navigation.MainBottomNavigationGraph
 import com.linkzip.linkzip.util.navigation.MainBottomPath
@@ -56,6 +59,7 @@ fun MainView(mainViewModel: MainViewModel) {
         MainBottomPath.Home,
         MainBottomPath.MyPage
     )
+
 
     LaunchedEffect(true){
         mainViewModel.updateMenuState(BottomDialogMenu.None)

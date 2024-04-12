@@ -28,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,8 +57,11 @@ import com.linkzip.linkzip.presentation.component.CustomToast
 import com.linkzip.linkzip.presentation.component.DialogComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.BackHandler
+import com.linkzip.linkzip.util.HandleBackButtonAction
 import com.linkzip.linkzip.util.ToastType
 import com.linkzip.linkzip.util.composableActivityViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -70,9 +74,13 @@ fun GroupView(
     onActionLinkPressed : (LinkData) -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel(),
     baseViewModel: BaseViewModel = composableActivityViewModel()
-) {
+)  {
     val backgroundColor = remember { groupData?.second?.iconHeaderColor }
     val groupName = remember { groupData?.first?.groupName }
+
+    HandleBackButtonAction{
+        onBackButtonPressed()
+    }
 
     // 링크 선택 ON/OFF 여부
     var isStatusSelectLink by remember { mutableStateOf(false) }

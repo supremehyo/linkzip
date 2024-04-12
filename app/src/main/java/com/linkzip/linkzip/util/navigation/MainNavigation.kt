@@ -170,7 +170,12 @@ fun MainNavigation(
                 })
         }
         composable(MainPath.WebView.path){
-            WebViewScreen(linkUrl = MainScreenState.WEBVIEW.linkData?.link)
+            WebViewScreen(
+                linkUrl = MainScreenState.WEBVIEW.linkData?.link,
+                onBackButtonPressed = {
+                    mainViewModel.updateScreenState(MainScreenState.GROUP.state)
+                }
+            )
         }
     }
 }
