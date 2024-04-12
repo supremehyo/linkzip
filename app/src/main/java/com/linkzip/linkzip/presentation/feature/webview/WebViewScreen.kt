@@ -8,17 +8,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.compose.rememberNavController
 import com.linkzip.linkzip.util.BackHandler
+import com.linkzip.linkzip.util.HandleBackButtonAction
 import kotlinx.coroutines.launch
 
 @Composable
 fun WebViewScreen(
+    onBackButtonPressed: () -> Unit,
     linkUrl : String?
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    BackHandler(enabled = true) {
-        coroutineScope.launch {
-            //뒤로가기 처리
-        }
+    HandleBackButtonAction{
+        onBackButtonPressed()
     }
 
     AndroidView(

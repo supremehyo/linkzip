@@ -31,6 +31,7 @@ import com.linkzip.linkzip.data.room.LinkData
 import com.linkzip.linkzip.presentation.component.CommonButton
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.HandleBackButtonAction
 
 @Composable
 fun MemoView(data: Triple<GroupData?, IconData?, LinkData?>?, onBackButtonPressed: () -> Unit) {
@@ -40,6 +41,10 @@ fun MemoView(data: Triple<GroupData?, IconData?, LinkData?>?, onBackButtonPresse
     fun hideKeyBoard() {
         focusManager.clearFocus()
         keyboardController?.hide()
+    }
+
+    HandleBackButtonAction{
+        onBackButtonPressed()
     }
 
     Column(modifier = Modifier

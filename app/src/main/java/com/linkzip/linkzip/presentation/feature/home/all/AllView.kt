@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,8 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
-import com.linkzip.linkzip.data.ToastKind
-import com.linkzip.linkzip.data.ToastType
+import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
 import com.linkzip.linkzip.presentation.BaseViewModel
@@ -41,6 +41,7 @@ import com.linkzip.linkzip.presentation.component.SwipeScreen
 import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.BackHandler
 import com.linkzip.linkzip.util.composableActivityViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,13 +60,13 @@ fun AllView(
     val iconListFlow by baseViewModel.iconListByGroup.collectAsStateWithLifecycle(null)
     val groupListFlow by baseViewModel.allGroupListFlow.collectAsStateWithLifecycle(null)
 
-    LaunchedEffect(key1 = dimmedBackground) {
+    LaunchedEffect(dimmedBackground) {
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.setBackgroundDim(dimmedBackground)
         }
     }
 
-    LaunchedEffect(key1 = groupListFlow) {
+    LaunchedEffect(groupListFlow) {
         CoroutineScope(Dispatchers.IO).launch {
             groupListFlow?.let { list ->
                 baseViewModel.getIconListById(list.map { it.groupIconId })
@@ -143,7 +144,6 @@ fun GroupIconComponent(
                     buttonModifier = Modifier,
                     clickAction = {
                         homeViewModel.deleteGroupAndUpdateLinks(group.groupId) {
-                            baseViewModel.setToastMessage(ToastKind.DeleteGroup(ToastType.SUCCESS, true))
                             baseViewModel.updateAllGroupList(it)
                         }
                     }

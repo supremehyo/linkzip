@@ -28,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,8 +45,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.linkzip.linkzip.R
-import com.linkzip.linkzip.data.ToastKind
-import com.linkzip.linkzip.data.ToastType
 import com.linkzip.linkzip.data.model.BottomDialogMenu
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
@@ -58,7 +57,11 @@ import com.linkzip.linkzip.presentation.component.CustomToast
 import com.linkzip.linkzip.presentation.component.DialogComponent
 import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.BackHandler
+import com.linkzip.linkzip.util.HandleBackButtonAction
+import com.linkzip.linkzip.util.ToastType
 import com.linkzip.linkzip.util.composableActivityViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -71,15 +74,22 @@ fun GroupView(
     onActionLinkPressed : (LinkData) -> Unit,
     groupViewModel: GroupViewModel = hiltViewModel(),
     baseViewModel: BaseViewModel = composableActivityViewModel()
-) {
+)  {
     val backgroundColor = remember { groupData?.second?.iconHeaderColor }
     val groupName = remember { groupData?.first?.groupName }
+
+    HandleBackButtonAction{
+        onBackButtonPressed()
+    }
 
     // 링크 선택 ON/OFF 여부
     var isStatusSelectLink by remember { mutableStateOf(false) }
 
     // 링크 삭제 다이얼로그 visible 여부
     var isDeleteSelectLink by remember { mutableStateOf(false) }
+
+    // 링크 삭제 success/fail 에 따라 토스트 표기
+    var isShowToastDeleteLink by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
 
     // 그룹 이동 선택 시 보여지는 아이콘 + 그룹 리스트
     val iconList by baseViewModel.iconListByGroup.collectAsStateWithLifecycle()
@@ -238,7 +248,8 @@ fun GroupView(
     }
 
     if(isDeleteSelectLink && selectLinkList.isEmpty()) {
-        baseViewModel.setToastMessage(ToastKind.None(ToastType.SELECT_LINK, true))
+        val customToast = CustomToast(LocalContext.current)
+        customToast.MakeText(message = "링크를 선택해주세요", icon = R.drawable.ic_check)
         isDeleteSelectLink = false
     }
 
@@ -254,12 +265,10 @@ fun GroupView(
             groupViewModel.deleteSelectListInDB(
                 groupId = groupData?.first?.groupId.toString(),
                 success = {
-                    baseViewModel.setToastMessage(ToastKind.DeleteLink(ToastType.SUCCESS, true))
-                    isStatusSelectLink = false
+                    isShowToastDeleteLink = Pair(ToastType.SUCCESS, true)
                 },
                 fail = {
-                    baseViewModel.setToastMessage(ToastKind.DeleteLink(ToastType.WAIT, true))
-                    isStatusSelectLink = false
+                    isShowToastDeleteLink = Pair(ToastType.FAIL, true)
                 }
             )
         }
@@ -285,6 +294,20 @@ fun GroupView(
             showBottomDialog = false
         }
     )
+
+    // 링크 삭제 완료되었을 때 뜨는 토스트 메시지
+    if (isShowToastDeleteLink.second) {
+        val msg = if (isShowToastDeleteLink.first == ToastType.SUCCESS) {
+            "링크 삭제완료!"
+        } else {
+            "잠시 후 다시 시도해주세요"
+        }
+
+        isStatusSelectLink = false
+        val customToast = CustomToast(LocalContext.current)
+        customToast.MakeText(message = msg, icon = R.drawable.ic_check)
+        isShowToastDeleteLink = Pair(ToastType.SUCCESS, false)
+    }
 }
 
 // 링크 선택 -> 그룹 이동 선택했을 때 뜨는 바텀 시트
@@ -370,11 +393,11 @@ fun LinkInGroup(
     onActionLinkEditPressed: (LinkData) -> Unit,
     onActionLinkPressed: (LinkData)->Unit,
     isStatusSelectLink: Boolean,
-    groupViewModel: GroupViewModel = hiltViewModel(),
-    baseViewModel: BaseViewModel = composableActivityViewModel()
+    groupViewModel: GroupViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var isSelected by remember { mutableStateOf(false) }
+    var isShowToastFavorite by remember { mutableStateOf(Pair(ToastType.SUCCESS, false)) }
 
     val favoriteMenuItems =
         mutableListOf(
@@ -503,14 +526,10 @@ fun LinkInGroup(
                                 groupViewModel.updateFavoriteLink(
                                     link,
                                     success = {
-                                        if (link.favorite) {
-                                            baseViewModel.setToastMessage(ToastKind.FavoriteLink(ToastType.SUCCESS, true))
-                                        } else {
-                                            baseViewModel.setToastMessage(ToastKind.UnFavoriteLink(ToastType.SUCCESS, true))
-                                        }
+                                        isShowToastFavorite = Pair(ToastType.SUCCESS, true)
                                     },
                                     fail = {
-                                        baseViewModel.setToastMessage(ToastKind.None(ToastType.WAIT, true))
+                                        isShowToastFavorite = Pair(ToastType.FAIL, true)
                                     })
                             }
 
@@ -520,5 +539,17 @@ fun LinkInGroup(
                 }
             }
         }
+    }
+
+    if (isShowToastFavorite.second) {
+        val msg = if (isShowToastFavorite.first == ToastType.SUCCESS) {
+            if (link.favorite) "즐겨찾기 설정완료!" else "즐겨찾기 해제완료!"
+        } else {
+            "잠시 후 다시 시도해주세요"
+        }
+
+        val customToast = CustomToast(LocalContext.current)
+        customToast.MakeText(message = msg, icon = R.drawable.ic_check)
+        isShowToastFavorite = Pair(ToastType.SUCCESS, false)
     }
 }

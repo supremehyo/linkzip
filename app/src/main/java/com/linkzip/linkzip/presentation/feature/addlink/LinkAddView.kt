@@ -54,6 +54,7 @@ import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.DisposableEffectWithLifeCycle
+import com.linkzip.linkzip.util.HandleBackButtonAction
 import com.linkzip.linkzip.util.LinkScrapData
 import com.linkzip.linkzip.util.composableActivityViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -79,6 +80,10 @@ fun LinkAddView(
     var isFocused by remember { mutableStateOf(false) }
     var iconListFlow by remember { mutableStateOf(listOf<IconData>()) }
     var saveButtonColor by remember { mutableStateOf(Color.Black) }
+
+    HandleBackButtonAction{
+        onBackButtonPressed.invoke(if (groupData != null) "GROUP" else "MAIN")
+    }
 
     val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
