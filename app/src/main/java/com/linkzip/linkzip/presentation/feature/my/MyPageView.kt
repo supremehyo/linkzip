@@ -1,21 +1,16 @@
 package com.linkzip.linkzip.presentation.feature.my
 
-import android.content.Context
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,10 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.linkzip.linkzip.R
-import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
-import com.linkzip.linkzip.presentation.feature.onboarding.OnBoardingView
-import com.linkzip.linkzip.presentation.feature.webview.WebViewScreen
-
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.ui.theme.LinkZipTypography
 
@@ -42,13 +33,12 @@ fun MyPageView(
         modifier = Modifier.padding(horizontal = 22.dp)
     ) {
         Text(text = stringResource(R.string.my_page_title),
-            style = LinkZipTypography.textStyle.bold20,
+            style = LinkZipTypography.textStyle.bold20.copy(color = LinkZipTheme.color.wg70),
             modifier = Modifier.padding(vertical = 40.dp))
         Box(modifier = Modifier
-            .fillMaxWidth(1f)
-            .padding(bottom = 20.dp)
+            .fillMaxWidth(  )
             .clip(RoundedCornerShape(12.dp))
-            .background(LinkZipTheme.color.greenD4F0EB)
+            .background(color = LinkZipTheme.color.greenD4F0EB)
             .height(82.dp),
         ){
             Row(
@@ -63,7 +53,7 @@ fun MyPageView(
                         text = stringResource(R.string.myPage_button_title_1),
                         style = LinkZipTypography.textStyle.medium12.copy(color = LinkZipTheme.color.wg60)
                     )
-                    Spacer(modifier = Modifier.height(height = 5.dp))
+                    Box(modifier = Modifier.height(height = 5.dp))
                     Text(
                         text = stringResource(R.string.myPage_button_sub_title_1),
                         style = LinkZipTypography.textStyle.bold16.copy(color = LinkZipTheme.color.wg60)
@@ -78,6 +68,7 @@ fun MyPageView(
                     contentDescription = "rightArrow")
             }
         }
+        Box(modifier = Modifier.height(20.dp))
         Box(modifier = Modifier
             .fillMaxWidth(1f)
             .padding(bottom = 40.dp)
@@ -97,7 +88,7 @@ fun MyPageView(
                         text = stringResource(R.string.myPage_button_title_2),
                         style = LinkZipTypography.textStyle.medium12.copy(color = LinkZipTheme.color.wg60)
                     )
-                    Spacer(modifier = Modifier.height(height = 5.dp))
+                    Box(modifier = Modifier.height(height = 5.dp))
                     Text(
                         text = stringResource(R.string.myPage_button_sub_title_2),
                         style = LinkZipTypography.textStyle.bold16.copy(color = LinkZipTheme.color.wg60)
@@ -112,7 +103,12 @@ fun MyPageView(
                     contentDescription = "rightArrow")
             }
         }
-        Spacer(modifier = Modifier.height(height = 64.dp))
+        Box(
+            modifier = Modifier
+                .height(4.dp)
+                .fillMaxWidth()
+                .background(LinkZipTheme.color.wg10)
+        )
         Row(modifier = Modifier
             .fillMaxWidth()
             .height(height = 60.dp),

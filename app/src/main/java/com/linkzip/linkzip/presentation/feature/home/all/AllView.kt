@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
+import com.linkzip.linkzip.data.ToastKind
+import com.linkzip.linkzip.data.ToastType
 import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
@@ -144,6 +146,7 @@ fun GroupIconComponent(
                     buttonModifier = Modifier,
                     clickAction = {
                         homeViewModel.deleteGroupAndUpdateLinks(group.groupId) {
+                            baseViewModel.setToastMessage(ToastKind.DeleteGroup(ToastType.SUCCESS, true))
                             baseViewModel.updateAllGroupList(it)
                         }
                     }
