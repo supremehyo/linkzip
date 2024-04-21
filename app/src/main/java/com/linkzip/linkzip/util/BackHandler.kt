@@ -7,8 +7,21 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import kotlinx.coroutines.launch
+
+
+@Composable
+fun HandleBackButtonAction(onBack: suspend () -> Unit) {
+    val coroutineScope = rememberCoroutineScope()
+    BackHandler(enabled = true) {
+        coroutineScope.launch {
+            onBack()
+        }
+    }
+}
 
 @Composable
 fun BackHandler(enabled: Boolean = true, onBack: () -> Unit) {
