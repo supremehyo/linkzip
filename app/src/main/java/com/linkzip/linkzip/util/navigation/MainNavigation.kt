@@ -38,6 +38,7 @@ sealed class MainPath(val path: String, var data: Triple<GroupData?, IconData?, 
     object Group : MainPath("Group", null)
     object Memo : MainPath("Memo", null)
     object WebView : MainPath("WebView", null)
+    object MyWebView : MainPath("MyWebView" , null)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -82,6 +83,9 @@ fun MainNavigation(
             }
             MainScreenState.WEBVIEW.state->{
                 navController.navigateSingleTopTo(MainPath.WebView.path)
+            }
+            MainScreenState.MYWEBVIEW.state->{
+                navController.navigateSingleTopTo(MainPath.MyWebView.path)
             }
         }
     }

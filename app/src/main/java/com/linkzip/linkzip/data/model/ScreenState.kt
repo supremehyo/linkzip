@@ -25,4 +25,5 @@ sealed class MainScreenState
     object GROUP : MainScreenState("GROUP", null, null)
     object MEMO : MainScreenState("MEMO", null, null)
     object WEBVIEW : MainScreenState("WEBVIEW", null, null)
+    object MYWEBVIEW : MainScreenState("MYWEBVIEW",null,null)
 }
