@@ -1,6 +1,7 @@
 package com.linkzip.linkzip
 
 import android.app.Application
+import android.net.Uri
 import androidx.room.Room
 import com.linkzip.linkzip.data.room.LinkRoomDataBase
 import dagger.hilt.android.HiltAndroidApp
@@ -9,11 +10,13 @@ import dagger.hilt.android.HiltAndroidApp
 class App : Application()  {
     companion object{
         var db : LinkRoomDataBase? = null
+        var EMPTY_THUMBNAIL = ""
     }
 
     override fun onCreate() {
         super.onCreate()
         db = initRoomDataBase()
+        EMPTY_THUMBNAIL = Uri.parse("android.resource://${applicationContext.packageName}/${R.drawable.linkzip_logo}").toString()
     }
 
     //room db 생성

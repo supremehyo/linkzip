@@ -28,7 +28,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.linkzip.linkzip.App.Companion.EMPTY_THUMBNAIL
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.ToastKind
 import com.linkzip.linkzip.data.ToastType
@@ -61,7 +61,6 @@ import com.linkzip.linkzip.presentation.component.HeaderTitleView
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.HandleBackButtonAction
 import com.linkzip.linkzip.util.composableActivityViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun GroupView(
@@ -400,6 +399,7 @@ fun LinkInGroup(
 
     var showDialog by remember { mutableStateOf(false) }
 
+    Log.e("adad", "${link} ${link.linkThumbnail.isEmpty()}")
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -422,7 +422,7 @@ fun LinkInGroup(
                         .height(72.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.FillBounds,
-                    model = link.linkThumbnail,
+                    model = link.linkThumbnail.ifEmpty { EMPTY_THUMBNAIL },
                     contentDescription = null,
                 )
                 Box(modifier = Modifier.width(20.dp))
