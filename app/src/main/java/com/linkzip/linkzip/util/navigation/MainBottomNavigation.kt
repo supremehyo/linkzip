@@ -30,6 +30,7 @@ import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.presentation.feature.home.HomeView
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.presentation.feature.my.MyPageView
+import com.linkzip.linkzip.presentation.feature.webview.OpenBrowser
 import com.linkzip.linkzip.presentation.feature.webview.WebViewScreen
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.getActivity
@@ -108,11 +109,10 @@ fun MainBottomNavigationGraph(navController: NavHostController, mainViewModel: M
         ){ backstackEntry ->
             val data = backstackEntry.arguments?.getString("data")
             data?.let {
-                WebViewScreen(
-                    //route 에 link 형태로 넘기니까 에러나서 이렇게 처리했는데 좀 별론거 같긴함, 딱히 문제는 없을거 같긴함
-                    linkUrl = convertLink(it),
+                OpenBrowser(
+                    url = convertLink(it),
                     onBackButtonPressed = {
-                        navController.popBackStack()
+                        navController.navigate(MainBottomPath.MyPage.path)
                     }
                 )
             }

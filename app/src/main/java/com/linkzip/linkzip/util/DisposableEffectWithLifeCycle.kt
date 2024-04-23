@@ -13,6 +13,7 @@ import androidx.lifecycle.LifecycleOwner
 
 @Composable
 fun DisposableEffectWithLifeCycle(
+    onStart: () -> Unit,
     onResume: () -> Unit
 ) {
     val context = LocalContext.current
@@ -21,6 +22,7 @@ fun DisposableEffectWithLifeCycle(
     //rememberUpdatedState 값이 변경되는 경우 다시 시작되지 않아야 하는 효과에서
     //값 참조
     val currentOnResume by rememberUpdatedState(onResume)
+    val currentOnStart by rememberUpdatedState(onStart)
 
     //Composable 의 lifecycle 에 맞춰 정리해야하는 리스너나 작업이 있는경우에
     //리스너나 작업을 제거하기 위해 사용되는 Effect 가 DisposableEffect
@@ -29,6 +31,9 @@ fun DisposableEffectWithLifeCycle(
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
                     currentOnResume()
+                }
+                Lifecycle.Event.ON_START ->{
+                    currentOnStart()
                 }
                 else -> {}
             }

@@ -188,6 +188,9 @@ fun LinkAddView(
 
 
     DisposableEffectWithLifeCycle(
+        onStart = {
+
+        },
         onResume = {
             val clipboardManager =
                 context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
