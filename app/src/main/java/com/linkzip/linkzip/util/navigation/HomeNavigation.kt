@@ -1,11 +1,15 @@
 package com.linkzip.linkzip.util.navigation
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -65,6 +69,9 @@ fun HomeNavigation(
     ) {
         composable(HomePath.All.path) {
             AllView(
+                onBackButtonPressed = {
+                   // val context = LocalContext.current
+                },
                 dimmedBoolean = {
                     callback(it)
                 },
@@ -95,4 +102,13 @@ fun HomeNavigation(
             )
         }
     }
+}
+
+fun Context.findActivity(): Activity {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    throw IllegalStateException("no activity")
 }

@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.presentation.feature.home.all
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +34,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.data.ToastKind
 import com.linkzip.linkzip.data.ToastType
+import com.linkzip.linkzip.data.model.INTRO
+import com.linkzip.linkzip.data.model.IS_FRIST
 import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.data.room.GroupData
 import com.linkzip.linkzip.data.room.IconData
@@ -44,7 +47,9 @@ import com.linkzip.linkzip.presentation.feature.addgroup.getDrawableIcon
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
 import com.linkzip.linkzip.util.BackHandler
+import com.linkzip.linkzip.util.HandleBackButtonAction
 import com.linkzip.linkzip.util.composableActivityViewModel
+import com.linkzip.linkzip.util.getActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,16 +60,24 @@ fun AllView(
     homeViewModel: HomeViewModel = hiltViewModel(),
     baseViewModel: BaseViewModel = composableActivityViewModel(),
     onClickAddGroup: () -> Unit,
+    onBackButtonPressed : () -> Unit,
     onClickGroup: (GroupData, IconData)-> Unit
 ) {
-    var isShowIntro by remember { mutableStateOf(true) }
+
     val dimmedBackground by remember { mutableStateOf(false) }
     val iconListFlow by baseViewModel.iconListByGroup.collectAsStateWithLifecycle(null)
     val groupListFlow by baseViewModel.allGroupListFlow.collectAsStateWithLifecycle(null)
+    val sharedData = getActivity().getSharedPreferences("spf", ComponentActivity.MODE_PRIVATE)
+    var isShowIntro by remember { mutableStateOf(sharedData.getBoolean(INTRO , true)) }
+
+    HandleBackButtonAction{
+        onBackButtonPressed()
+    }
 
     LaunchedEffect(dimmedBackground) {
         CoroutineScope(Dispatchers.IO).launch {
             homeViewModel.setBackgroundDim(dimmedBackground)
+
         }
     }
 
@@ -90,6 +103,8 @@ fun AllView(
         item {
             if (isShowIntro) {
                 IntroduceComponent { isDimmed ->
+                    val editor = sharedData.edit()
+                    editor.putBoolean(INTRO , false).apply()
                     isShowIntro = !isDimmed
                 }
             }
