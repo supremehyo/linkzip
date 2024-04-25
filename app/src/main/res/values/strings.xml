@@ -38,4 +38,9 @@
     <string name="add_link_title">링크 추가</string>
     <string name="edit_link_title">링크 수정</string>
     <string name="empty_favorite">아직 즐겨찾기로\n등록한 링크가 없어요.</string>
+
+    <!-- 웹 링크 -->
+    <string name="guide_link">https://shimmer-salesman-a21.notion.site/49d033f2f81b408fb3e2e5414124421e</string>
+    <string name="terms_of_use">https://shimmer-salesman-a21.notion.site/cc696e394e234bc59d947e9fbf9744c8?pvs=4</string>
+
 </resources>

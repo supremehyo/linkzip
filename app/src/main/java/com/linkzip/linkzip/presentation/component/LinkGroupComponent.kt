@@ -165,9 +165,6 @@ fun IntroduceComponent(
         contentComposable = {
                 Card(
                     modifier= Modifier
-                        .clickable {
-                            onClickIntro.invoke(true)
-                        }
                         .padding(vertical = 10.dp)
                         .fillMaxWidth(1f)
                         .height(80.dp)
@@ -205,7 +202,7 @@ fun IntroduceComponent(
         },
         buttonModifier = Modifier,
         clickAction = {
-            Log.v("클릭","딸깍")
+            onClickIntro.invoke(true)
         }
     )
 }

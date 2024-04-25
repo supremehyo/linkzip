@@ -1,5 +1,6 @@
 package com.linkzip.linkzip.util.navigation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -18,14 +19,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.activity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.linkzip.linkzip.R
+import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.presentation.feature.home.HomeView
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
 import com.linkzip.linkzip.presentation.feature.my.MyPageView
+import com.linkzip.linkzip.presentation.feature.webview.OpenBrowser
+import com.linkzip.linkzip.presentation.feature.webview.WebViewScreen
 import com.linkzip.linkzip.ui.theme.LinkZipTheme
+import com.linkzip.linkzip.util.getActivity
 
 sealed class MainBottomPath(
     val title: Int, val icon: Int, val path: String
@@ -87,9 +95,35 @@ fun MainBottomNavigationGraph(navController: NavHostController, mainViewModel: M
             HomeView(mainViewModel)
         }
         composable(MainBottomPath.MyPage.path) {
-             MyPageView(mainViewModel.versionCode)
-//            // TODO 후에 Mypage로 변경, 테스트 때문에 그룹 추가하기로 보여짐
-//            AddGroupView { navController.popBackStack() }
+             MyPageView(
+                 activity = getActivity(),
+                 appVersion = mainViewModel.versionCode,
+                 onMove = {
+                     navController.navigate("${MainPath.MyWebView.path}/${it}")
+                 }
+             )
         }
+        composable(
+            route = "${MainPath.MyWebView.path}/{data}",
+            arguments = listOf(navArgument("data") { type = NavType.StringType })
+        ){ backstackEntry ->
+            val data = backstackEntry.arguments?.getString("data")
+            data?.let {
+                OpenBrowser(
+                    url = convertLink(it),
+                    onBackButtonPressed = {
+                        navController.navigate(MainBottomPath.MyPage.path)
+                    }
+                )
+            }
+        }
+    }
+}
+
+fun convertLink(data : String) : String{
+    return when(data){
+        "GUIDE" -> "https://shimmer-salesman-a21.notion.site/49d033f2f81b408fb3e2e5414124421e"
+        "USE" -> "https://shimmer-salesman-a21.notion.site/cc696e394e234bc59d947e9fbf9744c8?pvs=4"
+        else -> ""
     }
 }
