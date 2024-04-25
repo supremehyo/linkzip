@@ -53,7 +53,6 @@ fun OpenBrowser(
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         context.startActivity(intent)
     }
-
     DisposableEffectWithLifeCycle(
         onStart = {
 

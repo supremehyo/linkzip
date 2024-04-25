@@ -102,11 +102,16 @@ fun AllView(
         // 소개 레이아웃을 조건부로 표시
         item {
             if (isShowIntro) {
-                IntroduceComponent { isDimmed ->
-                    val editor = sharedData.edit()
-                    editor.putBoolean(INTRO , false).apply()
-                    isShowIntro = !isDimmed
-                }
+                IntroduceComponent(
+                    onClickIntro = {
+                        dimmedBoolean.invoke(true)
+                    },
+                    onDeleteIntro = { isDimmed ->
+                        val editor = sharedData.edit()
+                        editor.putBoolean(INTRO , false).apply()
+                        isShowIntro = !isDimmed
+                    }
+                )
             }
         }
 

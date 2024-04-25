@@ -11,15 +11,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.linkzip.linkzip.data.model.HomeScreenState
 import com.linkzip.linkzip.data.model.MainScreenState
 import com.linkzip.linkzip.presentation.feature.home.HomeViewModel
 import com.linkzip.linkzip.presentation.feature.home.all.AllView
 import com.linkzip.linkzip.presentation.feature.home.favorite.FavoriteView
 import com.linkzip.linkzip.presentation.feature.main.MainViewModel
+import com.linkzip.linkzip.presentation.feature.webview.OpenBrowser
 import com.linkzip.linkzip.util.BackHandler
 import kotlinx.coroutines.launch
 
@@ -73,7 +76,7 @@ fun HomeNavigation(
                    // val context = LocalContext.current
                 },
                 dimmedBoolean = {
-                    callback(it)
+                    navController.navigate("${MainPath.MyWebView.path}/GUIDE")
                 },
                 onClickAddGroup = {
                      mainViewModel.updateScreenState(MainScreenState.GROUPADD.state)
@@ -100,6 +103,21 @@ fun HomeNavigation(
                     mainViewModel.updateScreenState(MainScreenState.MEMO.state)
                 }
             )
+        }
+
+        composable(
+            route = "${MainPath.MyWebView.path}/{data}",
+            arguments = listOf(navArgument("data") { type = NavType.StringType })
+        ){ backstackEntry ->
+            val data = backstackEntry.arguments?.getString("data")
+            data?.let {
+                OpenBrowser(
+                    url = convertLink(it),
+                    onBackButtonPressed = {
+                        navController.navigate(HomePath.All.path)
+                    }
+                )
+            }
         }
     }
 }

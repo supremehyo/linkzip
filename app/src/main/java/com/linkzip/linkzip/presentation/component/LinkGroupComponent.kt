@@ -153,7 +153,8 @@ fun swipeLinkGroupComponent(
 
 @Composable
 fun IntroduceComponent(
-    onClickIntro : (Boolean)->Unit
+    onClickIntro : ()->Unit,
+    onDeleteIntro : (Boolean)->Unit
 ) {
     SwipeScreen(
         buttonComposable = {
@@ -168,7 +169,10 @@ fun IntroduceComponent(
                         .padding(vertical = 10.dp)
                         .fillMaxWidth(1f)
                         .height(80.dp)
-                        .background(Color.Transparent),
+                        .background(Color.Transparent)
+                        .clickable {
+                            onClickIntro.invoke()
+                        },
                     shape = RoundedCornerShape(12.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = LinkZipTheme.color.orangeFFE6C1
@@ -202,7 +206,7 @@ fun IntroduceComponent(
         },
         buttonModifier = Modifier,
         clickAction = {
-            onClickIntro.invoke(true)
+            onDeleteIntro.invoke(true)
         }
     )
 }
@@ -219,7 +223,6 @@ private fun onLeftSwipe(translationX: Float,callback : (Dp)->Unit) {
 @Composable
 fun GreetingPreview() {
     LinkZipTheme {
-        IntroduceComponent{
-        }
+
     }
 }
