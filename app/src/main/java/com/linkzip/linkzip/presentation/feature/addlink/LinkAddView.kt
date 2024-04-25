@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.linkzip.linkzip.App.Companion.EMPTY_THUMBNAIL
 import com.linkzip.linkzip.R
 import com.linkzip.linkzip.common.UiState
 import com.linkzip.linkzip.data.room.GroupData
@@ -334,6 +335,8 @@ fun LinkAddView(
                     buttonName = "저장하기",
                     buttonColor = LinkZipTheme.color.wg20,
                     onClickEvent = {
+                        // 썸네일 사진 못 가져올 때, 기본 사진으로 저장
+                        resultLinkData = resultLinkData.copy(linkThumbnail = resultLinkData.linkThumbnail.ifEmpty { EMPTY_THUMBNAIL })
                         homeViewModel.insertLink(resultLinkData)
                     },
                     isFocused = isFocused
@@ -432,6 +435,3 @@ fun dropDownMenu(
         )
     }
 }
-
-const val EMPTY_THUMBNAIL =
-    "https://mblogthumb-phinf.pstatic.net/MjAyMjA1MzFfMTY4/MDAxNjUzOTI5Mjc3NzU5.4ESIx_02zDPDaboENohTwq1ejlla-rEnFjgR5Cnp6q4g.q2K3wfKEV7JpSFs0BRAAebNJNKPL7JA8xyTvAG0F0DAg.JPEG.jikim97/resized%EF%BC%BFresized%EF%BC%BFresized%EF%BC%BFIMG%EF%BC%BF0571.jpg?type=w800"
