@@ -187,10 +187,9 @@ fun rememberReviewTask(reviewManager: ReviewManager): ReviewInfo? {
     }
     reviewManager.requestReviewFlow().addOnCompleteListener {
         if (it.isSuccessful) {
-            Log.e("DSAfs", "${it.result}")
             reviewInfo = it.result
         }else{
-            Log.e("DSAfs2", "${it.result}")
+
         }
     }
 
